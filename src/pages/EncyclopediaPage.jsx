@@ -286,7 +286,6 @@ function EncyclopediaPage() {
       requestAnimationFrame(() => {
         setLightStyle(prev => ({ ...prev, transition: 'opacity 0.4s ease', opacity: 1 }))
         setTimeout(() => {
-          navigate('/encyclopedia')
           setLightStyle(prev => ({
             ...prev,
             transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease',
@@ -296,6 +295,7 @@ function EncyclopediaPage() {
             opacity: 0,
           }))
           setTimeout(() => {
+            navigate('/encyclopedia')
             setLightStyle(prev => ({ ...prev, display: 'none' }))
             setIsTransitioning(false)
           }, 500)
