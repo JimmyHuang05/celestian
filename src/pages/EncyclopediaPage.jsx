@@ -226,18 +226,18 @@ function EncyclopediaPage() {
     setIsClosing(true)
     setPanelStyle(prev => ({
       ...prev,
-      transition: 'width 0.2s ease, height 0.2s ease, opacity 0.2s ease',
+      transition: 'width 0.35s ease, height 0.35s ease, opacity 0.25s ease',
       width: '0',
       height: '0',
       opacity: 0,
       borderRadius: '50%',
     }))
     setTimeout(() => {
+      navigate('/encyclopedia', { replace: true })
       setPanelStyle(null)
       setIsClosing(false)
       setIsTransitioning(false)
-      navigate('/encyclopedia', { replace: true })
-    }, 200)
+    }, 380)
   }, [isTransitioning, navigate])
 
   const handleBack = useCallback(() => {
