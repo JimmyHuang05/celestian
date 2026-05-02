@@ -75,20 +75,18 @@ function EncyclopediaPage() {
   })
 
   const [lightStyle, setLightStyle] = useState({
-    display: 'none',
     position: 'fixed',
     pointerEvents: 'none',
-    zIndex: 200,
+    zIndex: -1,
     left: '50%',
     top: '50%',
-    width: '10px',
-    height: '10px',
-    borderRadius: '50%',
+    width: '100vw',
+    height: '100vh',
+    borderRadius: '0',
     opacity: 1,
     transform: 'translate(-50%, -50%)',
     transition: 'none',
-    backgroundColor: '#f9fafb',
-    boxShadow: '0 0 80px rgba(255,255,255,0.2)',
+    backgroundColor: '#0a0a0a',
   })
 
   const currentDetailComponent = useCallback(() => {
@@ -198,7 +196,6 @@ function EncyclopediaPage() {
       gallery: '#050505',
     }
     const bgColor = bgColors[node.id] || '#f9fafb'
-    const isDark = bgColor !== '#f9fafb'
 
     let cx = window.innerWidth / 2
     let cy = window.innerHeight / 2
@@ -213,7 +210,6 @@ function EncyclopediaPage() {
     else if (window.innerWidth >= 768 && window.innerWidth * 0.8333 < 1024) targetW = window.innerWidth * 0.8333
 
     setLightStyle({
-      display: 'block',
       position: 'fixed',
       pointerEvents: 'none',
       zIndex: 200,
@@ -226,7 +222,6 @@ function EncyclopediaPage() {
       transform: 'translate(-50%, -50%)',
       transition: 'none',
       backgroundColor: bgColor,
-      boxShadow: isDark ? '0 0 80px rgba(0,0,0,0.8)' : '0 0 80px rgba(255,255,255,0.2)',
     })
 
     requestAnimationFrame(() => {
@@ -244,9 +239,9 @@ function EncyclopediaPage() {
         }))
 
         setTimeout(() => {
-          navigate(`/encyclopedia/${node.id}`)
-          setLightStyle(prev => ({ ...prev, zIndex: -1, transition: 'none' }))
+          setLightStyle(prev => ({ ...prev, transition: 'none', zIndex: 0, width: '100vw', height: '100vh', borderRadius: '0' }))
           setIsTransitioning(false)
+          navigate(`/encyclopedia/${node.id}`)
         }, 500)
       })
     })
@@ -281,10 +276,9 @@ function EncyclopediaPage() {
       {nodeId ? (
         <div className="w-full h-screen overflow-hidden" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
           {renderDetailComponent()}
-          <div style={lightStyle} />
         </div>
       ) : (
-      <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"
+      <div className="relative w-full h-screen overflow-hidden font-sans select-none"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
         <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
@@ -347,12 +341,11 @@ function EncyclopediaPage() {
           </div>
         </div>
 
-        <div style={lightStyle} />
-
         <audio ref={bgmAudioRef} autoPlay loop src="/data/audio/bgm/encyclopedia.mp3" />
         <audio ref={hoverAudioRef} src="/data/audio/sfx/hover.mp3" />
       </div>
       )}
+      <div style={lightStyle} />
     </div>
   )
 }
