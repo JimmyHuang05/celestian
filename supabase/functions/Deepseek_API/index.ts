@@ -89,7 +89,7 @@ serve(async (req) => {
       : "\n\n暂无参考档案。"
 
     const payload = {
-      model: "deepseek-chat",
+      model: "deepseek-v4-flash",
       messages: [
         {
           role: "system",
