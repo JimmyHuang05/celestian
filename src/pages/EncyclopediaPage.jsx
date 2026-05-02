@@ -59,6 +59,7 @@ function EncyclopediaPage() {
   const [isPlayingBgm, setIsPlayingBgm] = useState(true)
   const [ripples, setRipples] = useState([])
   const [isTransitioning, setIsTransitioning] = useState(false)
+  const [isClosing, setIsClosing] = useState(false)
 
   const [panelStyle, setPanelStyle] = useState(null)
 
@@ -222,9 +223,10 @@ function EncyclopediaPage() {
   const closeDetail = useCallback(() => {
     if (isTransitioning) return
     setIsTransitioning(true)
+    setIsClosing(true)
     setPanelStyle(prev => ({
       ...prev,
-      transition: 'width 0.3s ease, height 0.3s ease, opacity 0.3s ease',
+      transition: 'width 0.2s ease, height 0.2s ease, opacity 0.2s ease',
       width: '0',
       height: '0',
       opacity: 0,
@@ -232,9 +234,10 @@ function EncyclopediaPage() {
     }))
     setTimeout(() => {
       setPanelStyle(null)
+      setIsClosing(false)
       setIsTransitioning(false)
       navigate('/encyclopedia', { replace: true })
-    }, 300)
+    }, 200)
   }, [isTransitioning, navigate])
 
   const handleBack = useCallback(() => {
@@ -329,7 +332,7 @@ function EncyclopediaPage() {
       {panelStyle && <div style={panelStyle} />}
 
       {nodeId && nodeFromUrl && (
-        <div className="fixed inset-0 z-[201]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+        <div className={`fixed inset-0 z-[201] transition-opacity duration-200 ${isClosing ? 'opacity-0' : 'opacity-100'}`} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
           {renderDetailComponent()}
         </div>
       )}

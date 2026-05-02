@@ -96,8 +96,8 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
       <div className="relative w-full h-full flex items-center justify-center">
         <div className={`relative flex flex-col z-10 shadow-[0_0_100px_rgba(0,0,0,0.9)] overflow-hidden bg-[#070709] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/5 md:border-gold/10 backdrop-blur-3xl'}`}>
         
-        <button onClick={onClose} className={`z-[400] w-12 h-12 rounded-full bg-black/20 hover:bg-black/50 backdrop-blur-md border border-transparent hover:border-gold/30 flex items-center justify-center text-gray-500/50 hover:text-gold transition-colors cursor-pointer ${isMobile ? 'fixed top-4 right-4' : 'absolute top-6 right-6'}`}>
-          <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="1.5"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
+        <button onClick={onClose} className={`z-[400] w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all cursor-pointer hover:scale-110 ${isMobile ? 'fixed top-4 right-4' : 'absolute top-5 right-5'}`}>
+          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
         </button>
 
         <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.12] mix-blend-screen"
