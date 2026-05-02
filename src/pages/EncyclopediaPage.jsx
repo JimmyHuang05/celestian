@@ -36,6 +36,11 @@ const mobileNodes = [
   { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: '/data/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '15%', left: '50%' }, scale: 0.65 },
 ]
 
+const bgColors = {
+  aeons: '#070709',
+  gallery: '#050505',
+}
+
 function EncyclopediaPage() {
   const navigate = useNavigate()
   const { nodeId } = useParams()
@@ -55,6 +60,8 @@ function EncyclopediaPage() {
   const [ripples, setRipples] = useState([])
   const [isTransitioning, setIsTransitioning] = useState(false)
 
+  const [panelStyle, setPanelStyle] = useState(null)
+
   const bgmAudioRef = useRef(null)
   const hoverAudioRef = useRef(null)
   const animationFrameRef = useRef(null)
@@ -62,39 +69,6 @@ function EncyclopediaPage() {
   const targetY = useRef(0)
   const currentMouseX = useRef(0)
   const currentMouseY = useRef(0)
-
-  const lightState = useRef({
-    center: { x: 0, y: 0 },
-    width: 10,
-    height: 10,
-    borderRadius: '50%',
-    opacity: 1,
-    color: 'white',
-    active: false,
-    transition: 'none',
-  })
-
-  const [lightStyle, setLightStyle] = useState({
-    position: 'fixed',
-    pointerEvents: 'none',
-    zIndex: -1,
-    left: '50%',
-    top: '50%',
-    width: '100vw',
-    height: '100vh',
-    borderRadius: '0',
-    opacity: 1,
-    transform: 'translate(-50%, -50%)',
-    transition: 'none',
-    backgroundColor: '#0a0a0a',
-  })
-
-  const currentDetailComponent = useCallback(() => {
-    if (!activeNode) return null
-    if (activeNode.id === 'gallery') return 'GalleryDetail'
-    if (activeNode.id === 'aeons') return 'AeonDetail'
-    return 'StandardDetail'
-  }, [activeNode])
 
   useEffect(() => {
     const updateParallax = () => {
@@ -191,10 +165,6 @@ function EncyclopediaPage() {
     if (isTransitioning) return
     setIsTransitioning(true)
 
-    const bgColors = {
-      aeons: '#070709',
-      gallery: '#050505',
-    }
     const bgColor = bgColors[node.id] || '#f9fafb'
 
     let cx = window.innerWidth / 2
@@ -209,7 +179,7 @@ function EncyclopediaPage() {
     if (isMobile) { targetW = window.innerWidth; targetH = window.innerHeight; targetRadius = '0' }
     else if (window.innerWidth >= 768 && window.innerWidth * 0.8333 < 1024) targetW = window.innerWidth * 0.8333
 
-    setLightStyle({
+    setPanelStyle({
       position: 'fixed',
       pointerEvents: 'none',
       zIndex: 200,
@@ -226,20 +196,22 @@ function EncyclopediaPage() {
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
-        setLightStyle(prev => ({
-          ...prev,
-          transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+        setPanelStyle({
+          position: 'fixed',
+          pointerEvents: 'none',
+          zIndex: 200,
           left: '50%',
           top: '50%',
           width: targetW + 'px',
           height: targetH + 'px',
           borderRadius: targetRadius,
+          opacity: 1,
           transform: 'translate(-50%, -50%)',
+          transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           backgroundColor: bgColor,
-        }))
+        })
 
         setTimeout(() => {
-          setLightStyle(prev => ({ ...prev, transition: 'none', zIndex: 0, width: '100vw', height: '100vh', borderRadius: '0' }))
           setIsTransitioning(false)
           navigate(`/encyclopedia/${node.id}`)
         }, 500)
@@ -248,8 +220,22 @@ function EncyclopediaPage() {
   }, [isMobile, isTransitioning, navigate])
 
   const closeDetail = useCallback(() => {
-    navigate('/encyclopedia', { replace: true })
-  }, [navigate])
+    if (isTransitioning) return
+    setIsTransitioning(true)
+    setPanelStyle(prev => ({
+      ...prev,
+      transition: 'width 0.3s ease, height 0.3s ease, opacity 0.3s ease',
+      width: '0',
+      height: '0',
+      opacity: 0,
+      borderRadius: '50%',
+    }))
+    setTimeout(() => {
+      setPanelStyle(null)
+      setIsTransitioning(false)
+      navigate('/encyclopedia', { replace: true })
+    }, 300)
+  }, [isTransitioning, navigate])
 
   const handleBack = useCallback(() => {
     navigate('/')
@@ -263,7 +249,7 @@ function EncyclopediaPage() {
 
   const renderDetailComponent = () => {
     if (!activeNode) return null
-    const compType = currentDetailComponent()
+    const compType = activeNode.id === 'gallery' ? 'GalleryDetail' : activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
     const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
     if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} />
@@ -273,12 +259,7 @@ function EncyclopediaPage() {
 
   return (
     <div id="encyclopedia-app">
-      {nodeId ? (
-        <div className="w-full h-screen overflow-hidden" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
-          {renderDetailComponent()}
-        </div>
-      ) : (
-      <div className="relative w-full h-screen overflow-hidden font-sans select-none"
+      <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
         <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
@@ -344,8 +325,14 @@ function EncyclopediaPage() {
         <audio ref={bgmAudioRef} autoPlay loop src="/data/audio/bgm/encyclopedia.mp3" />
         <audio ref={hoverAudioRef} src="/data/audio/sfx/hover.mp3" />
       </div>
+
+      {panelStyle && <div style={panelStyle} />}
+
+      {nodeId && nodeFromUrl && (
+        <div className="fixed inset-0 z-[201]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+          {renderDetailComponent()}
+        </div>
       )}
-      <div style={lightStyle} />
     </div>
   )
 }
