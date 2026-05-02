@@ -71,6 +71,20 @@ function EncyclopediaPage() {
   const targetY = useRef(0)
   const currentMouseX = useRef(0)
   const currentMouseY = useRef(0)
+  const hasEverHadEntryId = useRef(false)
+
+  useEffect(() => {
+    if (entryId) {
+      hasEverHadEntryId.current = true
+    }
+    if (nodeId && !entryId && hasEverHadEntryId.current) {
+      navigate('/encyclopedia', { replace: true })
+      hasEverHadEntryId.current = false
+    }
+    if (!nodeId) {
+      hasEverHadEntryId.current = false
+    }
+  }, [entryId, nodeId, navigate])
 
   useEffect(() => {
     const updateParallax = () => {
