@@ -499,6 +499,7 @@ function App() {
     <>
       <Routes>
         <Route path="/encyclopedia" element={<EncyclopediaPage />} />
+        <Route path="/encyclopedia/:nodeId" element={<EncyclopediaPage />} />
         <Route path="/map" element={<MapPage />} />
         <Route path="/functions" element={<FunctionsPage />} />
         <Route path="/functions/badge" element={<BadgePage />} />

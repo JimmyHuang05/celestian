@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
 import Starfield from '../components/encyclopedia/Starfield.jsx'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
@@ -38,10 +38,18 @@ const mobileNodes = [
 
 function EncyclopediaPage() {
   const navigate = useNavigate()
+  const { nodeId } = useParams()
+  const [searchParams] = useSearchParams()
+  const entryId = searchParams.get('id')
+
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
-  const [nodes, setNodes] = useState(isMobile ? mobileNodes : desktopNodes)
-  const [currentPage, setCurrentPage] = useState('home')
-  const [activeNode, setActiveNode] = useState(null)
+  const allNodes = isMobile ? mobileNodes : desktopNodes
+
+  const nodeFromUrl = nodeId ? allNodes.find(n => n.id === nodeId) || null : null
+
+  const [nodes, setNodes] = useState(allNodes)
+  const [currentPage, setCurrentPage] = useState(nodeFromUrl ? 'detail' : 'home')
+  const [activeNode, setActiveNode] = useState(nodeFromUrl)
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
   const [isPlayingBgm, setIsPlayingBgm] = useState(true)
@@ -174,6 +182,16 @@ function EncyclopediaPage() {
     fetchNodeCounts()
   }, [])
 
+  useEffect(() => {
+    if (nodeFromUrl) {
+      setActiveNode(nodeFromUrl)
+      setCurrentPage('detail')
+    } else {
+      setActiveNode(null)
+      setCurrentPage('home')
+    }
+  }, [nodeId])
+
   const openDetail = useCallback((node, event) => {
     if (isTransitioning) return
     setIsTransitioning(true)
@@ -224,8 +242,7 @@ function EncyclopediaPage() {
         }))
 
         setTimeout(() => {
-          setActiveNode(node)
-          setCurrentPage('detail')
+          navigate(`/encyclopedia/${node.id}`)
         }, 350)
 
         setTimeout(() => {
@@ -237,7 +254,7 @@ function EncyclopediaPage() {
         }, 600)
       })
     })
-  }, [isMobile, isTransitioning])
+  }, [isMobile, isTransitioning, navigate])
 
   const executeCloseDetail = useCallback(() => {
     if (currentPage !== 'detail' || isTransitioning) return
@@ -269,8 +286,7 @@ function EncyclopediaPage() {
       requestAnimationFrame(() => {
         setLightStyle(prev => ({ ...prev, transition: 'opacity 0.4s ease', opacity: 1 }))
         setTimeout(() => {
-          setActiveNode(null)
-          setCurrentPage('home')
+          navigate('/encyclopedia')
           setLightStyle(prev => ({
             ...prev,
             transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease',
@@ -286,30 +302,12 @@ function EncyclopediaPage() {
         }, 400)
       })
     })
-  }, [currentPage, isTransitioning, activeNode, isMobile])
+  }, [currentPage, isTransitioning, activeNode, isMobile, navigate])
 
   const closeDetail = useCallback(() => {
     if (currentPage !== 'detail') return
-    if (window.history.state && window.history.state.detailOpen) {
-      window.history.back()
-    } else {
-      executeCloseDetail()
-    }
+    executeCloseDetail()
   }, [currentPage, executeCloseDetail])
-
-  useEffect(() => {
-    const handlePopState = () => {
-      if (currentPage === 'detail') executeCloseDetail()
-    }
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
-  }, [currentPage, executeCloseDetail])
-
-  useEffect(() => {
-    if (currentPage === 'detail') {
-      window.history.pushState({ detailOpen: true }, '')
-    }
-  }, [currentPage])
 
   const handleBack = useCallback(() => {
     navigate('/')
@@ -318,7 +316,7 @@ function EncyclopediaPage() {
   const renderDetailComponent = () => {
     if (!activeNode) return null
     const compType = currentDetailComponent()
-    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient }
+    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
     if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} />
     if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />
@@ -332,15 +330,14 @@ function EncyclopediaPage() {
       >
         <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
 
-        {/* 固定返回按钮 */}
         <div className="absolute top-6 left-6 z-[150]">
-          <button onClick={handleBack}
+          <button onClick={nodeId ? closeDetail : handleBack}
             className="flex items-center gap-2 text-[#d4b58e]/40 hover:text-[#d4b58e]/80 transition-colors text-[10px] font-mono tracking-[0.4em] uppercase cursor-pointer group"
           >
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
-            <span>BACK</span>
+            <span>{nodeId ? 'BACK' : 'HOME'}</span>
           </button>
         </div>
 

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 
-function AeonDetail({ node, isMobile, onClose, supabaseClient }) {
+function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
   const [characters, setCharacters] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
@@ -13,8 +13,13 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient }) {
       if (!supabaseClient || !node) return
       setIsLoading(true)
       try {
-        const { data, error } = await supabaseClient
-          .from('entries').select('*').eq('node_id', node.id).order('created_at', { ascending: false })
+        let query = supabaseClient.from('entries').select('*')
+        if (entryId) {
+          query = query.eq('id', entryId)
+        } else {
+          query = query.eq('node_id', node.id).order('created_at', { ascending: false })
+        }
+        const { data, error } = await query
         if (error) throw error
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
