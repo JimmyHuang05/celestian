@@ -245,7 +245,7 @@ function EncyclopediaPage() {
 
         setTimeout(() => {
           navigate(`/encyclopedia/${node.id}`)
-          setLightStyle(prev => ({ ...prev, display: 'none' }))
+          setLightStyle(prev => ({ ...prev, zIndex: -1, transition: 'none' }))
           setIsTransitioning(false)
         }, 500)
       })
@@ -253,7 +253,7 @@ function EncyclopediaPage() {
   }, [isMobile, isTransitioning, navigate])
 
   const closeDetail = useCallback(() => {
-    navigate('/encyclopedia')
+    navigate('/encyclopedia', { replace: true })
   }, [navigate])
 
   const handleBack = useCallback(() => {
