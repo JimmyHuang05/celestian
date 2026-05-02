@@ -10,6 +10,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
   const [scrollProgress, setScrollProgress] = useState(0)
   const scrollContainerMobileRef = useRef(null)
   const scrollContainerDesktopRef = useRef(null)
+  const hasInitializedRef = useRef(false)
 
   const character = characters[currentIndex] || null
 
@@ -18,13 +19,8 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
       if (!supabaseClient || !node) return
       setIsLoading(true)
       try {
-        let query = supabaseClient.from('entries').select('*')
-        if (entryId) {
-          query = query.eq('id', entryId)
-        } else {
-          query = query.eq('node_id', node.id).order('created_at', { ascending: false })
-        }
-        const { data, error } = await query
+        const { data, error } = await supabaseClient
+          .from('entries').select('*').eq('node_id', node.id).order('created_at', { ascending: false })
         if (error) throw error
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
@@ -86,13 +82,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
           const extractedIds = parsedData.map(c => c.id)
           setIds(extractedIds)
           setCharacters(parsedData)
-
-          if (entryId) {
-            const foundIndex = extractedIds.indexOf(entryId)
-            if (foundIndex !== -1) {
-              setCurrentIndex(foundIndex)
-            }
-          }
+          hasInitializedRef.current = true
         } else {
           setCharacters([])
           setIds([])
@@ -105,7 +95,17 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
       }
     }
     fetchEntries()
-  }, [node, supabaseClient, entryId])
+  }, [node, supabaseClient])
+
+  useEffect(() => {
+    if (ids.length === 0) return
+    if (entryId) {
+      const foundIndex = ids.indexOf(entryId)
+      if (foundIndex !== -1) setCurrentIndex(foundIndex)
+    } else if (onEntryChange && ids[0]) {
+      onEntryChange(ids[0])
+    }
+  }, [ids])
 
   const prev = () => {
     if (currentIndex > 0) {

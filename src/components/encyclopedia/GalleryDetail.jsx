@@ -18,13 +18,8 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
       if (!supabaseClient || !node) return
       setIsLoading(true)
       try {
-        let query = supabaseClient.from('entries').select('*')
-        if (entryId) {
-          query = query.eq('id', entryId)
-        } else {
-          query = query.eq('node_id', node.id).order('created_at', { ascending: false })
-        }
-        const { data, error } = await query
+        const { data, error } = await supabaseClient
+          .from('entries').select('*').eq('node_id', node.id).order('created_at', { ascending: false })
         if (error) throw error
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
@@ -82,11 +77,6 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
           const extractedIds = parsedData.map(c => c.id)
           setIds(extractedIds)
           setCharacters(parsedData)
-
-          if (entryId) {
-            const foundIndex = extractedIds.indexOf(entryId)
-            if (foundIndex !== -1) setCurrentIndex(foundIndex)
-          }
         } else {
           setCharacters([])
           setIds([])
@@ -99,7 +89,17 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
       }
     }
     fetchEntries()
-  }, [node, supabaseClient, entryId])
+  }, [node, supabaseClient])
+
+  useEffect(() => {
+    if (ids.length === 0) return
+    if (entryId) {
+      const foundIndex = ids.indexOf(entryId)
+      if (foundIndex !== -1) setCurrentIndex(foundIndex)
+    } else if (onEntryChange && ids[0]) {
+      onEntryChange(ids[0])
+    }
+  }, [ids])
 
   const currentImages = character ? (() => {
     const fromDb = character.bg_image_url_db
