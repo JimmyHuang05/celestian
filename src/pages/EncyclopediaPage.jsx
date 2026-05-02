@@ -48,7 +48,6 @@ function EncyclopediaPage() {
   const nodeFromUrl = nodeId ? allNodes.find(n => n.id === nodeId) || null : null
 
   const [nodes, setNodes] = useState(allNodes)
-  const [currentPage, setCurrentPage] = useState(nodeFromUrl ? 'detail' : 'home')
   const [activeNode, setActiveNode] = useState(nodeFromUrl)
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
@@ -185,10 +184,8 @@ function EncyclopediaPage() {
   useEffect(() => {
     if (nodeFromUrl) {
       setActiveNode(nodeFromUrl)
-      setCurrentPage('detail')
     } else {
       setActiveNode(null)
-      setCurrentPage('home')
     }
   }, [nodeId])
 
@@ -255,15 +252,9 @@ function EncyclopediaPage() {
     })
   }, [isMobile, isTransitioning, navigate])
 
-  const executeCloseDetail = useCallback(() => {
-    if (currentPage !== 'detail') return
-    navigate('/encyclopedia')
-  }, [currentPage, navigate])
-
   const closeDetail = useCallback(() => {
-    if (currentPage !== 'detail') return
-    executeCloseDetail()
-  }, [currentPage, executeCloseDetail])
+    navigate('/encyclopedia')
+  }, [navigate])
 
   const handleBack = useCallback(() => {
     navigate('/')
@@ -287,78 +278,81 @@ function EncyclopediaPage() {
 
   return (
     <div id="encyclopedia-app">
+      {nodeId ? (
+        <div className="w-full h-screen overflow-hidden" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+          {renderDetailComponent()}
+          <div style={lightStyle} />
+        </div>
+      ) : (
       <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
         <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
 
         <div className="absolute top-6 left-6 z-[150]">
-          <button onClick={nodeId ? closeDetail : handleBack}
+          <button onClick={handleBack}
             className="flex items-center gap-2 text-[#d4b58e]/40 hover:text-[#d4b58e]/80 transition-colors text-[10px] font-mono tracking-[0.4em] uppercase cursor-pointer group"
           >
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
-            <span>{nodeId ? 'BACK' : 'HOME'}</span>
+            <span>HOME</span>
           </button>
         </div>
 
-        {currentPage === 'home' && (
-          <div className="absolute inset-0 z-10">
-            <div className="absolute inset-0 pointer-events-none z-[1]" style={{ transform: `translate(${-mouseX * 8}px, ${-mouseY * 8}px)` }}>
-              <div className="milky-way" />
-            </div>
+        <div className="absolute inset-0 z-10">
+          <div className="absolute inset-0 pointer-events-none z-[1]" style={{ transform: `translate(${-mouseX * 8}px, ${-mouseY * 8}px)` }}>
+            <div className="milky-way" />
+          </div>
 
-            <div className="absolute inset-0" style={{ zIndex: 20 }}>
-              {nodes.map(node => (
-                <DataNode
-                  key={node.id}
-                  node={node}
-                  mouseX={mouseX}
-                  mouseY={mouseY}
-                  isMobile={isMobile}
-                  onHoverNode={playHoverSfx}
-                  onClickNode={openDetail}
-                />
-              ))}
-            </div>
+          <div className="absolute inset-0" style={{ zIndex: 20 }}>
+            {nodes.map(node => (
+              <DataNode
+                key={node.id}
+                node={node}
+                mouseX={mouseX}
+                mouseY={mouseY}
+                isMobile={isMobile}
+                onHoverNode={playHoverSfx}
+                onClickNode={openDetail}
+              />
+            ))}
+          </div>
 
-            <div className="absolute top-6 left-8 text-[#d4b58e]/40 font-mono text-[10px] tracking-[0.6em] flex items-center gap-4" style={{ zIndex: 30 }}>
-              <span className="w-12 h-px bg-[#d4b58e]/30" /> D A T A B A N K // G A L A X Y
-            </div>
+          <div className="absolute top-6 left-8 text-[#d4b58e]/40 font-mono text-[10px] tracking-[0.6em] flex items-center gap-4" style={{ zIndex: 30 }}>
+            <span className="w-12 h-px bg-[#d4b58e]/30" /> D A T A B A N K // G A L A X Y
+          </div>
 
-            <div className="absolute bottom-4 left-6 flex items-center gap-3 hardware-accelerated" style={{ zIndex: 30 }}>
-              <div className="w-1 h-1 bg-[#d4b58e] opacity-50 rounded-full animate-ping" />
-              <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest">SYS.UID: 1008611</div>
-            </div>
+          <div className="absolute bottom-4 left-6 flex items-center gap-3 hardware-accelerated" style={{ zIndex: 30 }}>
+            <div className="w-1 h-1 bg-[#d4b58e] opacity-50 rounded-full animate-ping" />
+            <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest">SYS.UID: 1008611</div>
+          </div>
 
-            <div className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
-              <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest group-hover:text-[#d4b58e]/80 transition-colors uppercase drop-shadow-md">
-                {isPlayingBgm ? 'BGM : ON' : 'BGM : OFF'}
-              </div>
-              <div className="w-8 h-8 rounded-full border border-[#d4b58e]/20 flex items-center justify-center group-hover:border-[#d4b58e]/60 group-hover:bg-[#d4b58e]/10 transition-all bg-black/20 backdrop-blur-sm">
-                {isPlayingBgm ? (
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                  </svg>
-                ) : (
-                  <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]/50" fill="none" stroke="currentColor" strokeWidth="1.5">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L9 17.25H4.5A2.25 2.25 0 012.25 15V9A2.25 2.25 0 014.5 6.75h3.8l7.039-3.328a2.25 2.25 0 012.254.103z" />
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 10.5l-3 3m0-3l3 3" />
-                  </svg>
-                )}
-              </div>
+          <div className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
+            <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest group-hover:text-[#d4b58e]/80 transition-colors uppercase drop-shadow-md">
+              {isPlayingBgm ? 'BGM : ON' : 'BGM : OFF'}
+            </div>
+            <div className="w-8 h-8 rounded-full border border-[#d4b58e]/20 flex items-center justify-center group-hover:border-[#d4b58e]/60 group-hover:bg-[#d4b58e]/10 transition-all bg-black/20 backdrop-blur-sm">
+              {isPlayingBgm ? (
+                <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
+                </svg>
+              ) : (
+                <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]/50" fill="none" stroke="currentColor" strokeWidth="1.5">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L9 17.25H4.5A2.25 2.25 0 012.25 15V9A2.25 2.25 0 014.5 6.75h3.8l7.039-3.328a2.25 2.25 0 012.254.103z" />
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 10.5l-3 3m0-3l3 3" />
+                </svg>
+              )}
             </div>
           </div>
-        )}
+        </div>
 
         <div style={lightStyle} />
-
-        {currentPage === 'detail' && renderDetailComponent()}
 
         <audio ref={bgmAudioRef} autoPlay loop src="/data/audio/bgm/encyclopedia.mp3" />
         <audio ref={hoverAudioRef} src="/data/audio/sfx/hover.mp3" />
       </div>
+      )}
     </div>
   )
 }

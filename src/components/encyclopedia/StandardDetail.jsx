@@ -136,10 +136,8 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
   }
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center pointer-events-none" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
-      <div className="absolute inset-0 bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] pointer-events-auto" onClick={onClose} />
-
-      <div className={`relative flex pointer-events-auto z-10 shadow-2xl ${isMobile ? 'w-full h-[100dvh] flex-col rounded-none p-0 overflow-y-auto no-scrollbar bg-[#f9fafb]' : 'bg-[#f9fafb] w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] flex-col md:flex-row p-5 md:p-8 gap-6 md:gap-10 rounded-2xl border border-white/60'}`}
+    <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] flex items-center justify-center" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+      <div className={`relative flex z-10 shadow-2xl ${isMobile ? 'w-full h-[100dvh] flex-col rounded-none p-0 overflow-y-auto no-scrollbar bg-[#f9fafb]' : 'bg-[#f9fafb] w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] flex-col md:flex-row p-5 md:p-8 gap-6 md:gap-10 rounded-2xl border border-white/60'}`}
         onScroll={isMobile ? handleScroll : null} ref={scrollContainerMobileRef}
       >
         <button onClick={onClose} className={`z-[400] w-8 h-8 rounded-full bg-white/90 backdrop-blur-sm shadow-sm border border-gray-200 flex items-center justify-center text-gray-400 hover:text-gray-900 hover:bg-gray-50 transition-all cursor-pointer ${isMobile ? 'fixed top-4 right-4' : 'absolute top-4 right-4 md:top-5 md:right-5 hover:scale-110'}`}>
