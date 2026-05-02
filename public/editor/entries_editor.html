@@ -582,7 +582,7 @@
                     
                     <!-- 1. 21:9 居中原画区 -->
                     <div class="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000] max-h-[55%]" style="aspect-ratio: 21/9;">
-                        <img v-if="currentEntry.bg_image_url || currentEntry.image_url" :src="currentEntry.bg_image_url || currentEntry.image_url" class="w-full h-full object-cover transition-transform duration-[25s] ease-out hover:scale-[1.03]" />
+                        <img v-if="galleryPreviewUrl" :src="galleryPreviewUrl" class="w-full h-full object-cover transition-transform duration-[25s] ease-out hover:scale-[1.03]" />
                         <div v-else class="w-full h-full flex flex-col items-center justify-center text-[#d4b58e]/50 font-mono text-sm border-2 border-dashed border-[#d4b58e]/20 m-4 rounded-xl opacity-50">
                             <i data-lucide="image" class="w-10 h-10 mb-2"></i>
                             请在上方悬浮栏配置留影图
@@ -1077,12 +1077,17 @@
                 return [];
             });
 
+            const galleryPreviewUrl = computed(() => {
+                const list = galleryImagesList.value;
+                return list.length > 0 ? list[0] : (currentEntry.value.image_url || '');
+            });
+
             return {
                 nodesDict, allRecords, currentEntry, isDarkStyle,
                 searchQuery, isSearchDropdownOpen, filteredRecords, closeSearchDropdown, selectRecord,
                 loadEvent, createNew, addBlock, save, isSaving,
                 showDeleteModal, promptDelete, executeDelete, onEditorScroll,
-                showGalleryModal, galleryEditList, openGalleryModal, closeGalleryModal, saveGalleryImages, moveGalleryImage, galleryImagesList,
+                showGalleryModal, galleryEditList, openGalleryModal, closeGalleryModal, saveGalleryImages, moveGalleryImage, galleryImagesList, galleryPreviewUrl,
                 draggedIndex, dragOverIndex, enableDrag, disableDrag, dragStart, dragOver, dragLeave, drop, dragEnd
             };
         }
