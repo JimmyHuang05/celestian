@@ -567,7 +567,7 @@ function App() {
                               className="absolute inset-0 transition-all duration-500 opacity-0 pointer-events-none bg-black/40"
                             >
                               <img
-                                src={ASSETS_BASE + "/data/images/cards/hero-hover.webp"}
+                                src={ASSETS_BASE + "/images/cards/hero-hover.webp"}
                                 loading="lazy"
                                 decoding="async"
                                 className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
@@ -599,7 +599,7 @@ function App() {
                           <div className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-[#d4b58e]/60 bg-stoneCard [transform:rotateY(180deg)] [backface-visibility:hidden] vignette-overlay">
                             <div id="back-layer-poem" className="absolute inset-0 flex flex-col items-center justify-center p-[clamp(1rem,6cqw,2rem)] text-center transition-opacity duration-700 opacity-100">
                               <img
-                                src={ASSETS_BASE + "/data/images/cards/hero-back.webp"}
+                                src={ASSETS_BASE + "/images/cards/hero-back.webp"}
                                 loading="lazy"
                                 decoding="async"
                                 className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity pointer-events-none"
@@ -643,7 +643,7 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/data/images/cards/encyclopedia-card.webp"}
+                          src={ASSETS_BASE + "/images/cards/encyclopedia-card.webp"}
                           loading="lazy"
                           decoding="async"
                           draggable="false"
@@ -674,7 +674,7 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/data/images/cards/map-card.webp"}
+                          src={ASSETS_BASE + "/images/cards/map-card.webp"}
                           loading="lazy"
                           decoding="async"
                           draggable="false"
@@ -705,7 +705,7 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/data/images/cards/functions-card.webp"}
+                          src={ASSETS_BASE + "/images/cards/functions-card.webp"}
                           loading="lazy"
                           decoding="async"
                           draggable="false"
