@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SVG 矢量绘图器丨开发者中心</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- ImageTracer JS 矢量化库 -->
+    <script src="https://cdn.jsdelivr.net/npm/imagetracerjs@1.2.6/imagetracer_v1.2.6.js"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- 引入思源宋体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        body { background-color: #f8f9fa; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow-x: hidden; }
+        .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+        
+        .checkerboard {
+            background-color: #ffffff;
+            background-image: 
+                linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb),
+                linear-gradient(45deg, #e5e7eb 25%, transparent 25%, transparent 75%, #e5e7eb 75%, #e5e7eb);
+            background-size: 20px 20px;
+            background-position: 0 0, 10px 10px;
+        }
+
+        ::-webkit-scrollbar { width: 6px; height: 6px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px;}
+        ::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
+
+        .loader {
+            border-top-color: #d4b58e;
+            animation: spinner 1.2s cubic-bezier(0.5, 0, 0.5, 1) infinite;
+        }
+        @keyframes spinner {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        #editorCanvasContainer { position: relative; width: 100%; height: 65vh; overflow: auto; box-shadow: inset 0 0 10px rgba(0,0,0,0.02); padding: 20px; }
+        .canvas-wrapper { position: relative; display: inline-block; transform-origin: top left; }
+        #editorBgImg { display: none; position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; opacity: 0.5; z-index: 1; object-fit: fill; }
+        #mapCanvas { display: block; cursor: crosshair; position: relative; z-index: 10; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen flex flex-col bg-[#f8f9fa] overflow-hidden">
+
+    <!-- 统一白金顶栏 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm relative z-[200]">
+        <div class="flex items-center gap-4">
+            <!-- 像素级对齐 index.html 的 Home 按钮 -->
+            <a href="index.html" class="w-8 h-8 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30 flex items-center justify-center text-[#d4b58e] hover:bg-[#d4b58e] hover:text-white transition-all shadow-sm shrink-0" title="返回控制台中枢">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </a>
+            
+            <h1 class="font-black text-xl text-gray-800 flex items-center gap-2 font-serif-sc tracking-wide shrink-0">
+                SVG 矢量绘图器 <span class="text-gray-300 font-mono text-sm font-normal">| SVG EDITOR</span>
+            </h1>
+        </div>
+        
+        <div class="flex items-center gap-2 text-sm font-bold font-serif-sc shrink-0">
+            <button id="navExtractBtn" class="px-5 py-2 rounded-lg bg-[#d4b58e]/10 text-[#d4b58e] border border-[#d4b58e]/30 transition-colors flex items-center gap-1.5">
+                <i data-lucide="wand-2" class="w-4 h-4"></i> 第一步：图像提取
+            </button>
+            <i data-lucide="arrow-right" class="w-4 h-4 text-gray-300 mx-1"></i>
+            <button id="navEditBtn" class="px-5 py-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent transition-colors flex items-center gap-1.5">
+                <i data-lucide="edit-3" class="w-4 h-4"></i> 第二步：矢量绘制
+            </button>
+        </div>
+    </header>
+
+    <!-- 下方主体：左侧边栏 + 右侧功能区 -->
+    <div class="flex-1 flex flex-row overflow-hidden relative z-10">
+        <!-- 统一全局亮色侧边栏：间距完全统一 -->
+        <aside class="w-20 h-full bg-white flex flex-col items-center py-5 gap-5 shrink-0 z-[500] shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r border-gray-200 relative">
+            
+            <!-- 主要模块 (Core) -->
+            <a href="entries_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="百科全书编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+            </a>
+            
+            <a href="map_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="海陆图志编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+            </a>
+
+            <!-- 分隔栏 -->
+            <div class="w-6 h-px bg-gray-200 rounded-full shrink-0"></div>
+
+            <!-- 辅助功能 (Utility) -->
+            <a href="svg_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-[#d4b58e] text-white shadow-md pointer-events-none" title="矢量测绘工具">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </a>
+
+            <!-- 外部扩展 (External) -->
+            <div class="mt-auto flex flex-col gap-5 w-full items-center">
+                <a href="https://www.photopea.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Photopea 在线PS">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=photopea.com" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://squoosh.app/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Squoosh 图像压缩">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=squoosh.app" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://tinypng.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="TinyPNG 智能压缩">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=tinypng.com" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+                <a href="https://www.remove.bg/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="RemoveBG 一键抠图">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=remove.bg" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+            </div>
+        </aside>
+
+        <!-- 编辑区 (提取视图和编辑视图) -->
+        <main class="flex-1 overflow-hidden relative">
+            <!-- 提取视图 -->
+            <div id="extractView" class="absolute inset-0 p-4 sm:p-6 lg:p-8 flex flex-col lg:flex-row gap-6 overflow-y-auto bg-[#f8f9fa]">
+                
+                <div class="w-full lg:w-1/3 flex flex-col gap-4">
+                    <div id="dropZone" class="bg-white p-8 rounded-2xl shadow-sm border-2 border-dashed border-gray-200 hover:border-[#d4b58e] transition-colors cursor-pointer text-center group">
+                        <input type="file" id="fileInput" class="hidden" accept="image/*">
+                        <div class="text-gray-400 group-hover:text-[#d4b58e] transition-colors">
+                            <i data-lucide="upload-cloud" class="w-12 h-12 mb-4 mx-auto"></i>
+                            <p class="font-bold text-gray-800 font-serif-sc">点击导入地图图像</p>
+                            <p class="text-[11px] font-mono tracking-widest mt-1 text-gray-500 uppercase">Import Base Image</p>
+                        </div>
+                    </div>
+
+                    <div class="bg-white p-6 rounded-2xl shadow-sm border border-gray-100 flex flex-col gap-5">
+                        <h2 class="font-bold text-lg font-serif-sc text-gray-800 border-b border-gray-100 pb-3 flex items-center gap-2">
+                            <i data-lucide="sliders" class="w-5 h-5 text-gray-400"></i> 色彩检测设置
+                        </h2>
+                        
+                        <div>
+                            <div class="flex justify-between text-[11px] font-mono uppercase tracking-widest text-gray-500 mb-2">
+                                <span>Threshold (色彩提取阈值)</span>
+                                <span id="thresholdValue" class="text-[#d4b58e] font-bold">128</span>
+                            </div>
+                            <input type="range" id="threshold" min="0" max="255" value="128" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer focus:outline-none">
+                        </div>
+
+                        <div class="pt-2 border-t border-gray-100 mt-2">
+                            <label class="block text-[11px] font-mono text-gray-500 uppercase tracking-widest mb-3">Target (提取区域)</label>
+                            <div class="flex flex-col gap-3">
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="extractTarget" value="light" checked class="w-4 h-4 text-[#d4b58e] focus:ring-[#d4b58e]">
+                                    <span class="text-sm font-bold text-gray-700">提取浅色/白色 <span class="text-xs text-gray-400 font-normal">(当陆地偏白时)</span></span>
+                                </label>
+                                <label class="flex items-center gap-2 cursor-pointer group">
+                                    <input type="radio" name="extractTarget" value="dark" class="w-4 h-4 text-[#d4b58e] focus:ring-[#d4b58e]">
+                                    <span class="text-sm font-bold text-gray-700">提取深色/黑色 <span class="text-xs text-gray-400 font-normal">(当陆地偏黑时)</span></span>
+                                </label>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-6 pt-2 border-t border-gray-100 mt-2">
+                            <div>
+                                <div class="flex justify-between text-[11px] font-mono uppercase tracking-widest text-gray-500 mb-2"><span>Smoothness</span></div>
+                                <input type="range" id="smoothness" min="1" max="50" value="10" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none focus:outline-none">
+                            </div>
+                            <div>
+                                <div class="flex justify-between text-[11px] font-mono uppercase tracking-widest text-gray-500 mb-2"><span>Noise Filter</span></div>
+                                <input type="range" id="noise" min="0" max="50" value="8" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none focus:outline-none">
+                            </div>
+                        </div>
+
+                        <div class="pt-4 border-t border-gray-100 mt-2">
+                            <button id="extractToEditorBtn" disabled class="w-full py-3 px-4 bg-[#d4b58e] hover:bg-[#c2a27b] disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed text-white font-bold rounded-lg shadow-md transition-all flex justify-center items-center gap-2 font-serif-sc">
+                                <span>一键提取并进入编辑器</span>
+                                <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full lg:w-2/3 bg-white rounded-2xl shadow-sm border border-gray-100 flex flex-col overflow-hidden relative">
+                    <div id="loaderOverlay" class="hidden absolute inset-0 bg-white/80 backdrop-blur-sm z-20 flex flex-col items-center justify-center">
+                        <div class="w-12 h-12 border-4 border-gray-100 border-t-[#d4b58e] rounded-full loader mb-4"></div>
+                        <p class="text-gray-800 font-bold font-serif-sc">正在解析 SVG 并转换至编辑器...</p>
+                    </div>
+
+                    <div class="p-3 border-b border-gray-100 bg-gray-50/50 text-[11px] text-gray-500 font-mono tracking-widest uppercase flex items-center">
+                        <i data-lucide="eye" class="w-3.5 h-3.5 mr-2 text-[#d4b58e]"></i> 二值化预览 (请确保保留区域显示为纯白色)
+                    </div>
+                    <div class="checkerboard flex-1 flex items-center justify-center overflow-auto p-4">
+                        <canvas id="previewCanvas" class="max-w-full h-auto shadow-md border border-gray-200"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 编辑视图 -->
+            <div id="editorView" class="hidden absolute inset-0 flex flex-col bg-[#f8f9fa] p-4 sm:p-6 lg:p-8 overflow-y-auto">
+                <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 mb-4 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex gap-4 items-center border-r pr-4 border-gray-200">
+                        <label class="flex flex-col gap-1.5 cursor-pointer group">
+                            <span class="text-[10px] text-gray-400 font-mono tracking-widest uppercase font-bold">Base Image (底层参考)</span>
+                            <div class="bg-gray-50 hover:bg-gray-100 border border-gray-200 px-3 py-1.5 rounded-lg text-[13px] font-bold text-gray-700 transition-colors flex items-center gap-2">
+                                <i data-lucide="image" class="w-4 h-4 text-gray-400 group-hover:text-[#d4b58e]"></i> 导入参考图
+                                <input type="file" id="refImageInput" accept="image/*" class="hidden">
+                            </div>
+                        </label>
+                        <button onclick="clearRefImage()" class="text-gray-400 hover:text-red-500 mt-5 transition-colors" title="清除底图"><i data-lucide="trash-2" class="w-4 h-4"></i></button>
+                    </div>
+
+                    <div class="flex gap-4 items-center border-r pr-4 border-gray-200">
+                        <label class="flex flex-col gap-1.5 cursor-pointer group">
+                            <span class="text-[10px] text-gray-400 font-mono tracking-widest uppercase font-bold">Append Data (追加进度)</span>
+                            <div class="bg-[#d4b58e]/5 hover:bg-[#d4b58e]/10 border border-[#d4b58e]/30 px-3 py-1.5 rounded-lg text-[13px] font-bold text-[#d4b58e] transition-colors flex items-center gap-2">
+                                <i data-lucide="file-input" class="w-4 h-4"></i> 导入未完成的 SVG
+                                <input type="file" id="importSVGInput" accept=".svg" class="hidden">
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="flex gap-3 items-center border-r pr-4 border-gray-200 mt-5">
+                        <button onclick="closePath()" class="bg-gray-800 hover:bg-black text-white font-bold px-3 py-1.5 rounded-lg text-[13px] transition-colors shadow-sm flex items-center gap-1.5">
+                            <i data-lucide="link" class="w-3.5 h-3.5"></i> 闭合路径
+                        </button>
+                        <button onclick="resetPoints()" class="bg-red-50 hover:bg-red-100 text-red-600 font-bold px-3 py-1.5 rounded-lg text-[13px] transition-colors flex items-center gap-1.5">
+                            <i data-lucide="x-circle" class="w-3.5 h-3.5"></i> 清空红线
+                        </button>
+                        <label class="flex items-center cursor-pointer text-[13px] font-bold bg-white px-3 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" title="显示/隐藏区域编号">
+                            <input type="checkbox" id="showNumbersToggle" checked class="mr-2 text-[#d4b58e] focus:ring-[#d4b58e]"> 🔢 显示编号
+                        </label>
+                        <label class="flex items-center cursor-pointer text-[13px] font-bold bg-white px-3 py-1.5 border border-gray-200 rounded-lg text-gray-700 hover:bg-gray-50 transition-colors" title="靠近其他端点时自动吸附共享">
+                            <input type="checkbox" id="snapToggle" checked class="mr-2 text-[#d4b58e] focus:ring-[#d4b58e]"> 🧲 开启磁吸
+                        </label>
+                    </div>
+
+                    <div class="flex gap-2 items-center mt-5">
+                        <span class="text-[10px] text-gray-400 font-mono tracking-widest uppercase font-bold mr-1">Zoom:</span>
+                        <button onclick="changeZoom(0.2)" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 p-1.5 rounded-md shadow-sm transition-colors"><i data-lucide="zoom-in" class="w-4 h-4"></i></button>
+                        <button onclick="changeZoom(-0.2)" class="bg-white border border-gray-200 hover:bg-gray-50 text-gray-600 p-1.5 rounded-md shadow-sm transition-colors"><i data-lucide="zoom-out" class="w-4 h-4"></i></button>
+                        <span id="zoomDisplay" class="text-[13px] font-mono font-bold w-12 text-center text-[#d4b58e]">100%</span>
+                    </div>
+
+                    <div class="ml-auto mt-5">
+                        <button onclick="exportSVGFile()" class="bg-[#d4b58e] hover:bg-[#c2a27b] text-white px-5 py-2.5 rounded-lg font-bold shadow-md transition-all flex items-center gap-2 text-sm">
+                            <i data-lucide="download" class="w-4 h-4"></i> 最终导出 SVG
+                        </button>
+                    </div>
+                </div>
+
+                <div class="bg-white text-gray-600 text-[13px] px-5 py-3 rounded-xl mb-4 border border-gray-200 shadow-sm flex items-start gap-3">
+                    <i data-lucide="info" class="w-5 h-5 text-[#d4b58e] mt-0.5 shrink-0"></i>
+                    <p class="leading-relaxed">
+                        <strong class="text-gray-800">矢量网格编辑指南：</strong><br>
+                        1. <b>切割融合</b>：将红线两端连接在其他区域边缘，系统将自动切割闭合。跨海连线可合并孤岛。<br>
+                        2. <b>拓扑编辑</b>：按住端点拖拽；点击高亮连线可插入新点。<br>
+                        3. <b>同步处理</b>：<b>直接右键点击端点</b>将同步删除所有共享该坐标的边界，防止撕裂；<b>Shift+右键</b> 则将该区块打断成活动红线。
+                    </p>
+                </div>
+
+                <div id="editorCanvasContainer" class="checkerboard rounded-2xl border border-gray-200 bg-white flex-1 shadow-sm">
+                    <div class="canvas-wrapper">
+                        <img id="editorBgImg">
+                        <canvas id="mapCanvas"></canvas>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast 提示框 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-[3000] flex items-center gap-2">
+        <span id="toast-msg" class="text-sm"></span>
+    </div>
+
+    <script>
+        lucide.createIcons();
+
+        const extractView = document.getElementById('extractView');
+        const editorView = document.getElementById('editorView');
+        const navExtractBtn = document.getElementById('navExtractBtn');
+        const navEditBtn = document.getElementById('navEditBtn');
+
+        const fileInput = document.getElementById('fileInput');
+        const dropZone = document.getElementById('dropZone');
+        const previewCanvas = document.getElementById('previewCanvas');
+        const thresholdInput = document.getElementById('threshold');
+        const thresholdValue = document.getElementById('thresholdValue');
+        const targetRadios = document.getElementsByName('extractTarget');
+        const extractToEditorBtn = document.getElementById('extractToEditorBtn');
+        const loaderOverlay = document.getElementById('loaderOverlay');
+
+        const mapCanvas = document.getElementById('mapCanvas');
+        const editorCtx = mapCanvas.getContext('2d');
+        const editorBgImg = document.getElementById('editorBgImg');
+        const refImageInput = document.getElementById('refImageInput');
+        const importSVGInput = document.getElementById('importSVGInput');
+        const snapToggle = document.getElementById('snapToggle');
+        const showNumbersToggle = document.getElementById('showNumbersToggle');
+        const zoomDisplay = document.getElementById('zoomDisplay');
+
+        let originalImage = null;
+        let originalWidth = 0;
+        let originalHeight = 0;
+
+        let allPaths = [];   
+        let pathIds = [];    
+        let points = [];     
+        let zoomLevel = 1.0;
+        
+        const HIT_RADIUS = 8;       
+        const VISUAL_RADIUS = 2.5;  
+        const SNAP_RADIUS = 15;
+        let isMouseDown = false;
+        let potentialHit = null;     
+        let isDragging = false;
+        let draggedPointInfo = null;
+        let draggedSharedVertices = null; 
+        let hoveredSegment = null; 
+        let currentSnapPos = null;   
+
+        const f = (num) => Math.round(num * 100) / 100;
+
+        function init() {
+            dropZone.addEventListener('click', () => fileInput.click());
+            dropZone.addEventListener('dragover', (e) => { e.preventDefault(); dropZone.classList.add('border-[#d4b58e]', 'bg-[#d4b58e]/5'); });
+            dropZone.addEventListener('dragleave', () => dropZone.classList.remove('border-[#d4b58e]', 'bg-[#d4b58e]/5'));
+            dropZone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-[#d4b58e]', 'bg-[#d4b58e]/5');
+                if (e.dataTransfer.files && e.dataTransfer.files.length > 0) handleExtractFile(e.dataTransfer.files[0]);
+            });
+            fileInput.addEventListener('change', (e) => {
+                if (e.target.files && e.target.files.length > 0) handleExtractFile(e.target.files[0]);
+            });
+
+            thresholdInput.addEventListener('input', (e) => { thresholdValue.innerText = e.target.value; updateExtractionPreview(); });
+            targetRadios.forEach(r => r.addEventListener('change', updateExtractionPreview));
+            
+            extractToEditorBtn.addEventListener('click', executeExtractionAndTransfer);
+
+            navExtractBtn.addEventListener('click', () => switchView('extract'));
+            navEditBtn.addEventListener('click', () => switchView('editor'));
+
+            refImageInput.addEventListener('change', handleRefImageUpload);
+            importSVGInput.addEventListener('change', handleSVGImport);
+            
+            showNumbersToggle.addEventListener('change', drawEditor);
+
+            setupEditorCanvasEvents();
+        }
+
+        function showToast(msg, isError = false) {
+            const toast = document.getElementById('toast'); 
+            document.getElementById('toast-msg').innerText = msg;
+            toast.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl transition-all duration-300 z-[3000] flex items-center gap-2 pointer-events-none ${isError ? 'bg-red-500 text-white' : 'bg-gray-900 text-white'}`;
+            toast.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => toast.classList.add('opacity-0', 'translate-y-4'), 3000);
+        }
+
+        function switchView(viewName) {
+            if (viewName === 'extract') {
+                extractView.classList.remove('hidden');
+                editorView.classList.add('hidden');
+                navExtractBtn.className = 'px-5 py-2 rounded-lg bg-[#d4b58e]/10 text-[#d4b58e] border border-[#d4b58e]/30 transition-colors flex items-center gap-1.5';
+                navEditBtn.className = 'px-5 py-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent transition-colors flex items-center gap-1.5';
+            } else {
+                extractView.classList.add('hidden');
+                editorView.classList.remove('hidden');
+                navEditBtn.className = 'px-5 py-2 rounded-lg bg-[#d4b58e]/10 text-[#d4b58e] border border-[#d4b58e]/30 transition-colors flex items-center gap-1.5';
+                navExtractBtn.className = 'px-5 py-2 rounded-lg bg-gray-50 text-gray-500 hover:bg-gray-100 border border-transparent transition-colors flex items-center gap-1.5';
+                drawEditor(); 
+            }
+        }
+
+        function handleExtractFile(file) {
+            if (!file.type.startsWith('image/')) return showToast('请上传图片文件！', true);
+            const reader = new FileReader();
+            reader.onload = (event) => {
+                const img = new Image();
+                img.onload = () => {
+                    originalImage = img;
+                    originalWidth = img.width;
+                    originalHeight = img.height;
+                    
+                    extractToEditorBtn.disabled = false;
+                    mapCanvas.width = originalWidth;
+                    mapCanvas.height = originalHeight;
+                    
+                    updateExtractionPreview();
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
+
+        function updateExtractionPreview() {
+            if (!originalImage) return;
+
+            const canvas = document.createElement('canvas');
+            canvas.width = originalWidth;
+            canvas.height = originalHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(originalImage, 0, 0);
+
+            const imgData = ctx.getImageData(0, 0, originalWidth, originalHeight);
+            const data = imgData.data;
+            const threshold = parseInt(thresholdInput.value);
+            const extractDark = document.querySelector('input[name="extractTarget"]:checked').value === 'dark';
+
+            for (let i = 0; i < data.length; i += 4) {
+                let v = (data[i] * 0.299 + data[i+1] * 0.587 + data[i+2] * 0.114);
+                if (data[i+3] < 128) v = extractDark ? 255 : 0; 
+                let isTarget = v >= threshold;
+                if (extractDark) isTarget = v < threshold;
+                let val = isTarget ? 255 : 0; 
+                data[i] = data[i+1] = data[i+2] = val; 
+                data[i+3] = 255; 
+            }
+
+            previewCanvas.width = originalWidth;
+            previewCanvas.height = originalHeight;
+            const pCtx = previewCanvas.getContext('2d');
+            pCtx.putImageData(imgData, 0, 0);
+        }
+
+        function parseDStringToPoints(dStr) {
+            const pointRegex = /[ML]\s*(-?\d+(?:\.\d+)?)\s*,\s*(-?\d+(?:\.\d+)?)/gi;
+            let match;
+            let pathPoints = [];
+            while ((match = pointRegex.exec(dStr)) !== null) {
+                pathPoints.push({ x: f(parseFloat(match[1])), y: f(parseFloat(match[2])) });
+            }
+            return pathPoints;
+        }
+
+        function extractSubPaths(d) {
+            let subPaths = [];
+            let currentSubPath = [];
+            let tokens = d.replace(/([MmLlQqCcAaZz])/g, ' $1 ').replace(/,/g, ' ').split(/\s+/).filter(t => t);
+            let currentCommand = 'M';
+            let i = 0;
+            
+            while (i < tokens.length) {
+                let token = tokens[i];
+                if (isNaN(parseFloat(token))) {
+                    currentCommand = token.toUpperCase();
+                    i++;
+                } else {
+                    if (currentCommand === 'M') {
+                        if (currentSubPath.length > 0) { subPaths.push(currentSubPath.join(' ')); currentSubPath = []; }
+                        currentSubPath.push(`M ${tokens[i]},${tokens[i+1]}`);
+                        i += 2; currentCommand = 'L';
+                    } else if (currentCommand === 'L') {
+                        currentSubPath.push(`L ${tokens[i]},${tokens[i+1]}`); i += 2;
+                    } else if (currentCommand === 'Q') {
+                        currentSubPath.push(`L ${tokens[i+2]},${tokens[i+3]}`); i += 4;
+                    } else if (currentCommand === 'C') {
+                        currentSubPath.push(`L ${tokens[i+4]},${tokens[i+5]}`); i += 6;
+                    } else if (currentCommand === 'A') {
+                        currentSubPath.push(`L ${tokens[i+5]},${tokens[i+6]}`); i += 7;
+                    } else { i++; }
+                }
+            }
+            if (currentSubPath.length > 0) subPaths.push(currentSubPath.join(' '));
+            return subPaths;
+        }
+
+        function isCanvasBoundary(d, width, height) {
+            const matches = d.match(/-?\d+(?:\.\d+)?/g);
+            if (!matches) return false;
+            const coords = matches.map(Number);
+            if (coords.length < 8) return false;
+            let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+            for (let i = 0; i < coords.length; i += 2) {
+                if (coords[i] < minX) minX = coords[i];
+                if (coords[i] > maxX) maxX = coords[i];
+                if (coords[i+1] < minY) minY = coords[i+1];
+                if (coords[i+1] > maxY) maxY = coords[i+1];
+            }
+            const coversFullWidth = minX <= 2 && maxX >= width - 2;
+            const coversFullHeight = minY <= 2 && maxY >= height - 2;
+            return coversFullWidth && coversFullHeight && coords.length <= 20;
+        }
+
+        function executeExtractionAndTransfer() {
+            if (!originalImage) return;
+
+            loaderOverlay.classList.remove('hidden');
+            const ctx = previewCanvas.getContext('2d');
+            const thresholdImageData = ctx.getImageData(0, 0, originalWidth, originalHeight);
+
+            setTimeout(() => {
+                try {
+                    const traceOptions = {
+                        ltres: parseFloat(document.getElementById('smoothness').value) / 10,
+                        qtres: parseFloat(document.getElementById('smoothness').value) / 10,
+                        pathomit: parseInt(document.getElementById('noise').value),
+                        colorsampling: 0, numberofcolors: 2, mincolorratio: 0, colorquantcycles: 1, strokewidth: 1, viewbox: false
+                    };
+
+                    let rawSvgStr = ImageTracer.imagedataToSVG(thresholdImageData, traceOptions);
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(rawSvgStr, "image/svg+xml");
+                    const pathsNodes = doc.querySelectorAll('path');
+
+                    let extractedPathArrays = [];
+
+                    pathsNodes.forEach(p => {
+                        const fill = p.getAttribute('fill');
+                        if (fill && fill.replace(/\s/g, '') !== 'rgb(0,0,0)') {
+                            const originalD = p.getAttribute('d');
+                            if (originalD) {
+                                const subPathStrings = extractSubPaths(originalD);
+                                const validSubPaths = subPathStrings.filter(subD => !isCanvasBoundary(subD, originalWidth, originalHeight));
+                                
+                                validSubPaths.forEach(dStr => {
+                                    const pointArr = parseDStringToPoints(dStr);
+                                    if (pointArr.length > 2) extractedPathArrays.push(pointArr);
+                                });
+                            }
+                        }
+                    });
+
+                    allPaths = extractedPathArrays;
+                    pathIds = allPaths.map((_, i) => `region_${i + 1}`);
+                    points = []; 
+                    
+                    switchView('editor');
+                    resetZoom();
+                    showToast(`成功提取了 ${allPaths.length} 个封闭矢量区域并传入编辑器！`);
+                } catch (error) {
+                    showToast("提取过程发生错误，请重试。", true);
+                } finally {
+                    loaderOverlay.classList.add('hidden');
+                }
+            }, 100);
+        }
+
+        function changeZoom(delta) {
+            zoomLevel += delta;
+            if (zoomLevel < 0.2) zoomLevel = 0.2; 
+            if (zoomLevel > 5.0) zoomLevel = 5.0; 
+            applyZoom();
+        }
+
+        function resetZoom() {
+            zoomLevel = 1.0;
+            applyZoom();
+        }
+
+        function applyZoom() {
+            if(mapCanvas.width === 0) return; 
+            const scaledWidth = Math.round(mapCanvas.width * zoomLevel);
+            const scaledHeight = Math.round(mapCanvas.height * zoomLevel);
+            mapCanvas.style.width = scaledWidth + 'px';
+            mapCanvas.style.height = scaledHeight + 'px';
+            
+            if(editorBgImg.src) {
+                editorBgImg.style.width = Math.round(editorBgImg.naturalWidth * zoomLevel) + 'px';
+                editorBgImg.style.height = Math.round(editorBgImg.naturalHeight * zoomLevel) + 'px';
+            }
+            zoomDisplay.innerText = Math.round(zoomLevel * 100) + '%';
+        }
+
+        function getMousePos(e) {
+            const rect = mapCanvas.getBoundingClientRect();
+            const scaleX = mapCanvas.width / rect.width;
+            const scaleY = mapCanvas.height / rect.height;
+            return {
+                x: f((e.clientX - rect.left) * scaleX),
+                y: f((e.clientY - rect.top) * scaleY)
+            };
+        }
+
+        function pointToSegmentDistance(p, v, w) {
+            let l2 = Math.pow(v.x - w.x, 2) + Math.pow(v.y - w.y, 2);
+            if (l2 === 0) return { dist: Math.hypot(p.x - v.x, p.y - v.y), projection: v };
+            let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+            t = Math.max(0, Math.min(1, t));
+            let projection = { x: v.x + t * (w.x - v.x), y: v.y + t * (w.y - v.y) };
+            return { dist: Math.hypot(p.x - projection.x, p.y - projection.y), projection };
+        }
+
+        function getSharedVertices(targetPt) {
+            let shared = [];
+            for (let p = 0; p < allPaths.length; p++) {
+                for (let i = 0; i < allPaths[p].length; i++) {
+                    let pt = allPaths[p][i];
+                    if (Math.abs(pt.x - targetPt.x) < 0.1 && Math.abs(pt.y - targetPt.y) < 0.1) {
+                        shared.push({ type: 'closed', pathIndex: p, index: i, pt: pt });
+                    }
+                }
+            }
+            for (let i = 0; i < points.length; i++) {
+                let pt = points[i];
+                if (Math.abs(pt.x - targetPt.x) < 0.1 && Math.abs(pt.y - targetPt.y) < 0.1) {
+                    shared.push({ type: 'current', index: i, pt: pt });
+                }
+            }
+            return shared;
+        }
+
+        function getAllHoveredSegments(pos) {
+            let segments = [];
+            let minDistance = 8; 
+
+            if (points.length >= 2) {
+                for (let i = 0; i < points.length - 1; i++) {
+                    let dist = pointToSegmentDistance(pos, points[i], points[i+1]).dist;
+                    if (dist < minDistance) minDistance = dist;
+                }
+            }
+            for (let p = 0; p < allPaths.length; p++) {
+                if (allPaths[p].length >= 3) {
+                    for (let i = 0; i < allPaths[p].length; i++) {
+                        let nextI = (i + 1) % allPaths[p].length; 
+                        let dist = pointToSegmentDistance(pos, allPaths[p][i], allPaths[p][nextI]).dist;
+                        if (dist < minDistance) minDistance = dist;
+                    }
+                }
+            }
+
+            if (minDistance >= 8) return segments; 
+
+            if (points.length >= 2) {
+                for (let i = 0; i < points.length - 1; i++) {
+                    let dist = pointToSegmentDistance(pos, points[i], points[i+1]).dist;
+                    if (Math.abs(dist - minDistance) < 0.1) segments.push({ type: 'current', index: i });
+                }
+            }
+            for (let p = 0; p < allPaths.length; p++) {
+                if (allPaths[p].length >= 3) {
+                    for (let i = 0; i < allPaths[p].length; i++) {
+                        let nextI = (i + 1) % allPaths[p].length; 
+                        let dist = pointToSegmentDistance(pos, allPaths[p][i], allPaths[p][nextI]).dist;
+                        if (Math.abs(dist - minDistance) < 0.1) segments.push({ type: 'closed', pathIndex: p, index: i });
+                    }
+                }
+            }
+            return segments;
+        }
+
+        function getHitPoint(pos) {
+            for (let i = points.length - 1; i >= 0; i--) {
+                if (Math.hypot(points[i].x - pos.x, points[i].y - pos.y) <= HIT_RADIUS) return { type: 'current', index: i };
+            }
+            for (let p = allPaths.length - 1; p >= 0; p--) {
+                for (let i = allPaths[p].length - 1; i >= 0; i--) {
+                    if (Math.hypot(allPaths[p][i].x - pos.x, allPaths[p][i].y - pos.y) <= HIT_RADIUS) return { type: 'closed', pathIndex: p, index: i };
+                }
+            }
+            return null;
+        }
+
+        function getHoveredSegment(pos) {
+            let res = getAllHoveredSegments(pos);
+            return res.length > 0 ? res[0] : null;
+        }
+
+        function getMagneticSnap(pos, draggedPtInfo) {
+            if (!snapToggle.checked) return pos;
+
+            let bestSnap = null;
+            let minPointDist = SNAP_RADIUS;
+            let minSegDist = SNAP_RADIUS;
+            let bestSegSnap = null;
+
+            for (let p = 0; p < allPaths.length; p++) {
+                for (let i = 0; i < allPaths[p].length; i++) {
+                    if (draggedPtInfo && draggedPtInfo.type === 'closed' && draggedPtInfo.pathIndex === p && draggedPtInfo.index === i) continue;
+                    let dist = Math.hypot(allPaths[p][i].x - pos.x, allPaths[p][i].y - pos.y);
+                    if (dist < minPointDist) {
+                        minPointDist = dist;
+                        bestSnap = { x: allPaths[p][i].x, y: allPaths[p][i].y };
+                    }
+                }
+            }
+            if (bestSnap) return bestSnap; 
+
+            for (let p = 0; p < allPaths.length; p++) {
+                let path = allPaths[p];
+                if (path.length < 3) continue;
+                for (let i = 0; i < path.length; i++) {
+                    let nextI = (i + 1) % path.length;
+                    if (draggedPtInfo && draggedPtInfo.type === 'closed' && draggedPtInfo.pathIndex === p) {
+                        if (draggedPtInfo.index === i || draggedPtInfo.index === nextI) continue;
+                    }
+                    let res = pointToSegmentDistance(pos, path[i], path[nextI]);
+                    if (res.dist < minSegDist) {
+                        minSegDist = res.dist;
+                        bestSegSnap = { x: f(res.projection.x), y: f(res.projection.y) };
+                    }
+                }
+            }
+            if (bestSegSnap) return bestSegSnap;
+
+            if (points.length > 0 && (!draggedPtInfo || draggedPtInfo.type !== 'current' || draggedPtInfo.index !== 0)) {
+                let dist = Math.hypot(points[0].x - pos.x, points[0].y - pos.y);
+                if (dist < SNAP_RADIUS) return { x: points[0].x, y: points[0].y };
+            }
+
+            return pos; 
+        }
+
+        function getCentroid(pts) {
+            let cx = 0, cy = 0;
+            pts.forEach(p => { cx += p.x; cy += p.y; });
+            return { x: cx / pts.length, y: cy / pts.length };
+        }
+
+        function drawEditor() {
+            if (!editorCtx) return;
+            editorCtx.clearRect(0, 0, mapCanvas.width, mapCanvas.height);
+            editorCtx.save();
+            editorCtx.scale(zoomLevel, zoomLevel);
+
+            allPaths.forEach((path, pathIdx) => {
+                if (path.length < 2) return;
+                editorCtx.beginPath();
+                editorCtx.moveTo(path[0].x, path[0].y);
+                for (let i = 1; i < path.length; i++) editorCtx.lineTo(path[i].x, path[i].y);
+                editorCtx.closePath();
+
+                let isHovered = false; 
+                if (hoveredSegment && hoveredSegment.type === 'closed' && hoveredSegment.pathIndex === pathIdx) {
+                    isHovered = true;
+                }
+
+                editorCtx.fillStyle = isHovered ? 'rgba(59, 130, 246, 0.4)' : 'rgba(59, 130, 246, 0.2)';
+                editorCtx.fill();
+                editorCtx.lineWidth = 2;
+                editorCtx.strokeStyle = isHovered ? '#2563eb' : '#3b82f6';
+                editorCtx.stroke();
+
+                if (showNumbersToggle.checked) {
+                    let c = getCentroid(path);
+                    editorCtx.fillStyle = '#1e40af';
+                    editorCtx.font = '16px Noto Serif SC';
+                    editorCtx.textAlign = 'center';
+                    editorCtx.textBaseline = 'middle';
+                    editorCtx.fillText(pathIdx + 1, c.x, c.y);
+                }
+            });
+
+            if (points.length > 0) {
+                editorCtx.beginPath();
+                editorCtx.moveTo(points[0].x, points[0].y);
+                for (let i = 1; i < points.length; i++) editorCtx.lineTo(points[i].x, points[i].y);
+                editorCtx.strokeStyle = 'red';
+                editorCtx.lineWidth = 2;
+                editorCtx.stroke();
+            }
+
+            allPaths.forEach(path => {
+                path.forEach(pt => {
+                    editorCtx.beginPath();
+                    editorCtx.arc(pt.x, pt.y, VISUAL_RADIUS, 0, Math.PI * 2);
+                    editorCtx.fillStyle = '#3b82f6';
+                    editorCtx.fill();
+                });
+            });
+            points.forEach(pt => {
+                editorCtx.beginPath();
+                editorCtx.arc(pt.x, pt.y, VISUAL_RADIUS, 0, Math.PI * 2);
+                editorCtx.fillStyle = 'red';
+                editorCtx.fill();
+            });
+
+            if (hoveredSegment) {
+                let p1, p2;
+                if (hoveredSegment.type === 'current') {
+                    p1 = points[hoveredSegment.index];
+                    p2 = points[hoveredSegment.index + 1];
+                } else {
+                    let path = allPaths[hoveredSegment.pathIndex];
+                    p1 = path[hoveredSegment.index];
+                    p2 = path[(hoveredSegment.index + 1) % path.length];
+                }
+                if(p1 && p2) {
+                    editorCtx.beginPath();
+                    editorCtx.moveTo(p1.x, p1.y);
+                    editorCtx.lineTo(p2.x, p2.y);
+                    editorCtx.strokeStyle = 'orange';
+                    editorCtx.lineWidth = 4;
+                    editorCtx.stroke();
+                }
+            }
+
+            if (potentialHit) {
+                let pt = potentialHit.type === 'current' ? points[potentialHit.index] : allPaths[potentialHit.pathIndex][potentialHit.index];
+                editorCtx.beginPath();
+                editorCtx.arc(pt.x, pt.y, HIT_RADIUS, 0, Math.PI * 2);
+                editorCtx.strokeStyle = 'green';
+                editorCtx.lineWidth = 2;
+                editorCtx.stroke();
+            }
+
+            if (currentSnapPos && snapToggle.checked && !isDragging) {
+                editorCtx.beginPath();
+                editorCtx.arc(currentSnapPos.x, currentSnapPos.y, 5, 0, Math.PI * 2);
+                editorCtx.strokeStyle = '#d4b58e';
+                editorCtx.stroke();
+            }
+
+            editorCtx.restore();
+        }
+
+        function setupEditorCanvasEvents() {
+            mapCanvas.addEventListener('mousedown', handleMouseDown);
+            mapCanvas.addEventListener('mousemove', handleMouseMove);
+            window.addEventListener('mouseup', handleMouseUp);
+            mapCanvas.addEventListener('contextmenu', e => e.preventDefault());
+        }
+
+        function handleMouseDown(e) {
+            if (e.button !== 0 && e.button !== 2) return;
+            let pos = getMousePos(e);
+            let actualPos = getMagneticSnap(pos, null);
+            let hit = getHitPoint(pos);
+
+            if (e.button === 0) { 
+                if (hit) {
+                    isDragging = true;
+                    draggedPointInfo = hit;
+                    draggedSharedVertices = getSharedVertices(hit.type === 'current' ? points[hit.index] : allPaths[hit.pathIndex][hit.index]);
+                } else {
+                    let seg = getHoveredSegment(pos);
+                    if (seg) {
+                        let newPt = { x: actualPos.x, y: actualPos.y };
+                        if (seg.type === 'current') {
+                            points.splice(seg.index + 1, 0, newPt);
+                            isDragging = true;
+                            draggedPointInfo = { type: 'current', index: seg.index + 1 };
+                        } else {
+                            allPaths[seg.pathIndex].splice(seg.index + 1, 0, newPt);
+                            isDragging = true;
+                            draggedPointInfo = { type: 'closed', pathIndex: seg.pathIndex, index: seg.index + 1 };
+                        }
+                        draggedSharedVertices = getSharedVertices(newPt);
+                    } else {
+                        points.push({ x: actualPos.x, y: actualPos.y });
+                    }
+                }
+            } else if (e.button === 2) { 
+                if (hit) {
+                    if (e.shiftKey && hit.type === 'closed') {
+                        let path = allPaths.splice(hit.pathIndex, 1)[0];
+                        path = path.slice(hit.index).concat(path.slice(0, hit.index));
+                        points = path;
+                        pathIds.splice(hit.pathIndex, 1);
+                    } else {
+                        let shared = getSharedVertices(hit.type === 'current' ? points[hit.index] : allPaths[hit.pathIndex][hit.index]);
+                        shared.sort((a,b) => b.index - a.index);
+                        let pathsToDelete = new Set();
+                        shared.forEach(s => {
+                            if (s.type === 'current') points.splice(s.index, 1);
+                            else {
+                                allPaths[s.pathIndex].splice(s.index, 1);
+                                if (allPaths[s.pathIndex].length < 3) pathsToDelete.add(s.pathIndex);
+                            }
+                        });
+                        let pathsToDeleteArr = Array.from(pathsToDelete).sort((a,b) => b - a);
+                        pathsToDeleteArr.forEach(idx => {
+                            allPaths.splice(idx, 1);
+                            pathIds.splice(idx, 1);
+                        });
+                    }
+                }
+            }
+            drawEditor();
+        }
+
+        function handleMouseMove(e) {
+            let pos = getMousePos(e);
+            if (isDragging && draggedSharedVertices) {
+                let snapPos = getMagneticSnap(pos, draggedPointInfo);
+                let dx = snapPos.x - draggedSharedVertices[0].pt.x;
+                let dy = snapPos.y - draggedSharedVertices[0].pt.y;
+                draggedSharedVertices.forEach(s => {
+                    s.pt.x += dx;
+                    s.pt.y += dy;
+                });
+            } else {
+                potentialHit = getHitPoint(pos);
+                hoveredSegment = getHoveredSegment(pos);
+                currentSnapPos = getMagneticSnap(pos, null);
+            }
+            drawEditor();
+        }
+
+        function handleMouseUp() {
+            isDragging = false;
+            draggedPointInfo = null;
+            draggedSharedVertices = null;
+        }
+
+        function closePath() {
+            if (points.length >= 3) {
+                allPaths.push([...points]);
+                pathIds.push(`region_${allPaths.length}`);
+                points = [];
+                drawEditor();
+                showToast('已闭合区域');
+            } else {
+                showToast('节点不足，无法闭合', true);
+            }
+        }
+        
+        function resetPoints() {
+            points = [];
+            drawEditor();
+        }
+
+        function clearRefImage() {
+            editorBgImg.src = '';
+            editorBgImg.style.display = 'none';
+        }
+
+        function handleRefImageUpload(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    editorBgImg.src = event.target.result;
+                    editorBgImg.style.display = 'block';
+                    setTimeout(applyZoom, 100);
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            }
+        }
+
+        function handleSVGImport(e) {
+            if (e.target.files && e.target.files.length > 0) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const text = event.target.result;
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(text, 'image/svg+xml');
+                    
+                    const svgEl = doc.querySelector('svg');
+                    if (svgEl) {
+                        const vb = svgEl.getAttribute('viewBox');
+                        if (vb) {
+                            const [, , w, h] = vb.split(' ').map(Number);
+                            if (w && h) {
+                                mapCanvas.width = w;
+                                mapCanvas.height = h;
+                            }
+                        }
+                    }
+
+                    const pathNodes = doc.querySelectorAll('path');
+                    pathNodes.forEach((p, idx) => {
+                        const d = p.getAttribute('d');
+                        if (d) {
+                            if (p.getAttribute('stroke') === 'red') {
+                                points = parseDStringToPoints(d);
+                            } else {
+                                const subPaths = extractSubPaths(d);
+                                subPaths.forEach(sub => {
+                                    const pts = parseDStringToPoints(sub);
+                                    if (pts.length >= 3) {
+                                        allPaths.push(pts);
+                                        pathIds.push(p.id || `imported_${Date.now()}_${idx}`);
+                                    }
+                                });
+                            }
+                        }
+                    });
+                    switchView('editor');
+                    showToast('SVG 数据导入成功！');
+                };
+                reader.readAsText(e.target.files[0]);
+            }
+        }
+
+        function buildFinalSVGString() {
+            let content = '';
+            allPaths.forEach((path, idx) => {
+                if (path.length < 3) return;
+                let pid = pathIds[idx] || `region_${idx + 1}`;
+                let d = `M${path[0].x},${path[0].y} `;
+                for(let i=1; i<path.length; i++) {
+                    d += `L${path[i].x},${path[i].y} `;
+                }
+                d += "Z";
+                content += `<path id="${pid}" d="${d}" />\n`;
+            });
+            
+            if (points.length > 0) {
+                let dTemp = `M${points[0].x},${points[0].y} `;
+                points.slice(1).forEach(p => dTemp += `L${p.x},${p.y} `);
+                content += `<!-- 尚未完成连接的活动红线图层 -->\n<path d="${dTemp}" stroke="red" stroke-width="2" fill="none" />\n`;
+            }
+
+            return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ${mapCanvas.width || 10800} ${mapCanvas.height || 5200}">\n${content}</svg>`;
+        }
+
+        function exportSVGFile() {
+            if (allPaths.length === 0 && points.length === 0) {
+                return showToast("当前编辑器中没有任何 SVG 数据！", true);
+            }
+            const svgXml = buildFinalSVGString();
+            const blob = new Blob([svgXml], {type: "image/svg+xml"});
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "map_regions.svg";
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        }
+
+        init();
+    </script>
+</body>
+</html>

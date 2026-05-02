@@ -1,0 +1,1420 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>「海陆图志」编辑器丨开发者中心</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- Leaflet -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <!-- 引入思源宋体 -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <style type="text/tailwindcss">
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow: hidden; background-color: #f8f9fa; }
+        .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+        ::-webkit-scrollbar { width: 5px; height: 5px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px;}
+
+        #admin-map-container { background-color: #050505; cursor: crosshair; }
+        #admin-map-container.move-mode { cursor: move !important; }
+        
+        .leaflet-bar a { background-color: #1a1817 !important; color: #d4b58e !important; border-color: #2c2825 !important; }
+        .leaflet-bar a:hover { background-color: #d4b58e !important; color: #1a1817 !important; }
+        
+        .custom-popup .leaflet-popup-content-wrapper { background: #1a1817; color: #dcd6cc; border: 1px solid #d4b58e; border-radius: 8px; font-family: 'Noto Serif SC', serif;}
+        .custom-popup .leaflet-popup-tip { background: #1a1817; border-bottom: 1px solid #d4b58e; border-right: 1px solid #d4b58e; }
+        .custom-popup .leaflet-popup-close-button { color: #d4b58e !important; }
+        
+        .geo-pin { display: flex; justify-content: center; align-items: center; }
+        .geo-pin > div { transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); will-change: transform; }
+        .geo-pin:hover > div { transform: scale(1.15); }
+
+        input[type="color"] { -webkit-appearance: none; border: none; padding: 0; }
+        input[type="color"]::-webkit-color-swatch-wrapper { padding: 0; }
+        input[type="color"]::-webkit-color-swatch { border: none; border-radius: 4px; }
+        
+        .custom-dropdown-scroll::-webkit-scrollbar { width: 4px; }
+        .custom-dropdown-scroll::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
+
+        .leaflet-overlay-pane svg { pointer-events: none; }
+        .leaflet-overlay-pane svg path, .leaflet-overlay-pane svg polygon { pointer-events: auto; }
+    </style>
+</head>
+<body class="text-gray-800 h-screen w-screen flex flex-col bg-[#f8f9fa] overflow-hidden">
+
+    <!-- 统一白金顶栏 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm relative z-[200]">
+        <div class="flex items-center gap-4">
+            <!-- 像素级对齐 index.html 的 Home 按钮 -->
+            <a href="index.html" class="w-8 h-8 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30 flex items-center justify-center text-[#d4b58e] hover:bg-[#d4b58e] hover:text-white transition-all shadow-sm shrink-0" title="返回控制台中枢">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </a>
+            
+            <h1 class="font-black text-xl text-gray-800 flex items-center gap-2 font-serif-sc tracking-wide shrink-0">
+                「海陆图志」编辑器 <span class="text-gray-300 font-mono text-sm font-normal">| MAP EDITOR</span>
+            </h1>
+        </div>
+        <div class="flex items-center gap-3">
+            <div class="text-[11px] text-gray-500 font-mono hidden sm:block mr-2 border-r border-gray-200 pr-3">
+                <i data-lucide="info" class="w-3.5 h-3.5 inline text-blue-500 mb-0.5"></i> 提示: 请先切换对应模式，方可对图层进行操作。
+            </div>
+            <div class="text-xs text-[#d4b58e] font-bold bg-[#d4b58e]/10 border border-[#d4b58e]/30 px-3 py-1.5 rounded-full flex items-center gap-1.5 font-mono">
+                <i data-lucide="target" class="w-3.5 h-3.5"></i> 状态：开发者模式
+            </div>
+        </div>
+    </header>
+
+    <!-- 下方主体：左侧边栏 + 右侧编辑区 -->
+    <div class="flex-1 flex flex-row overflow-hidden relative z-10">
+        <!-- 统一全局亮色侧边栏：间距完全统一 -->
+        <aside class="w-20 h-full bg-white flex flex-col items-center py-5 gap-5 shrink-0 z-[500] shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r border-gray-200 relative">
+            
+            <!-- 主要模块 (Core) -->
+            <a href="entries_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="百科全书编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+            </a>
+            
+            <a href="map_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-[#d4b58e] text-white shadow-md pointer-events-none" title="海陆图志编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+            </a>
+
+            <!-- 分隔栏 -->
+            <div class="w-6 h-px bg-gray-200 rounded-full shrink-0"></div>
+
+            <!-- 辅助功能 (Utility) -->
+            <a href="svg_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="矢量测绘工具">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </a>
+
+            <!-- 外部扩展 (External) -->
+            <div class="mt-auto flex flex-col gap-5 w-full items-center">
+                <a href="https://www.photopea.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Photopea 在线PS">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=photopea.com" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://squoosh.app/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Squoosh 图像压缩">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=squoosh.app" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://tinypng.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="TinyPNG 智能压缩">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=tinypng.com" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+                <a href="https://www.remove.bg/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="RemoveBG 一键抠图">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=remove.bg" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+            </div>
+        </aside>
+
+        <!-- 编辑区 -->
+        <div class="flex-1 flex overflow-hidden relative z-10">
+            <div class="w-[70%] h-full relative z-10 select-none" id="admin-map-container" oncontextmenu="return false;" style="-webkit-user-drag:none;"></div>
+            
+            <div class="w-[30%] h-full bg-gray-50 border-l border-gray-200 shadow-xl relative z-20 flex flex-col">
+                <div class="flex p-1.5 bg-gray-200/60 rounded-lg mx-5 mt-5 mb-1 border border-gray-200">
+                    <button id="tab-marker" onclick="switchMode('marker')" class="flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md bg-white shadow-sm text-[#d4b58e] border border-gray-100 transition-all">
+                        <i data-lucide="map-pin" class="w-3.5 h-3.5"></i> 节点检索
+                    </button>
+                    <button id="tab-region" onclick="switchMode('region')" class="flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md text-gray-500 hover:text-gray-700 transition-all border border-transparent">
+                        <i data-lucide="layers" class="w-3.5 h-3.5"></i> 区域检索
+                    </button>
+                </div>
+
+                <div class="px-5 pb-5 pt-3 border-b border-gray-200 bg-gray-50 flex flex-col gap-4 shrink-0 shadow-sm relative z-[100]">
+                    <div class="flex justify-between items-end">
+                        <div>
+                            <h2 class="text-lg font-black font-serif-sc text-gray-800 mb-0.5" id="sidebar-title">节点坐标</h2>
+                            <p class="text-[10px] text-gray-400 font-mono tracking-widest" id="sidebar-subtitle">TACTICAL ANCHORS</p>
+                        </div>
+                        <div class="text-[10px] text-gray-400 font-mono font-bold bg-gray-200 px-2 py-0.5 rounded" id="admin-marker-count"></div>
+                    </div>
+                    
+                    <div class="flex gap-2">
+                        <div class="relative flex-1">
+                            <i data-lucide="search" class="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400"></i>
+                            <input type="text" id="admin-search-input" oninput="handleAdminFilter()" class="w-full h-[38px] bg-white border border-gray-200 rounded-lg pl-9 pr-3 py-2 text-sm text-gray-700 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-all font-serif-sc shadow-inner" placeholder="检索标识...">
+                        </div>
+                        
+                        <div class="relative shrink-0 w-32 font-serif-sc" id="custom-filter-container">
+                            <button id="custom-filter-btn" type="button" class="w-full h-[38px] flex items-center justify-between bg-white border border-gray-200 rounded-lg px-3 py-2 text-sm text-gray-700 hover:border-[#d4b58e] hover:bg-gray-50 focus:outline-none transition-all shadow-sm">
+                                <span id="custom-filter-text" class="truncate font-medium">全部分类</span>
+                                <i data-lucide="chevron-down" id="custom-filter-arrow" class="w-4 h-4 text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            
+                            <div id="custom-filter-menu" class="absolute right-0 top-[110%] w-full bg-white/95 backdrop-blur-sm border border-gray-100 rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.15)] opacity-0 invisible scale-95 origin-top-right transition-all duration-200 flex flex-col py-1.5 overflow-y-auto max-h-64 custom-dropdown-scroll z-[200]">
+                                <button class="filter-option w-full text-left px-4 py-2 text-[13px] text-gray-800 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] font-bold transition-colors" data-value="">全部分类</button>
+                                <div class="h-[1px] bg-gray-100 mx-3 my-1"></div>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="首都">首都</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="主要城市">主要城市</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="城市">城市/城镇</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="要塞">要塞</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="基地">基地</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="港口">港口</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="遗迹">遗迹</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="据点">据点</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="观测站">观测站</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="异常">异常</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="资源">资源</button>
+                                <button class="filter-option w-full text-left px-4 py-1.5 text-[13px] text-gray-600 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="其他">其他</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-5 space-y-3.5 relative z-10" id="map-marker-list">
+                    <div class="text-center py-10 text-gray-400 text-sm font-serif-sc">正在扫描地图...</div>
+                </div>
+                
+                <div class="flex-1 overflow-y-auto p-4 space-y-3.5 relative z-10 hidden custom-dropdown-scroll" id="map-region-list">
+                    <div class="text-center py-10 text-gray-400 text-sm font-serif-sc">正在解析地图...</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 区域悬浮信息框 (Tooltip) -->
+    <div id="region-tooltip" class="fixed pointer-events-none z-[1000] opacity-0 transition-opacity duration-200 bg-white/95 backdrop-blur-md border border-gray-200 shadow-2xl rounded-xl p-4 w-72 transform -translate-x-1/2 -translate-y-[110%] flex flex-col gap-2">
+        <div id="tooltip-header-border" class="absolute top-0 left-0 w-full h-1.5 rounded-t-xl transition-colors"></div>
+        <div class="flex items-start justify-between gap-2 mt-1">
+            <div class="flex flex-col min-w-0" id="tooltip-title-container">
+                <h4 id="tooltip-title" class="font-bold text-lg font-serif-sc leading-tight"></h4>
+                <span id="tooltip-foreign-title" class="font-mono uppercase tracking-widest opacity-70 leading-none mt-0.5 truncate text-[10px]"></span>
+            </div>
+            <span id="tooltip-status" class="text-[10px] px-1.5 py-0.5 rounded font-mono shrink-0 border mt-0.5"></span>
+        </div>
+        <p id="tooltip-desc" class="text-xs text-gray-500 leading-relaxed font-serif-sc line-clamp-3 mt-1"></p>
+        <div id="tooltip-svg-container" class="mt-2 pt-2 border-t border-gray-100 flex items-center justify-center min-h-[60px]"></div>
+    </div>
+
+    <!-- 地图标点输入/编辑弹窗 -->
+    <div id="map-modal" class="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-100">
+            <div class="flex justify-between items-center mb-6">
+                <h3 class="text-xl font-bold font-serif-sc text-gray-800" id="modal-title">新建节点</h3>
+                <button onclick="cancelMapMarker()" class="text-gray-400 hover:text-gray-600 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <input type="hidden" id="map-edit-id">
+            
+            <div class="space-y-4 mb-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">中文标识 (TITLE)</label>
+                        <input type="text" id="map-title" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-colors font-bold" placeholder="如：洛雷迪亚">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">外文标识 (FOREIGN TITLE)</label>
+                        <input type="text" id="map-foreign-title" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-colors font-mono" placeholder="如：Loredia">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-3 gap-6 relative z-50">
+                    <div class="col-span-1">
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">地理层级 (TYPE)</label>
+                        <div class="relative w-full font-serif-sc" id="modal-type-container">
+                            <button id="modal-type-btn" type="button" class="w-full flex items-center justify-between bg-white border border-gray-300 rounded-lg px-3 py-2.5 text-sm text-gray-800 hover:border-[#d4b58e] focus:outline-none transition-all">
+                                <span id="modal-type-text" class="truncate font-bold">城市 (City)</span>
+                                <i data-lucide="chevron-down" id="modal-type-arrow" class="w-4 h-4 text-gray-400 transition-transform duration-300"></i>
+                            </button>
+                            <input type="hidden" id="map-type" value="城市">
+                            
+                            <div id="modal-type-menu" class="absolute left-0 top-[110%] w-full bg-white/95 backdrop-blur-sm border border-gray-100 rounded-xl shadow-[0_15px_40px_-10px_rgba(0,0,0,0.2)] opacity-0 invisible scale-95 origin-top-left transition-all duration-200 flex flex-col py-1.5 max-h-48 overflow-y-auto custom-dropdown-scroll z-[200]">
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="首都">首都 (Capital)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="主要城市">主要城市 (Major City)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="城市">城市/城镇 (City)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="要塞">要塞 (Fortress)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="基地">基地 (Base)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="港口">港口 (Port)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="遗迹">遗迹 (Ruin)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="据点">据点 (Camp)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="观测站">观测站 (Observation)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="异常">异常 (Anomaly)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="资源">资源 (Resource)</button>
+                                <button class="modal-type-option w-full text-left px-4 py-2 text-[13px] text-gray-700 hover:bg-[#d4b58e]/10 hover:text-[#d4b58e] transition-colors" data-value="其他">其他 (Other)</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">信号色 (HEX COLOR)</label>
+                        <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-2 py-1.5 bg-gray-50/50 shadow-inner">
+                            <div class="relative w-7 h-7 rounded border border-gray-200 shrink-0 overflow-hidden">
+                                <input type="color" id="map-color-picker" class="absolute -inset-2 w-12 h-12 cursor-pointer bg-transparent" oninput="syncColor(this.value, 'picker')">
+                            </div>
+                            <input type="text" id="map-color-hex" maxlength="7" class="flex-1 bg-transparent border-none text-gray-800 font-bold focus:outline-none uppercase font-mono text-[15px]" oninput="syncColor(this.value, 'hex')">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2 relative z-10">
+                    <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">摘要 (INTELLIGENCE)</label>
+                    <textarea id="map-desc" rows="3" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 resize-none transition-colors" placeholder="补充关于此地的详细驻军、资源或异常状态..."></textarea>
+                </div>
+            </div>
+            
+            <div class="flex justify-end gap-4 pt-4 border-t border-gray-100">
+                <button onclick="cancelMapMarker()" class="px-5 py-2 text-gray-500 hover:text-gray-800 font-bold text-sm transition-colors border border-transparent hover:border-gray-300 rounded-lg">取消</button>
+                <button onclick="saveMapMarker()" id="map-save-btn" class="px-6 py-2 bg-[#d4b58e] text-white font-bold rounded-lg hover:bg-[#c2a27b] transition-colors shadow-md text-sm flex items-center gap-1.5">
+                    <i data-lucide="cloud-upload" class="w-4 h-4"></i> 保存节点
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 区域情报编辑器弹窗 -->
+    <div id="region-modal" class="fixed inset-0 z-[120] bg-black/60 backdrop-blur-sm hidden items-center justify-center p-4">
+        <div class="bg-white p-6 sm:p-8 rounded-2xl shadow-2xl w-full max-w-lg border border-gray-100">
+            <div class="flex justify-between items-center mb-5">
+                <div class="flex flex-col">
+                    <h3 class="text-xl font-bold font-serif-sc text-gray-800 flex items-center gap-2">
+                        <i data-lucide="paintbrush" class="w-5 h-5 text-[#d4b58e]"></i> 区域配置
+                    </h3>
+                    <p class="text-[10px] text-gray-400 font-mono tracking-widest mt-1">PRO: 三级树状文件模式</p>
+                </div>
+                <button onclick="cancelRegionModal()" class="text-gray-400 hover:text-gray-600 transition-colors"><i data-lucide="x" class="w-5 h-5"></i></button>
+            </div>
+            
+            <div class="space-y-4 mb-6">
+                <!-- 架构标识区 -->
+                <div class="grid grid-cols-2 gap-3 bg-gray-50/50 p-3 rounded-xl border border-gray-200">
+                    <div class="col-span-2">
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5 flex items-center gap-1">
+                            独立区块 ID <i data-lucide="lock" class="w-3 h-3 text-gray-400"></i>
+                        </label>
+                        <input type="text" id="region-internal-id" readonly class="w-full bg-gray-100/50 border border-gray-200 rounded-lg px-3 py-1.5 text-gray-500 font-mono font-bold text-xs cursor-not-allowed">
+                    </div>
+                    
+                    <div class="p-2.5 border border-[#d4b58e]/30 rounded-lg bg-white shadow-sm">
+                        <label class="block text-[10px] font-mono text-[#d4b58e] uppercase tracking-widest mb-1.5">一级编组 ID </label>
+                        <input type="text" id="region-group-id" class="w-full bg-[#d4b58e]/5 border border-[#d4b58e]/20 rounded-md px-2 py-1.5 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-1 focus:ring-[#d4b58e] transition-colors font-mono font-bold text-xs" placeholder="empire_alpha">
+                        <label class="flex items-center gap-1.5 mt-2 cursor-pointer">
+                            <input type="checkbox" id="region-is-primary" class="w-3.5 h-3.5 text-[#d4b58e] border-gray-300 rounded focus:ring-[#d4b58e]">
+                            <span class="text-[11px] font-bold text-gray-700">设为一级核心区</span>
+                        </label>
+                    </div>
+
+                    <div class="p-2.5 border border-gray-200 rounded-lg bg-white shadow-sm">
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">二级编组 ID </label>
+                        <input type="text" id="region-sub-group-id" class="w-full bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5 text-gray-800 focus:outline-none focus:border-gray-400 focus:ring-1 focus:ring-gray-400 transition-colors font-mono font-bold text-xs" placeholder="province_beta">
+                        <label class="flex items-center gap-1.5 mt-2 cursor-pointer">
+                            <input type="checkbox" id="region-is-sub-primary" class="w-3.5 h-3.5 text-gray-500 border-gray-300 rounded focus:ring-gray-500">
+                            <span class="text-[11px] font-bold text-gray-700">设为二级核心区</span>
+                        </label>
+                    </div>
+                    
+                    <div class="col-span-2 mt-1">
+                        <label class="flex items-center gap-2 cursor-pointer p-2.5 border border-gray-200 rounded-lg bg-white hover:bg-gray-50 transition-colors shadow-sm">
+                            <input type="checkbox" id="region-follow-primary" class="w-4 h-4 text-green-600 border-gray-300 rounded focus:ring-green-500">
+                            <span class="text-[11px] font-bold text-gray-700">信息跟随核心区 <span class="text-gray-400 font-normal">(本地区悬停时，弹出其所属核心区情报)</span></span>
+                        </label>
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">当前状态 (STATUS)</label>
+                        <input type="text" id="region-status" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-colors font-bold" placeholder="如：控制中、沦陷等">
+                    </div>
+                </div>
+                
+                <div class="grid grid-cols-2 gap-4 pt-1">
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">地区名称 (REGION NAME)</label>
+                        <input type="text" id="region-title" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-colors font-bold" placeholder="如：洛雷迪亚帝国">
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">外文标识 (FOREIGN TITLE)</label>
+                        <input type="text" id="region-foreign-title" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 transition-colors font-mono" placeholder="如：Loredia Empire">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4 pt-1">
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">地名文字色 (TEXT COLOR)</label>
+                        <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-2 py-1 bg-gray-50/50 shadow-inner">
+                            <div class="relative w-6 h-6 rounded border border-gray-200 shrink-0 overflow-hidden">
+                                <input type="color" id="region-color-picker" class="absolute -inset-2 w-10 h-10 cursor-pointer bg-transparent" oninput="document.getElementById('region-color-hex').value = this.value.toUpperCase()">
+                            </div>
+                            <input type="text" id="region-color-hex" maxlength="7" class="flex-1 bg-transparent border-none text-gray-800 font-bold focus:outline-none uppercase font-mono text-[14px]" oninput="document.getElementById('region-color-picker').value = this.value">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">状态与区域色 (STATUS COLOR)</label>
+                        <div class="flex items-center gap-2 border border-gray-300 rounded-lg px-2 py-1 bg-gray-50/50 shadow-inner">
+                            <div class="relative w-6 h-6 rounded border border-gray-200 shrink-0 overflow-hidden">
+                                <input type="color" id="region-status-color-picker" class="absolute -inset-2 w-10 h-10 cursor-pointer bg-transparent" oninput="document.getElementById('region-status-color-hex').value = this.value.toUpperCase()">
+                            </div>
+                            <input type="text" id="region-status-color-hex" maxlength="7" class="flex-1 bg-transparent border-none text-gray-800 font-bold focus:outline-none uppercase font-mono text-[14px]" oninput="document.getElementById('region-status-color-picker').value = this.value">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pt-2">
+                    <label class="block text-[10px] font-mono text-gray-500 uppercase tracking-widest mb-1.5">摘要 (DESCRIPTION)</label>
+                    <textarea id="region-desc" rows="3" class="w-full bg-white border border-gray-300 rounded-lg px-3 py-2 text-sm text-gray-800 focus:outline-none focus:border-[#d4b58e] focus:ring-2 focus:ring-[#d4b58e]/10 resize-none transition-colors" placeholder="补充该疆域的政治、资源或战略环境..."></textarea>
+                </div>
+            </div>
+            
+            <div class="flex justify-between items-center pt-4 border-t border-gray-100">
+                <button onclick="clearRegionColor()" class="text-red-500 hover:text-red-700 font-bold text-[13px] transition-colors bg-red-50 px-4 py-2 rounded-lg border border-transparent hover:border-red-200">清除配置</button>
+                <div class="flex gap-2">
+                    <button onclick="cancelRegionModal()" class="px-4 py-2 text-gray-500 hover:text-gray-800 font-bold text-[13px] transition-colors border border-transparent hover:border-gray-300 rounded-lg">取消</button>
+                    <button onclick="saveRegionMarker()" id="region-save-btn" class="px-6 py-2 bg-[#d4b58e] text-white font-bold rounded-lg hover:bg-[#c2a27b] transition-colors shadow-md text-[13px]">
+                        保存修改
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 锁定 Toast 的指针穿透 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-[3000] flex items-center gap-2">
+        <span id="toast-msg"></span>
+    </div>
+
+    <script>
+        lucide.createIcons();
+        const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co';
+        const supabaseAnonKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8'; 
+        
+        const supabaseClient = window.supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+        let adminMap = null;
+        let tempLatLng = null;
+        let mapMarkersLayer = null;
+        let allMapMarkers = [];
+        let adminSearchQuery = '';
+        let adminFilterType = '';
+        let movingMarkerId = null;
+
+        let currentMode = 'marker';
+        
+        let regionSettingsDB = {}; 
+        let domIdToDbId = {}; 
+
+        const MAP_TRUE_WIDTH = 10800;   
+        const MAP_TRUE_HEIGHT = 5200;  
+        const MAP_BOUNDS = [[0, 0], [MAP_TRUE_HEIGHT, MAP_TRUE_WIDTH]];
+        
+        let currentColor = '#d4b58e';
+
+        window.addEventListener('DOMContentLoaded', async () => {
+            const { data: { session } } = await supabaseClient.auth.getSession();
+            if (!session) { 
+                window.location.href = 'index.html'; 
+                return; 
+            }
+            initAdminMap();
+            fetchAdminMapMarkers();
+            fetchAdminRegions(); 
+            initCustomDropdowns(); 
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && movingMarkerId) {
+                    movingMarkerId = null;
+                    document.getElementById('admin-map-container').classList.remove('move-mode');
+                    showToast('已取消节点移动模式');
+                }
+            });
+        });
+
+        window.switchMode = function(mode) {
+            currentMode = mode;
+            const btnMarker = document.getElementById('tab-marker');
+            const btnRegion = document.getElementById('tab-region');
+            const listMarker = document.getElementById('map-marker-list');
+            const listRegion = document.getElementById('map-region-list');
+            const filterContainer = document.getElementById('custom-filter-container');
+            
+            document.getElementById('admin-search-input').value = '';
+            adminSearchQuery = '';
+
+            if (mode === 'marker') {
+                document.getElementById('sidebar-title').innerText = '节点配置';
+                document.getElementById('sidebar-subtitle').innerText = 'TACTICAL ANCHORS';
+                btnMarker.className = "flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md bg-white shadow-sm text-[#d4b58e] border border-gray-100 transition-all";
+                btnRegion.className = "flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md text-gray-500 hover:text-gray-700 transition-all border border-transparent";
+                listMarker.classList.remove('hidden');
+                listRegion.classList.add('hidden');
+                filterContainer.classList.remove('hidden');
+                renderAdminMapMarkers();
+            } else {
+                document.getElementById('sidebar-title').innerText = '区域配置';
+                document.getElementById('sidebar-subtitle').innerText = 'REGION INTELLIGENCE (TREE)';
+                btnRegion.className = "flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md bg-white shadow-sm text-[#d4b58e] border border-gray-100 transition-all";
+                btnMarker.className = "flex-1 flex items-center justify-center gap-2 py-1.5 text-[13px] font-bold rounded-md text-gray-500 hover:text-gray-700 transition-all border border-transparent";
+                listMarker.classList.add('hidden');
+                listRegion.classList.remove('hidden');
+                filterContainer.classList.add('hidden');
+                renderAdminRegionList();
+            }
+        }
+
+        function initCustomDropdowns() {
+            const filterBtn = document.getElementById('custom-filter-btn');
+            const filterMenu = document.getElementById('custom-filter-menu');
+            const filterArrow = document.getElementById('custom-filter-arrow');
+            const filterText = document.getElementById('custom-filter-text');
+            let filterOpen = false;
+
+            function toggleFilter(forceClose = false) {
+                filterOpen = forceClose ? false : !filterOpen;
+                if (filterOpen) {
+                    filterMenu.classList.remove('opacity-0', 'invisible', 'scale-95');
+                    filterMenu.classList.add('opacity-100', 'visible', 'scale-100');
+                    filterArrow.classList.add('rotate-180');
+                    filterBtn.classList.add('border-[#d4b58e]');
+                } else {
+                    filterMenu.classList.add('opacity-0', 'invisible', 'scale-95');
+                    filterMenu.classList.remove('opacity-100', 'visible', 'scale-100');
+                    filterArrow.classList.remove('rotate-180');
+                    filterBtn.classList.remove('border-[#d4b58e]');
+                }
+            }
+
+            filterBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleFilter(); });
+            document.querySelectorAll('.filter-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    filterText.innerText = e.currentTarget.innerText.trim();
+                    adminFilterType = e.currentTarget.getAttribute('data-value');
+                    toggleFilter(true);
+                    handleAdminFilter(); 
+                });
+            });
+
+            const typeBtn = document.getElementById('modal-type-btn');
+            const typeMenu = document.getElementById('modal-type-menu');
+            const typeArrow = document.getElementById('modal-type-arrow');
+            let typeOpen = false;
+
+            function toggleType(forceClose = false) {
+                typeOpen = forceClose ? false : !typeOpen;
+                if (typeOpen) {
+                    typeMenu.classList.remove('opacity-0', 'invisible', 'scale-95');
+                    typeMenu.classList.add('opacity-100', 'visible', 'scale-100');
+                    typeArrow.classList.add('rotate-180');
+                    typeBtn.classList.add('border-[#d4b58e]', 'ring-2', 'ring-[#d4b58e]/10');
+                } else {
+                    typeMenu.classList.add('opacity-0', 'invisible', 'scale-95');
+                    typeMenu.classList.remove('opacity-100', 'visible', 'scale-100');
+                    typeArrow.classList.remove('rotate-180');
+                    typeBtn.classList.remove('border-[#d4b58e]', 'ring-2', 'ring-[#d4b58e]/10');
+                }
+            }
+
+            typeBtn.addEventListener('click', (e) => { e.stopPropagation(); toggleType(); });
+            document.querySelectorAll('.modal-type-option').forEach(opt => {
+                opt.addEventListener('click', (e) => {
+                    window.setModalDropdown(e.currentTarget.getAttribute('data-value'));
+                    toggleType(true);
+                });
+            });
+
+            document.addEventListener('click', () => {
+                if (filterOpen) toggleFilter(true);
+                if (typeOpen) toggleType(true);
+            });
+        }
+
+        window.setModalDropdown = function(value) {
+            const input = document.getElementById('map-type');
+            const text = document.getElementById('modal-type-text');
+            const optionsMap = {
+                '首都': '首都 (Capital)', '主要城市': '主要城市 (Major City)', '城市': '城市/城镇 (City)',
+                '要塞': '要塞 (Fortress)', '基地': '基地 (Base)', '据点': '基地 (Base)', '港口': '港口 (Port)', '遗迹': '遗迹 (Ruin)',
+                '观测站': '观测站 (Observation)', '异常': '异常 (Anomaly)', '资源': '资源 (Resource)', '其他': '其他 (Other)'
+            };
+            let safeValue = value;
+            if(safeValue === '城市/城镇') safeValue = '城市';
+            if(safeValue === '据点') safeValue = '基地'; 
+            input.value = safeValue;
+            text.innerText = optionsMap[safeValue] || '城市/城镇 (City)';
+        }
+
+        function initAdminMap() {
+            adminMap = L.map('admin-map-container', { 
+                crs: L.CRS.Simple, minZoom: -5, maxZoom: 2, 
+                zoomControl: true, attributionControl: false 
+            });
+            const mapImagePath = '../data/map/basemap.webp';
+
+            L.imageOverlay(mapImagePath, MAP_BOUNDS, { opacity: 1 }).addTo(adminMap);
+            adminMap.setMaxBounds(MAP_BOUNDS);
+            adminMap.setMinZoom(adminMap.getBoundsZoom(MAP_BOUNDS, true));
+            adminMap.fitBounds(MAP_BOUNDS);
+
+            mapMarkersLayer = L.layerGroup().addTo(adminMap);
+
+            adminMap.on('click', async function(e) {
+                if (window.isRegionClickActive) return;
+
+                if (currentMode === 'region') {
+                    showToast('⚠ 请先切换至「节点配置」模式。', true);
+                    return;
+                }
+
+                if (movingMarkerId) {
+                    const id = movingMarkerId;
+                    movingMarkerId = null;
+                    document.getElementById('admin-map-container').classList.remove('move-mode');
+                    
+                    try {
+                        const { error } = await supabaseClient.from('map_markers').update({ lat: e.latlng.lat, lng: e.latlng.lng }).eq('id', id);
+                        if (error) throw error;
+                        showToast('节点移动成功');
+                        fetchAdminMapMarkers();
+                    } catch (err) {
+                        showToast('移动节点失败，请重试', true);
+                    }
+                    return;
+                }
+                openMarkerModal(null, e.latlng);
+            });
+        }
+
+        window.addEventListener('resize', () => {
+            if (adminMap) { adminMap.setMinZoom(adminMap.getBoundsZoom(MAP_BOUNDS, true)); }
+        });
+
+        function showToast(msg, isError = false) {
+            const t = document.getElementById('toast'); 
+            document.getElementById('toast-msg').innerText = msg;
+            t.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl transition-all duration-300 z-[3000] flex items-center gap-2 pointer-events-none ${isError ? 'bg-red-500 text-white' : 'bg-gray-900 text-white'}`;
+            t.classList.remove('opacity-0', 'translate-y-4');
+            setTimeout(() => t.classList.add('opacity-0', 'translate-y-4'), 3000);
+        }
+
+        async function fetchAdminRegions() {
+            try {
+                const { data, error } = await supabaseClient.from('map_regions').select('*');
+                if (data) {
+                    regionSettingsDB = {}; 
+                    domIdToDbId = {};
+                    data.forEach(r => { 
+                        if (r.region_id) {
+                            regionSettingsDB[r.region_id] = r; 
+                            domIdToDbId[r.region_id.trim()] = r.region_id;
+                        }
+                    });
+                }
+            } catch(e) { 
+                console.log("Database table 'map_regions' error.", e);
+                showToast('读取数据时遇到异常，请检查数据库结构', true);
+            }
+            loadRegionsSVG();
+            if(currentMode === 'region') renderAdminRegionList();
+        }
+
+        let currentSvgOverlay = null;
+
+        function loadRegionsSVG() {
+            fetch('../data/map/regions.svg')
+                .then(res => res.text())
+                .then(svgText => {
+                    const parser = new DOMParser();
+                    const doc = parser.parseFromString(svgText, 'image/svg+xml');
+                    const svgEl = doc.querySelector('svg');
+                    if(!svgEl) return;
+
+                    svgEl.setAttribute('viewBox', '0 0 10800 5200');
+                    svgEl.removeAttribute('width');
+                    svgEl.removeAttribute('height');
+
+                    if(!adminMap.getPane('regionsPane')) {
+                        adminMap.createPane('regionsPane');
+                        adminMap.getPane('regionsPane').style.zIndex = 450;
+                    }
+
+                    svgEl.style.pointerEvents = 'none';
+                    
+                    if (currentSvgOverlay) {
+                        adminMap.removeLayer(currentSvgOverlay);
+                    }
+
+                    const tooltip = document.getElementById('region-tooltip');
+                    const tooltipTitle = document.getElementById('tooltip-title');
+                    const tooltipTitleContainer = document.getElementById('tooltip-title-container');
+                    const tooltipForeignTitle = document.getElementById('tooltip-foreign-title');
+                    const tooltipStatus = document.getElementById('tooltip-status');
+                    const tooltipDesc = document.getElementById('tooltip-desc');
+                    const tooltipHeaderBorder = document.getElementById('tooltip-header-border');
+                    const tooltipSvgContainer = document.getElementById('tooltip-svg-container');
+
+                    const paths = svgEl.querySelectorAll('path, polygon');
+                    paths.forEach((p, idx) => {
+                        const domId = p.id || p.getAttribute('name') || `region_${idx}`;
+                        p.id = domId;
+
+                        p.style.pointerEvents = 'auto';
+                        p.style.cursor = 'pointer';
+                        p.style.transition = 'fill 0.3s, stroke 0.3s';
+
+                        const dbRid = domIdToDbId[domId];
+                        const config = dbRid ? regionSettingsDB[dbRid] : null;
+
+                        let activeColor = null;
+                        if (config && config.status_color) activeColor = config.status_color;
+                        else if (config && config.color) activeColor = config.color;
+
+                        if (dbRid && activeColor) {
+                            p.style.fill = activeColor + '40'; 
+                            p.style.stroke = activeColor + 'A0'; 
+                            p.style.strokeWidth = '8';
+                        } else {
+                            p.style.fill = 'rgba(255, 255, 255, 0.05)';
+                            p.style.stroke = 'rgba(255, 255, 255, 0.2)';
+                            p.style.strokeWidth = '8';
+                        }
+
+                        const triggerTooltip = (e, isClickLock = false) => {
+                            let displayConfig = config;
+                            
+                            if (config && config.follow_primary) {
+                                let primaryConfig = null;
+                                if (config.sub_group_id) {
+                                    for (const key in regionSettingsDB) {
+                                        if (regionSettingsDB[key].sub_group_id === config.sub_group_id && regionSettingsDB[key].is_sub_primary) {
+                                            primaryConfig = regionSettingsDB[key]; 
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (!primaryConfig && config.group_id) {
+                                    for (const key in regionSettingsDB) {
+                                        if (regionSettingsDB[key].group_id === config.group_id && regionSettingsDB[key].is_primary) {
+                                            primaryConfig = regionSettingsDB[key]; 
+                                            break;
+                                        }
+                                    }
+                                }
+                                if (primaryConfig) displayConfig = primaryConfig;
+                            }
+
+                            if (!displayConfig || (!displayConfig.title && !displayConfig.description)) {
+                                if(tooltip) tooltip.style.opacity = '0';
+                                return;
+                            }
+
+                            const textColor = (displayConfig && displayConfig.color) ? displayConfig.color : '#dcd6cc'; 
+                            const displayActiveColor = (displayConfig && displayConfig.status_color) ? displayConfig.status_color : textColor;
+                            const isSpecial = displayConfig && ['污染', '沦陷', '深渊'].includes(displayConfig.status);
+                            const badgeColor = (isSpecial && displayActiveColor) ? displayActiveColor : textColor;
+
+                            if(tooltip) {
+                                if (isSpecial) {
+                                    tooltip.classList.add('tooltip-danger');
+                                    tooltipHeaderBorder.style.borderColor = badgeColor + '50';
+                                } else {
+                                    tooltip.classList.remove('tooltip-danger');
+                                    tooltipHeaderBorder.style.borderColor = textColor + '50';
+                                }
+
+                                if (displayConfig && displayConfig.title) {
+                                    tooltipTitle.innerText = displayConfig.title;
+                                    tooltipTitleContainer.style.color = textColor; 
+
+                                    if (displayConfig.foreign_title) {
+                                        tooltipForeignTitle.innerText = displayConfig.foreign_title;
+                                        tooltipForeignTitle.className = `font-mono uppercase tracking-widest opacity-70 leading-none mt-0.5 truncate block`;
+                                    } else {
+                                        tooltipForeignTitle.className = "hidden";
+                                    }
+                                    
+                                    if (displayConfig.status) {
+                                        tooltipStatus.innerText = displayConfig.status;
+                                        tooltipStatus.style.color = badgeColor;
+                                        tooltipStatus.style.borderColor = badgeColor + '50'; 
+                                        tooltipStatus.style.backgroundColor = badgeColor + '15'; 
+                                        tooltipStatus.className = `px-1.5 py-0.5 rounded font-serif-sc tracking-widest shrink-0 border block`; 
+                                    } else {
+                                        tooltipStatus.className = "hidden";
+                                    }
+
+                                    tooltipDesc.innerText = displayConfig.description || '数据库中暂无关于该区域的进一步公开数据。';
+                                    
+                                    let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+                                    const clonedPaths = [];
+                                    paths.forEach(sib => {
+                                        const sibDbRid = domIdToDbId[sib.id];
+                                        const sibConfig = sibDbRid ? regionSettingsDB[sibDbRid] : null;
+                                        
+                                        const isSameMainGroup = displayConfig.group_id && sibConfig && sibConfig.group_id === displayConfig.group_id;
+                                        const isSameSubGroup = displayConfig.sub_group_id && sibConfig && sibConfig.sub_group_id === displayConfig.sub_group_id;
+                                        const isSameRegion = sibDbRid === (domIdToDbId[domId] || domId);
+                                        
+                                        if ((displayConfig.is_primary && isSameMainGroup) || 
+                                            (displayConfig.is_sub_primary && isSameSubGroup) || 
+                                            isSameRegion) {
+                                            try {
+                                                const box = sib.getBBox();
+                                                if (box.width > 0 && box.height > 0) {
+                                                    minX = Math.min(minX, box.x);
+                                                    minY = Math.min(minY, box.y);
+                                                    maxX = Math.max(maxX, box.x + box.width);
+                                                    maxY = Math.max(maxY, box.y + box.height);
+                                                    const clone = sib.cloneNode(true);
+                                                    
+                                                    let sibActiveColor = '#d4b58e'; 
+                                                    if (sibConfig && sibConfig.status_color) {
+                                                        sibActiveColor = sibConfig.status_color;
+                                                    } else if (sibConfig && sibConfig.color) {
+                                                        sibActiveColor = sibConfig.color;
+                                                    }
+                                                    
+                                                    clone.style.fill = sibActiveColor + '20'; 
+                                                    clone.style.stroke = sibActiveColor + 'B0'; 
+                                                    clone.style.strokeWidth = Math.max((maxX - minX), (maxY - minY)) * 0.015 + 'px'; 
+                                                    clone.style.transition = 'none';
+                                                    clone.style.transform = 'none';
+                                                    clone.style.pointerEvents = 'none';
+                                                    clonedPaths.push(clone.outerHTML);
+                                                }
+                                            } catch (err) {}
+                                        }
+                                    });
+                                    
+                                    if (clonedPaths.length > 0 && minX !== Infinity) {
+                                        const pad = Math.max((maxX - minX) * 0.15, (maxY - minY) * 0.15, 10);
+                                        const vBox = `${minX - pad} ${minY - pad} ${maxX - minX + 2*pad} ${maxY - minY + 2*pad}`;
+                                        tooltipSvgContainer.innerHTML = `<svg viewBox="${vBox}" class="w-full h-auto max-h-32 drop-shadow-md" preserveAspectRatio="xMidYMid meet">${clonedPaths.join('')}</svg>`;
+                                        tooltipSvgContainer.style.display = 'flex';
+                                    } else {
+                                        tooltipSvgContainer.style.display = 'none';
+                                    }
+
+                                    tooltip.style.opacity = '1';
+                                    tooltip.style.left = e.clientX + 'px';
+                                    tooltip.style.top = e.clientY + 'px';
+                                }
+                            }
+                        };
+
+                        p.addEventListener('mouseenter', (e) => {
+                            if (window.lockedTooltipRegion) return; 
+                            
+                            const groupId = config ? config.group_id : null;
+                            const subGroupId = config ? config.sub_group_id : null;
+                            
+                            paths.forEach(sib => {
+                                const sibDbRid = domIdToDbId[sib.id];
+                                const sibConfig = sibDbRid ? regionSettingsDB[sibDbRid] : null;
+                                
+                                const isSameGroup = groupId && sibConfig && sibConfig.group_id === groupId;
+                                const isSameSubGroup = subGroupId && sibConfig && sibConfig.sub_group_id === subGroupId;
+                                const isSameRegion = sibDbRid === dbRid || (!dbRid && sib.id === domId);
+                                
+                                if (isSameGroup || isSameSubGroup || isSameRegion) {
+                                    let sibActiveColor = null;
+                                    if (sibConfig && sibConfig.status_color) sibActiveColor = sibConfig.status_color;
+                                    else if (sibConfig && sibConfig.color) sibActiveColor = sibConfig.color;
+                                    
+                                    const sibHoverColor = sibActiveColor || '#d4b58e';
+                                    
+                                    sib.style.fill = sibHoverColor + '60'; 
+                                    sib.style.stroke = sibHoverColor;
+                                }
+                            });
+                            
+                            triggerTooltip(e);
+                        });
+
+                        p.addEventListener('mousemove', (e) => {
+                            const tooltip = document.getElementById('region-tooltip');
+                            if (tooltip && !window.lockedTooltipRegion && tooltip.style.opacity === '1') {
+                                tooltip.style.left = e.clientX + 'px';
+                                tooltip.style.top = e.clientY + 'px';
+                            }
+                        });
+
+                        p.addEventListener('mouseleave', () => {
+                            if (!window.lockedTooltipRegion) {
+                                const groupId = config ? config.group_id : null;
+                                const subGroupId = config ? config.sub_group_id : null;
+                                
+                                paths.forEach(sib => {
+                                    const sibDbRid = domIdToDbId[sib.id];
+                                    const sibConfig = sibDbRid ? regionSettingsDB[sibDbRid] : null;
+                                    
+                                    const isSameGroup = groupId && sibConfig && sibConfig.group_id === groupId;
+                                    const isSameSubGroup = subGroupId && sibConfig && sibConfig.sub_group_id === subGroupId;
+                                    const isSameRegion = sibDbRid === dbRid || (!dbRid && sib.id === domId);
+                                    
+                                    if (isSameGroup || isSameSubGroup || isSameRegion) {
+                                        let resetColor = null;
+                                        if (sibConfig && sibConfig.status_color) resetColor = sibConfig.status_color;
+                                        else if (sibConfig && sibConfig.color) resetColor = sibConfig.color;
+
+                                        if (resetColor) {
+                                            sib.style.fill = resetColor + '40';
+                                            sib.style.stroke = resetColor + 'A0';
+                                        } else {
+                                            sib.style.fill = 'rgba(255, 255, 255, 0.05)';
+                                            sib.style.stroke = 'rgba(255, 255, 255, 0.2)';
+                                        }
+                                    }
+                                });
+                                
+                                const tooltip = document.getElementById('region-tooltip');
+                                if (tooltip) tooltip.style.opacity = '0';
+                            }
+                        });
+
+                        p.addEventListener('click', (e) => {
+                            if (currentMode === 'marker') {
+                                const rect = document.getElementById('admin-map-container').getBoundingClientRect();
+                                const containerPoint = L.point(e.clientX - rect.left, e.clientY - rect.top);
+                                const clickLatLng = adminMap.containerPointToLatLng(containerPoint);
+                                adminMap.fire('click', { latlng: clickLatLng, originalEvent: e });
+                                return;
+                            }
+
+                            e.preventDefault();
+                            e.stopPropagation();
+                            window.isRegionClickActive = true; 
+                            setTimeout(() => window.isRegionClickActive = false, 150);
+
+                            if(movingMarkerId) return; 
+
+                            openRegionModal(dbRid || domId, config);
+                        });
+                    });
+
+                    currentSvgOverlay = L.svgOverlay(svgEl, MAP_BOUNDS, {
+                        interactive: true,
+                        pane: 'regionsPane'
+                    }).addTo(adminMap);
+                    
+                }).catch(e => console.log('Regions map not loaded', e));
+        }
+
+        function renderAdminRegionList() {
+            const listContainer = document.getElementById('map-region-list');
+            
+            let filtered = Object.values(regionSettingsDB).filter(r => {
+                const searchMatch = (r.title && r.title.toLowerCase().includes(adminSearchQuery)) || 
+                                    (r.foreign_title && r.foreign_title.toLowerCase().includes(adminSearchQuery)) ||
+                                    (r.region_id && r.region_id.toLowerCase().includes(adminSearchQuery)) ||
+                                    (r.group_id && r.group_id.toLowerCase().includes(adminSearchQuery)) ||
+                                    (r.sub_group_id && r.sub_group_id.toLowerCase().includes(adminSearchQuery)) ||
+                                    (r.description && r.description.toLowerCase().includes(adminSearchQuery));
+                return searchMatch;
+            });
+
+            document.getElementById('admin-marker-count').innerText = `TOTAL: ${filtered.length}`;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm font-serif-sc">暂无匹配的地区档案记录</div>';
+                return;
+            }
+
+            const tree = {};
+            filtered.forEach(r => {
+                const gKey = r.group_id || '独立区域 (未编组)';
+                const sgKey = r.sub_group_id || 'NONE';
+                
+                if (!tree[gKey]) tree[gKey] = { count: 0, subs: {}, directs: [] };
+                tree[gKey].count++;
+                
+                if (sgKey !== 'NONE') {
+                    if (!tree[gKey].subs[sgKey]) tree[gKey].subs[sgKey] = [];
+                    tree[gKey].subs[sgKey].push(r);
+                } else {
+                    tree[gKey].directs.push(r);
+                }
+            });
+
+            let listHtml = '';
+            
+            const groupKeys = Object.keys(tree).sort((a, b) => {
+                if (a === '独立区域 (未编组)') return 1;
+                if (b === '独立区域 (未编组)') return -1;
+                return a.localeCompare(b);
+            });
+
+            groupKeys.forEach(gKey => {
+                const mainObj = tree[gKey];
+                const isUnGrouped = gKey === '独立区域 (未编组)';
+                const hiddenClass = isUnGrouped || adminSearchQuery ? '' : 'hidden';
+                const arrowClass = isUnGrouped || adminSearchQuery ? 'rotate-90' : '';
+                const iconColorClass = isUnGrouped ? 'text-gray-400' : 'text-[#d4b58e]';
+                const folderIcon = isUnGrouped ? 'file-box' : 'folder-tree';
+
+                listHtml += `
+                    <div class="mb-3 bg-white border border-[#e5e7eb] rounded-xl shadow-sm overflow-hidden">
+                        <button class="w-full flex items-center justify-between p-3 bg-gray-50 hover:bg-gray-100 transition-colors border-b border-transparent" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.folder-arrow').classList.toggle('rotate-90');">
+                            <div class="flex items-center gap-2">
+                                <i data-lucide="${folderIcon}" class="w-4 h-4 ${iconColorClass}"></i>
+                                <span class="font-bold text-gray-800 text-sm font-serif-sc">${gKey}</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span class="text-[10px] bg-gray-200 text-gray-500 px-2 py-0.5 rounded-full font-mono">${mainObj.count}</span>
+                                <i data-lucide="chevron-right" class="w-4 h-4 text-gray-400 transition-transform folder-arrow ${arrowClass}"></i>
+                            </div>
+                        </button>
+                        <div class="${hiddenClass} flex-col border-t border-gray-100">
+                `;
+
+                const sgKeys = Object.keys(mainObj.subs).sort();
+                sgKeys.forEach(sgKey => {
+                    const sgItems = mainObj.subs[sgKey];
+                    sgItems.sort((a, b) => (b.is_sub_primary ? 1 : 0) - (a.is_sub_primary ? 1 : 0));
+                    
+                    listHtml += `
+                        <div class="bg-[#d4b58e]/5 border-b border-gray-100 last:border-b-0">
+                            <button class="w-full flex items-center justify-between p-2.5 pl-6 bg-[#d4b58e]/10 hover:bg-[#d4b58e]/20 transition-colors" onclick="this.nextElementSibling.classList.toggle('hidden'); this.querySelector('.sub-folder-arrow').classList.toggle('rotate-90');">
+                                <div class="flex items-center gap-2">
+                                    <i data-lucide="network" class="w-3.5 h-3.5 text-[#d4b58e]"></i>
+                                    <span class="text-xs font-bold text-gray-800">${sgKey}</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span class="text-[9px] bg-white border border-[#d4b58e]/30 text-[#d4b58e] px-1.5 rounded font-mono">${sgItems.length}</span>
+                                    <i data-lucide="chevron-right" class="w-3 h-3 text-gray-400 transition-transform sub-folder-arrow rotate-90"></i>
+                                </div>
+                            </button>
+                            <div class="flex-col divide-y divide-gray-100/50">
+                    `;
+
+                    sgItems.forEach(r => {
+                        listHtml += renderItemHtml(r, true);
+                    });
+
+                    listHtml += `</div></div>`;
+                });
+
+                mainObj.directs.sort((a, b) => (b.is_primary ? 1 : 0) - (a.is_primary ? 1 : 0));
+                if(mainObj.directs.length > 0) {
+                    listHtml += `<div class="divide-y divide-gray-100">`;
+                    mainObj.directs.forEach(r => {
+                        listHtml += renderItemHtml(r, false);
+                    });
+                    listHtml += `</div>`;
+                }
+
+                listHtml += `</div></div>`;
+            });
+
+            listContainer.innerHTML = listHtml;
+            lucide.createIcons({ root: listContainer });
+        }
+
+        function renderItemHtml(r, isSubGroup = false) {
+            const title = r.title || '未名区域';
+            const foreign = r.foreign_title ? `<span class="text-gray-400 ml-1.5">${r.foreign_title}</span>` : '';
+            const activeColor = r.status_color || r.color || '#d4b58e';
+            
+            const isSpecial = ['污染', '沦陷', '深渊'].includes(r.status);
+            const badgeColor = isSpecial ? activeColor : (r.color || '#d4b58e');
+            const statusBadge = r.status ? `<span class="text-[9px] px-1.5 py-0.5 rounded border font-mono shrink-0" style="color:${badgeColor}; border-color:${badgeColor}50; background-color:${badgeColor}15">${r.status}</span>` : '';
+
+            const isCore = isSubGroup ? r.is_sub_primary : r.is_primary;
+            const coreIcon = isCore ? `<i data-lucide="star" class="w-3.5 h-3.5" style="color:${activeColor}"></i>` : `<i data-lucide="layers" class="w-3.5 h-3.5" style="color:${activeColor}"></i>`;
+            const paddingClass = isSubGroup ? 'pl-9 pr-3 py-2.5' : 'p-3';
+            const bgHover = isSubGroup ? 'hover:bg-[#d4b58e]/5' : 'hover:bg-gray-50';
+
+            return `
+                <div class="${paddingClass} ${bgHover} transition-all cursor-pointer group flex items-center justify-between" onclick="openRegionModal('${r.region_id}', regionSettingsDB['${r.region_id}'])">
+                    <div class="flex items-center gap-3 flex-1 min-w-0 pointer-events-none">
+                        <div class="w-7 h-7 rounded-md flex items-center justify-center shrink-0 border" style="background-color:${activeColor}10; border-color:${activeColor}40">
+                            ${coreIcon}
+                        </div>
+                        <div class="flex flex-col justify-center flex-1 min-w-0">
+                            <div class="flex items-center gap-2 mb-0.5">
+                                <h4 class="font-bold text-gray-800 text-xs font-serif-sc truncate leading-none">${title}</h4>
+                                ${statusBadge}
+                            </div>
+                            <p class="text-[9px] text-gray-400 font-mono tracking-widest uppercase leading-none truncate">
+                                [ID: ${r.region_id}] ${foreign}
+                            </p>
+                        </div>
+                    </div>
+                    <div class="shrink-0 ml-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <button class="p-1 text-blue-500 hover:bg-blue-100 rounded" title="编辑信息">
+                            <i data-lucide="edit-3" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </div>
+                </div>
+            `;
+        }
+
+        function openRegionModal(domId, config) {
+            const modal = document.getElementById('region-modal');
+            document.getElementById('region-internal-id').value = domId; 
+
+            document.getElementById('region-group-id').value = config && config.group_id ? config.group_id : '';
+            document.getElementById('region-is-primary').checked = config && config.is_primary ? true : false;
+            
+            document.getElementById('region-sub-group-id').value = config && config.sub_group_id ? config.sub_group_id : '';
+            document.getElementById('region-is-sub-primary').checked = config && config.is_sub_primary ? true : false;
+            
+            document.getElementById('region-follow-primary').checked = config && config.follow_primary ? true : false;
+
+            const color1 = config && config.color ? config.color : '#dcd6cc';
+            document.getElementById('region-color-picker').value = color1;
+            document.getElementById('region-color-hex').value = color1.toUpperCase();
+
+            const color2 = config && config.status_color ? config.status_color : '#d4b58e';
+            document.getElementById('region-status-color-picker').value = color2;
+            document.getElementById('region-status-color-hex').value = color2.toUpperCase();
+
+            document.getElementById('region-title').value = config && config.title ? config.title : '';
+            document.getElementById('region-foreign-title').value = config && config.foreign_title ? config.foreign_title : '';
+            document.getElementById('region-status').value = config && config.status ? config.status : '';
+            document.getElementById('region-desc').value = config && config.description ? config.description : '';
+
+            if(adminMap) adminMap.closePopup(); 
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            document.getElementById('region-group-id').focus();
+        }
+
+        function cancelRegionModal() {
+            const modal = document.getElementById('region-modal');
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        async function saveRegionMarker() {
+            const regionId = document.getElementById('region-internal-id').value.trim();
+
+            const btn = document.getElementById('region-save-btn');
+            btn.disabled = true; btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 animate-spin inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 保存中';
+
+            const payload = { 
+                region_id: regionId, 
+                group_id: document.getElementById('region-group-id').value.trim() || null,
+                is_primary: document.getElementById('region-is-primary').checked,
+                sub_group_id: document.getElementById('region-sub-group-id').value.trim() || null,
+                is_sub_primary: document.getElementById('region-is-sub-primary').checked,
+                follow_primary: document.getElementById('region-follow-primary').checked,
+                color: document.getElementById('region-color-hex').value, 
+                status_color: document.getElementById('region-status-color-hex').value, 
+                title: document.getElementById('region-title').value.trim(), 
+                foreign_title: document.getElementById('region-foreign-title').value.trim(), 
+                status: document.getElementById('region-status').value.trim(), 
+                description: document.getElementById('region-desc').value.trim() 
+            };
+
+            const existing = regionSettingsDB[regionId];
+
+            try {
+                if (existing && existing.id) {
+                    const { error } = await supabaseClient.from('map_regions').update(payload).eq('id', existing.id);
+                    if(error) throw error;
+                } else {
+                    const { error } = await supabaseClient.from('map_regions').insert([payload]);
+                    if(error) throw error;
+                }
+                showToast('数据已成功更新');
+                cancelRegionModal();
+                fetchAdminRegions(); 
+            } catch(e) {
+                console.error("保存失败", e);
+                showToast('保存失败: 请确保数据库状态正常', true);
+            } finally {
+                btn.disabled = false; btn.innerText = '保存修改';
+            }
+        }
+
+        async function clearRegionColor() {
+            const regionId = document.getElementById('region-internal-id').value;
+            const existing = regionSettingsDB[regionId];
+            
+            if (existing && existing.id) {
+                 try {
+                     const { error } = await supabaseClient.from('map_regions').delete().eq('id', existing.id);
+                     if(error) throw error;
+                     
+                     showToast('已删除该区域配置');
+                     cancelRegionModal();
+                     fetchAdminRegions();
+                 } catch(e) { showToast('删除失败', true); }
+            } else {
+                cancelRegionModal();
+            }
+        }
+
+        function getGeoSvg(type, color, size = 32) {
+            let svgContent = '';
+            switch(type) {
+                case '首都': 
+                    svgContent = `<circle cx="16" cy="16" r="12" fill="none" stroke="${color}" stroke-width="3"/><circle cx="16" cy="16" r="4.5" fill="${color}"/>`; 
+                    break;
+                case '主要城市': 
+                    svgContent = `<circle cx="16" cy="16" r="8" fill="none" stroke="${color}" stroke-width="2.5"/><circle cx="16" cy="16" r="3" fill="${color}"/>`; 
+                    break;
+                case '城市': 
+                case '城市/城镇': 
+                    svgContent = `<circle cx="16" cy="16" r="3" fill="${color}"/>`; 
+                    break;
+                case '要塞': 
+                    svgContent = `<polygon points="27,16 21.5,25.5 10.5,25.5 5,16 10.5,6.5 21.5,6.5" fill="none" stroke="${color}" stroke-width="2.5"/><circle cx="16" cy="16" r="3" fill="${color}"/>`; 
+                    break;
+                case '据点': 
+                case '基地': 
+                    svgContent = `<circle cx="16" cy="16" r="3" fill="none" stroke="${color}" stroke-width="2"/>`;
+                    break;
+                case '观测站':
+                    svgContent = `<polygon points="16,8 22,19 10,19" fill="none" stroke="${color}" stroke-width="2"/>`;
+                    break;
+                case '异常': 
+                    svgContent = `<polygon points="16,2.6 29.4,16 16,29.4 2.6,16" fill="none" stroke="${color}" stroke-width="2.5"/><circle cx="16" cy="16" r="3" fill="${color}"/>`; 
+                    break;
+                case '港口': 
+                    svgContent = `<path d="M7,16 A9,9 0 0,0 25,16" fill="none" stroke="${color}" stroke-width="2.5"/><line x1="16" y1="7" x2="16" y2="25" stroke="${color}" stroke-width="2.5"/><line x1="11" y1="11" x2="21" y2="11" stroke="${color}" stroke-width="2.5"/>`; 
+                    break;
+                case '遗迹': 
+                    svgContent = `<rect x="6.5" y="6.5" width="19" height="19" fill="none" stroke="${color}" stroke-width="2.5" stroke-dasharray="4 4"/>`; 
+                    break;
+                case '资源': 
+                    svgContent = `<polygon points="16,2 20,12 30,16 20,20 16,30 12,20 2,16 12,12" fill="${color}"/>`; 
+                    break;
+                default: 
+                    svgContent = `<circle cx="16" cy="16" r="4.5" fill="${color}"/>`; 
+                    break;
+            }
+            return `<svg width="${size}" height="${size}" viewBox="0 0 32 32" xmlns="http://www.w3.org/2000/svg" style="display:block; margin:auto;">${svgContent}</svg>`;
+        }
+
+        window.syncColor = function(val, source) {
+            if (source === 'picker') {
+                currentColor = val;
+                document.getElementById('map-color-hex').value = val.toUpperCase();
+            } else if (source === 'hex') {
+                let formatted = val.startsWith('#') ? val : '#' + val;
+                if (/^#[0-9A-Fa-f]{6}$/.test(formatted)) {
+                    currentColor = formatted;
+                    document.getElementById('map-color-picker').value = formatted;
+                }
+            }
+        }
+
+        function openMarkerModal(id = null, latlng = null) {
+            const modal = document.getElementById('map-modal');
+            const titleEl = document.getElementById('modal-title');
+            
+            if (id) {
+                const marker = allMapMarkers.find(m => m.id === id);
+                if (!marker) return;
+                document.getElementById('map-edit-id').value = marker.id;
+                document.getElementById('map-title').value = marker.title;
+                document.getElementById('map-foreign-title').value = marker.foreign_title || '';
+                document.getElementById('map-desc').value = marker.description || '';
+                
+                window.setModalDropdown(marker.type || '城市');
+                currentColor = marker.color || '#d4b58e';
+                tempLatLng = { lat: marker.lat, lng: marker.lng };
+                titleEl.innerHTML = `<i data-lucide="edit" class="w-5 h-5 text-[#d4b58e] inline-block mb-1"></i> 编辑战术坐标`;
+                
+                if(adminMap) adminMap.closePopup(); 
+            } else {
+                document.getElementById('map-edit-id').value = '';
+                document.getElementById('map-title').value = '';
+                document.getElementById('map-foreign-title').value = '';
+                document.getElementById('map-desc').value = '';
+                window.setModalDropdown('城市');
+                
+                currentColor = '#d4b58e';
+                if (latlng) tempLatLng = latlng;
+                titleEl.innerHTML = `<i data-lucide="crosshair" class="w-5 h-5 text-[#d4b58e] inline-block mb-1"></i> 确立战术坐标`;
+            }
+            
+            document.getElementById('map-color-picker').value = currentColor;
+            document.getElementById('map-color-hex').value = currentColor.toUpperCase();
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            
+            lucide.createIcons({ root: titleEl });
+            if(!id) document.getElementById('map-title').focus();
+        }
+
+        window.cancelMapMarker = function() {
+            document.getElementById('map-modal').classList.add('hidden');
+            document.getElementById('map-modal').classList.remove('flex');
+            tempLatLng = null;
+        }
+
+        async function saveMapMarker() {
+            const id = document.getElementById('map-edit-id').value;
+            const title = document.getElementById('map-title').value.trim();
+            if(!title) return showToast('必须填写中文标识', true);
+            
+            const btn = document.getElementById('map-save-btn');
+            btn.disabled = true; btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg> 烧录中...';
+
+            const payload = { 
+                title: title, foreign_title: document.getElementById('map-foreign-title').value.trim(),
+                type: document.getElementById('map-type').value, description: document.getElementById('map-desc').value.trim(),
+                icon: 'geo', color: currentColor
+            };
+
+            if (!id && tempLatLng) {
+                payload.lat = tempLatLng.lat;
+                payload.lng = tempLatLng.lng;
+            }
+
+            try {
+                const res = id ? await supabaseClient.from('map_markers').update(payload).eq('id', id) : await supabaseClient.from('map_markers').insert([payload]);
+                if (res.error) throw res.error;
+                showToast(id ? '节点数据已更新' : '节点创建成功');
+                cancelMapMarker();
+                fetchAdminMapMarkers(); 
+            } catch (e) { showToast('操作失败，请确认数据库状态', true); } 
+            finally { 
+                btn.disabled = false; 
+                btn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg> 保存并锚定'; 
+            }
+        }
+
+        async function deleteMapMarker(id) {
+            if (!confirm('警告：删除此节点将导致相关数据永久丢失。是否继续？')) return;
+            try {
+                const { error } = await supabaseClient.from('map_markers').delete().eq('id', id);
+                if (error) throw error;
+                showToast('已删除节点');
+                if(adminMap) adminMap.closePopup(); 
+                fetchAdminMapMarkers(); 
+            } catch (err) { showToast('删除失败', true); }
+        }
+
+        async function fetchAdminMapMarkers() {
+            if (currentMode === 'marker') document.getElementById('map-marker-list').innerHTML = '<div class="text-center py-10 text-gray-400 text-sm animate-pulse font-serif-sc">Scanning Grid...</div>';
+            try {
+                const { data, error } = await supabaseClient.from('map_markers').select('*').order('created_at', { ascending: false });
+                if (error) throw error;
+                allMapMarkers = data || [];
+                if (currentMode === 'marker') renderAdminMapMarkers();
+            } catch (e) { document.getElementById('map-marker-list').innerHTML = '<div class="text-center py-10 text-red-500 text-sm font-serif-sc">同步异常</div>'; }
+        }
+
+        function handleAdminFilter() {
+            adminSearchQuery = document.getElementById('admin-search-input').value.toLowerCase();
+            if (currentMode === 'marker') {
+                renderAdminMapMarkers();
+            } else {
+                renderAdminRegionList();
+            }
+        }
+
+        window.activateMoveMode = function(id) {
+            movingMarkerId = id;
+            adminMap.closePopup();
+            document.getElementById('admin-map-container').classList.add('move-mode');
+            showToast('节点已锁定：请点击地图上的新位置（按Esc取消）');
+        }
+
+        function locateMarker(id) {
+            const marker = allMapMarkers.find(m => m.id === id);
+            if(marker && adminMap) {
+                adminMap.flyTo([marker.lat, marker.lng], 0, { duration: 1.0 });
+                const layers = mapMarkersLayer.getLayers();
+                const targetLayer = layers.find(l => l.getLatLng().lat === marker.lat && l.getLatLng().lng === marker.lng);
+                if(targetLayer) {
+                    setTimeout(() => targetLayer.openPopup(), 1000);
+                }
+            }
+        }
+
+        function renderAdminMapMarkers() {
+            const listContainer = document.getElementById('map-marker-list');
+            mapMarkersLayer.clearLayers();
+
+            let filtered = allMapMarkers.filter(m => {
+                const searchMatch = (m.title && m.title.toLowerCase().includes(adminSearchQuery)) || 
+                                    (m.foreign_title && m.foreign_title.toLowerCase().includes(adminSearchQuery)) || 
+                                    (m.description && m.description.toLowerCase().includes(adminSearchQuery));
+                const typeMatch = adminFilterType === '' || m.type === adminFilterType;
+                return searchMatch && typeMatch;
+            });
+
+            filtered.sort((a, b) => {
+                let nameA = (a.foreign_title || a.title || '').toLowerCase();
+                let nameB = (b.foreign_title || b.title || '').toLowerCase();
+                return nameA.localeCompare(nameB, 'en');
+            });
+
+            document.getElementById('admin-marker-count').innerText = `TOTAL: ${filtered.length}`;
+
+            if (filtered.length === 0) {
+                listContainer.innerHTML = '<div class="text-center py-10 text-gray-400 text-sm font-serif-sc">暂无匹配的坐标档案</div>';
+                return;
+            }
+
+            let listHtml = '';
+            filtered.forEach(marker => {
+                const iconColor = marker.color || '#d4b58e';
+                const markerType = marker.type || '城市';
+                
+                const mapSvg = getGeoSvg(markerType, iconColor, 32);
+                const listSvg = getGeoSvg(markerType, iconColor, 20);
+
+                const mIcon = L.divIcon({
+                    className: 'geo-pin',
+                    html: `<div style="filter: drop-shadow(0 3px 4px rgba(0,0,0,0.8));">${mapSvg}</div>`,
+                    iconSize: [32, 32], iconAnchor: [16, 16], popupAnchor: [0, -16]
+                });
+
+                const m = L.marker([marker.lat, marker.lng], { icon: mIcon }).addTo(mapMarkersLayer);
+                
+                const popupHTML = `
+                    <div class="p-1 min-w-[180px]">
+                        <h4 class="font-bold text-base mb-1.5 border-b pb-1.5 flex flex-col gap-0.5" style="color:${iconColor}; border-color:${iconColor}50;">
+                            <span class="leading-none">${marker.title}</span>
+                            ${marker.foreign_title ? `<span class="text-[10px] font-mono uppercase tracking-wider opacity-70 leading-none">${marker.foreign_title}</span>` : ''}
+                        </h4>
+                        <p class="text-gray-300 text-xs font-serif-sc leading-relaxed mb-2.5">${marker.description || '无摘要'}</p>
+                        
+                        <div class="flex items-center gap-2 pt-2 border-t border-[#d4b58e]/20">
+                            <button onclick="openMarkerModal('${marker.id}')" class="flex-1 flex items-center justify-center gap-1 py-1 bg-[#d4b58e]/10 text-[#d4b58e] border border-[#d4b58e]/30 hover:bg-[#d4b58e]/20 rounded text-[11px] transition-colors">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 3a2.828 2.828 0 1 1 4 4L7.5 20.5 2 22l1.5-5.5L17 3z"></path></svg> 
+                                编辑
+                            </button>
+                            <button onclick="activateMoveMode('${marker.id}')" class="flex-1 flex items-center justify-center gap-1 py-1 bg-blue-500/10 text-blue-400 border border-blue-500/30 hover:bg-blue-500/20 rounded text-[11px] transition-colors">
+                                <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="5 9 2 12 5 15"></polyline><polyline points="9 5 12 2 15 5"></polyline><polyline points="19 9 22 12 19 15"></polyline><polyline points="9 19 12 22 15 19"></polyline><line x1="2" y1="12" x2="22" y2="12"></line><line x1="12" y1="2" x2="12" y2="22"></line></svg>
+                                移动
+                            </button>
+                        </div>
+                    </div>
+                `;
+                m.bindPopup(popupHTML, { className: 'custom-popup', autoPan: false });
+
+                listHtml += `
+                    <div class="bg-white border border-[#e5e7eb] rounded-xl p-4 shadow-sm flex items-center justify-between group transition-all hover:border-[${iconColor}]/40 hover:shadow-md cursor-pointer" onclick="locateMarker('${marker.id}')">
+                        <div class="flex items-center gap-4 flex-1 min-w-0 pointer-events-none">
+                            <div class="w-12 h-12 bg-gray-50 border border-gray-100 rounded-lg flex items-center justify-center shrink-0 transition-colors shadow-inner">
+                                ${listSvg}
+                            </div>
+                            <div class="flex flex-col justify-center flex-1 min-w-0">
+                                <div class="flex items-center gap-2 mb-1">
+                                    <h4 class="font-bold text-gray-800 text-[15px] font-serif-sc truncate leading-none">${marker.title}</h4>
+                                    <span class="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded border border-gray-200 font-mono shrink-0">${markerType}</span>
+                                </div>
+                                <p class="text-[11px] text-gray-400 font-mono tracking-widest uppercase leading-none">
+                                    ${marker.foreign_title ? `<span class="mr-2">${marker.foreign_title}</span>` : ''}
+                                    <span class="opacity-70">X: ${Math.round(marker.lng)}, Y: ${Math.round(marker.lat)}</span>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="flex flex-col gap-1 shrink-0 ml-4 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <button onclick="event.stopPropagation(); openMarkerModal('${marker.id}')" class="p-1.5 text-blue-500 hover:text-blue-700 hover:bg-blue-50 rounded transition-colors" title="重新编辑">
+                                <i data-lucide="edit-3" class="w-4 h-4"></i>
+                            </button>
+                            <button onclick="event.stopPropagation(); deleteMapMarker('${marker.id}')" class="p-1.5 text-red-500 hover:text-red-700 hover:bg-red-50 rounded transition-colors" title="抹除坐标">
+                                <i data-lucide="trash-2" class="w-4 h-4"></i>
+                            </button>
+                        </div>
+                    </div>
+                `;
+            });
+            listContainer.innerHTML = listHtml;
+            lucide.createIcons({ root: listContainer }); 
+        }
+    </script>
+</body>
+</html>

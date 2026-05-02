@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>日志编辑器丨开发者中心</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@400;500;700;900&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <style>
+    body { margin: 0; padding: 0; background-color: #f8f9fa; overflow: hidden; font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif; }
+    .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+  </style>
+</head>
+<body>
+  <div class="w-screen h-screen flex flex-col bg-[#f8f9fa] overflow-hidden">
+
+    <!-- 顶部导航 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm relative z-[200]">
+      <div class="flex items-center gap-4">
+        <a href="index.html" class="w-8 h-8 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30 flex items-center justify-center text-[#d4b58e] hover:bg-[#d4b58e] hover:text-white transition-all shadow-sm shrink-0">
+          <i data-lucide="home" class="w-4 h-4"></i>
+        </a>
+        <h1 class="font-black text-xl flex items-center gap-2 font-serif-sc tracking-wide shrink-0 text-gray-800">
+          日志编辑器 <span class="font-mono text-sm font-normal hidden sm:inline text-gray-300">| CHANGE LOGS</span>
+        </h1>
+      </div>
+      <div class="flex items-center gap-2">
+        <button onclick="newLog()" class="text-sm px-3 py-1.5 bg-[#d4b58e] text-white rounded-lg hover:bg-[#c2a27b] transition-colors flex items-center gap-1 shadow-sm">
+          <i data-lucide="plus" class="w-4 h-4"></i> 新建
+        </button>
+      </div>
+    </header>
+
+    <!-- 下方主体：统一左侧边栏 + 日志编辑区 -->
+    <div class="flex-1 flex flex-row overflow-hidden relative z-10">
+      
+      <!-- 统一全局亮色侧边栏 -->
+      <aside class="w-20 h-full bg-white flex flex-col items-center py-5 gap-5 shrink-0 z-[500] shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r border-gray-200 relative">
+          
+          <!-- 主要模块 (Core) -->
+          <a href="entries_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="百科全书编辑器">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+          </a>
+          
+          <a href="map_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="海陆图志编辑器">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+          </a>
+
+          <!-- 分隔栏 -->
+          <div class="w-6 h-px bg-gray-200 rounded-full shrink-0"></div>
+
+          <!-- 辅助功能 (Utility) -->
+          <a href="svg_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-gray-50 border border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="矢量测绘工具">
+              <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+          </a>
+          <a href="log_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-[#d4b58e] text-white shadow-md pointer-events-none" title="日志编辑器">
+              <i data-lucide="notebook-text" class="w-5 h-5"></i>
+          </a>
+
+          <!-- 外部扩展 (External) -->
+          <div class="mt-auto flex flex-col gap-5 w-full items-center">
+              <a href="https://www.photopea.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Photopea 在线PS">
+                  <img src="https://www.google.com/s2/favicons?sz=64&domain=photopea.com" class="w-5 h-5 object-contain">
+              </a>
+              <a href="https://squoosh.app/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="Squoosh 图像压缩">
+                  <img src="https://www.google.com/s2/favicons?sz=64&domain=squoosh.app" class="w-5 h-5 object-contain">
+              </a>
+              <a href="https://tinypng.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="TinyPNG 智能压缩">
+                  <img src="https://www.google.com/s2/favicons?sz=64&domain=tinypng.com" class="w-5 h-5 object-contain rounded-sm">
+              </a>
+              <a href="https://www.remove.bg/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border border-gray-200 hover:border-[#d4b58e] transition-all opacity-70 hover:opacity-100 bg-gray-50 flex items-center justify-center" title="RemoveBG 一键抠图">
+                  <img src="https://www.google.com/s2/favicons?sz=64&domain=remove.bg" class="w-5 h-5 object-contain rounded-sm">
+              </a>
+          </div>
+      </aside>
+
+      <!-- 日志列表与编辑区 -->
+      <div class="flex-1 flex overflow-hidden">
+        <!-- 左侧边栏：搜索与列表 -->
+        <aside class="w-72 bg-white border-r border-gray-200 flex flex-col shrink-0">
+          <div class="p-3 border-b border-gray-100">
+            <input id="search-input" type="text" placeholder="搜索版本号或标题..." class="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:border-[#d4b58e] text-gray-700" />
+          </div>
+          <div id="log-list" class="flex-1 overflow-y-auto custom-scrollbar">
+            <!-- 列表内容由 JS 动态渲染 -->
+          </div>
+        </aside>
+
+        <!-- 右侧主内容区 -->
+        <main class="flex-1 flex flex-col overflow-hidden relative">
+          
+          <!-- 空状态视图 -->
+          <div id="empty-view" class="absolute inset-0 flex items-center justify-center text-gray-400">
+            <div class="text-center">
+              <i data-lucide="file-text" class="w-12 h-12 mx-auto mb-4 opacity-40"></i>
+              <p class="text-sm">从左侧选择一个日志或点击「新建」</p>
+            </div>
+          </div>
+
+          <!-- 编辑器视图 -->
+          <div id="editor-view" class="hidden absolute inset-0 flex flex-col bg-[#f8f9fa] z-10">
+            <div class="flex-1 overflow-y-auto p-6 space-y-4 custom-scrollbar">
+              <div class="flex gap-4">
+                <div class="flex-1">
+                  <label class="block text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">版本号 (code)</label>
+                  <input id="input-code" type="text" placeholder="V1.1.0" class="w-full border-b-2 border-gray-200 pb-1 text-lg font-mono font-bold text-[#d4b58e] focus:outline-none focus:border-[#d4b58e] bg-transparent" />
+                </div>
+                <div class="w-40">
+                  <label class="block text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">日期 (time)</label>
+                  <input id="input-time" type="text" placeholder="2026-05-01" class="w-full border-b-2 border-gray-200 pb-1 text-sm font-mono text-gray-700 focus:outline-none focus:border-[#d4b58e] bg-transparent" />
+                </div>
+              </div>
+              <div>
+                <label class="block text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">标题 (title)</label>
+                <input id="input-title" type="text" placeholder="架构迁移与素材重构" class="w-full text-xl font-bold font-serif-sc text-gray-800 border-b-2 border-gray-200 pb-1 focus:outline-none focus:border-[#d4b58e] bg-transparent" />
+              </div>
+              <div class="flex-1 flex flex-col h-[calc(100%-150px)] min-h-[300px]">
+                <label class="block text-[10px] font-mono text-gray-400 uppercase tracking-widest mb-1">内容 (desc)</label>
+                <p class="text-[10px] text-gray-400 mb-1">每行一条更新内容，自动转为换行分隔</p>
+                <textarea id="input-desc" class="flex-1 w-full font-mono text-sm bg-gray-50 border border-gray-200 rounded-lg p-4 focus:outline-none focus:border-[#d4b58e] text-gray-700 leading-relaxed resize-none" placeholder="新增「百科全书」页面。&#10;修复 Bug。&#10;优化性能。"></textarea>
+              </div>
+            </div>
+            
+            <!-- 底部操作栏 -->
+            <div class="h-14 bg-white border-t border-gray-200 flex items-center justify-between px-4 shrink-0 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.02)]">
+              <div class="flex gap-2">
+                <button onclick="saveLog()" class="px-4 py-1.5 bg-[#d4b58e] text-white rounded-lg hover:bg-[#c2a27b] transition-colors text-sm font-bold shadow-sm flex items-center gap-1.5">
+                  <i data-lucide="save" class="w-4 h-4"></i> 保存
+                </button>
+                <button onclick="cancelEdit()" class="px-3 py-1.5 text-gray-500 hover:text-gray-700 text-sm">取消</button>
+              </div>
+              <button id="btn-delete" onclick="deleteLog()" class="px-3 py-1.5 text-red-400 hover:text-red-600 text-sm flex items-center gap-1">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> 删除
+              </button>
+            </div>
+          </div>
+
+        </main>
+      </div>
+
+    </div>
+
+    <!-- Toast 提示框 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-[3000] flex items-center gap-2">
+      <span id="toast-msg" class="text-sm"></span>
+    </div>
+
+  </div>
+
+  <script>
+    // 初始化 Supabase
+    const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co';
+    const supabaseKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8';
+    const supabaseClient = supabase.createClient(supabaseUrl, supabaseKey);
+
+    // 全局状态
+    let logs = [];
+    let currentLog = null;
+    let isLoading = true;
+    let searchQuery = '';
+
+    // DOM 元素引用
+    const searchInput = document.getElementById('search-input');
+    const logList = document.getElementById('log-list');
+    const editorView = document.getElementById('editor-view');
+    const emptyView = document.getElementById('empty-view');
+    const btnDelete = document.getElementById('btn-delete');
+
+    // 表单输入框引用
+    const inputCode = document.getElementById('input-code');
+    const inputTime = document.getElementById('input-time');
+    const inputTitle = document.getElementById('input-title');
+    const inputDesc = document.getElementById('input-desc');
+
+    // 简单防 XSS 转义函数
+    function escapeHTML(str) {
+      if (!str) return '';
+      return str.replace(/[&<>'"]/g, tag => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+        }[tag]));
+    }
+
+    // 获取并渲染日志列表
+    async function fetchLogs() {
+      isLoading = true;
+      renderSidebar();
+      
+      const { data, error } = await supabaseClient.from('system_logs').select('*').order('created_at', { ascending: false });
+      if (!error && data) {
+        logs = data;
+      }
+      
+      isLoading = false;
+      renderSidebar();
+    }
+
+    // 渲染左侧列表
+    function renderSidebar() {
+      if (isLoading) {
+        logList.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">加载中...</div>';
+        return;
+      }
+
+      const q = searchQuery.toLowerCase();
+      const filteredLogs = logs.filter(l => 
+        (l.code && l.code.toLowerCase().includes(q)) || 
+        (l.title && l.title.toLowerCase().includes(q))
+      );
+
+      if (filteredLogs.length === 0) {
+        logList.innerHTML = '<div class="p-4 text-center text-gray-400 text-sm">暂无日志</div>';
+        return;
+      }
+
+      logList.innerHTML = filteredLogs.map(log => {
+        const isActive = currentLog && currentLog.id === log.id;
+        const activeClasses = isActive ? 'bg-[#d4b58e]/10 border-l-2 border-l-[#d4b58e]' : '';
+        return `
+          <div onclick="selectLogById('${log.id}')" class="px-4 py-3 border-b border-gray-50 cursor-pointer transition-colors hover:bg-[#d4b58e]/5 ${activeClasses}">
+            <div class="flex items-center justify-between">
+              <span class="text-xs font-mono font-bold text-[#d4b58e]">${escapeHTML(log.code)}</span>
+              <span class="text-[10px] text-gray-400 font-mono">${escapeHTML(log.time)}</span>
+            </div>
+            <div class="text-sm font-medium text-gray-800 font-serif-sc mt-1 truncate">${escapeHTML(log.title)}</div>
+          </div>
+        `;
+      }).join('');
+    }
+
+    // 渲染右侧编辑器视图
+    function updateEditorView() {
+      if (currentLog) {
+        // 显示编辑器，隐藏空状态
+        editorView.classList.remove('hidden');
+        editorView.classList.add('flex');
+        emptyView.classList.add('hidden');
+
+        // 填充表单
+        inputCode.value = currentLog.code || '';
+        inputTime.value = currentLog.time || '';
+        inputTitle.value = currentLog.title || '';
+        inputDesc.value = currentLog.desc || '';
+
+        // 只有已存在的日志才显示删除按钮 (新日志不显示)
+        if (currentLog.id) {
+          btnDelete.classList.remove('hidden');
+          btnDelete.classList.add('flex');
+        } else {
+          btnDelete.classList.add('hidden');
+          btnDelete.classList.remove('flex');
+        }
+      } else {
+        // 隐藏编辑器，显示空状态
+        editorView.classList.add('hidden');
+        editorView.classList.remove('flex');
+        emptyView.classList.remove('hidden');
+      }
+    }
+
+    // 根据 ID 选择日志
+    window.selectLogById = function(id) {
+      const log = logs.find(l => l.id === id);
+      if (log) {
+        currentLog = { ...log }; // 拷贝数据，防止直接修改原对象
+        updateEditorView();
+        renderSidebar(); // 重新渲染以更新高亮状态
+      }
+    };
+
+    // 新建日志
+    window.newLog = function() {
+      currentLog = { id: null, code: '', time: '', title: '', desc: '' };
+      updateEditorView();
+      renderSidebar();
+    };
+
+    // 取消编辑
+    window.cancelEdit = function() {
+      currentLog = null;
+      updateEditorView();
+      renderSidebar();
+    };
+
+    // 监听搜索输入
+    searchInput.addEventListener('input', (e) => {
+      searchQuery = e.target.value;
+      renderSidebar();
+    });
+
+    // 保存日志 (新增或更新)
+    window.saveLog = async function() {
+      const code = inputCode.value.trim();
+      const time = inputTime.value.trim() || new Date().toISOString().split('T')[0];
+      const title = inputTitle.value.trim();
+      const desc = inputDesc.value;
+
+      if (!code || !title) {
+        showToast('版本号和标题不能为空', true);
+        return;
+      }
+
+      const payload = { code, time, title, desc };
+
+      try {
+        if (currentLog.id) {
+          // 更新
+          const { error } = await supabaseClient.from('system_logs').update(payload).eq('id', currentLog.id);
+          if (error) throw error;
+        } else {
+          // 新增
+          const { data, error } = await supabaseClient.from('system_logs').insert([payload]).select();
+          if (error) throw error;
+          if (data && data.length > 0) currentLog.id = data[0].id;
+        }
+        showToast('保存成功');
+        await fetchLogs(); // 刷新列表
+        // 保持选中状态
+        if(currentLog.id) selectLogById(currentLog.id);
+      } catch (e) {
+        showToast('保存失败: ' + e.message, true);
+      }
+    };
+
+    // 删除日志
+    window.deleteLog = async function() {
+      if (!currentLog || !currentLog.id) return;
+      if (!confirm('确定删除该日志？')) return;
+      
+      const { error } = await supabaseClient.from('system_logs').delete().eq('id', currentLog.id);
+      if (error) { 
+        showToast('删除失败', true); 
+        return; 
+      }
+      
+      showToast('日志已删除');
+      currentLog = null;
+      updateEditorView();
+      fetchLogs();
+    };
+
+    // Toast 提示框
+    let toastTimer = null;
+    window.showToast = function(msg, isError = false) {
+      const toast = document.getElementById('toast');
+      document.getElementById('toast-msg').innerText = msg;
+      
+      toast.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl transition-all duration-300 z-[3000] flex items-center gap-2 pointer-events-none ${isError ? 'bg-red-500 text-white' : 'bg-gray-900 text-white'}`;
+      toast.classList.remove('opacity-0', 'translate-y-4');
+      
+      if (toastTimer) clearTimeout(toastTimer);
+      toastTimer = setTimeout(() => {
+        toast.classList.add('opacity-0', 'translate-y-4');
+      }, 3000);
+    };
+
+    // 初始执行
+    lucide.createIcons();
+    fetchLogs();
+
+  </script>
+</body>
+</html>

@@ -1,0 +1,1107 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>「百科全书」编辑器丨开发者中心</title>
+  
+  <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700&family=Noto+Serif+SC:wght@300;400;600;700;900&display=swap" rel="stylesheet">
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  
+  <style>
+    [v-cloak] { display: none !important; }
+
+    body {
+      margin: 0; padding: 0; background-color: #f8f9fa; overflow: hidden;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+    }
+    
+    .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+    .font-cinzel { font-family: 'Cinzel', serif; }
+
+    .custom-scrollbar::-webkit-scrollbar { width: 5px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e5e7eb; border-radius: 10px; }
+    .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #d1d5db; }
+
+    .dark-scrollbar::-webkit-scrollbar { width: 4px; }
+    .dark-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .dark-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+    .dark-scrollbar::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+    
+    .extreme-dark-scrollbar::-webkit-scrollbar { width: 4px; }
+    .extreme-dark-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .extreme-dark-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,181,142,0.2); border-radius: 4px; }
+    .extreme-dark-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(212,181,142,0.4); }
+
+    .slider-thumb-style::-webkit-slider-thumb {
+        appearance: none; width: 14px; height: 14px; border-radius: 50%;
+        background: #d4b58e; cursor: pointer; transition: transform 0.1s, background 0.1s;
+        box-shadow: 0 0 8px rgba(212,181,142,0.5);
+    }
+    .slider-thumb-style::-webkit-slider-thumb:hover { transform: scale(1.3); background: #c2a27b; }
+
+    #floating-toolbar { transition: opacity 0.15s ease, transform 0.15s ease; transform-origin: bottom center; }
+    #floating-toolbar.active { opacity: 1; transform: translate(-50%, 0) scale(1); pointer-events: auto; }
+    #floating-toolbar.inactive { opacity: 0; transform: translate(-50%, 10px) scale(0.95); pointer-events: none; }
+    
+    input[type="number"]::-webkit-inner-spin-button, 
+    input[type="number"]::-webkit-outer-spin-button { 
+        -webkit-appearance: none; margin: 0; 
+    }
+
+    @keyframes spin-slow {
+      from { transform: translate(-50%, -50%) rotate(0deg); }
+      to { transform: translate(-50%, -50%) rotate(360deg); }
+    }
+    @keyframes spin-slow-reverse {
+      from { transform: translate(-50%, -50%) rotate(360deg); }
+      to { transform: translate(-50%, -50%) rotate(0deg); }
+    }
+    .halo-ring-1 { animation: spin-slow 40s linear infinite; }
+    .halo-ring-2 { animation: spin-slow-reverse 60s linear infinite; }
+
+    @keyframes shrine-float {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-12px); }
+    }
+    .animate-shrine { animation: shrine-float 10s ease-in-out infinite; }
+
+    .has-drop-cap::first-letter {
+      float: left; font-size: 4rem; line-height: 0.8;
+      padding-top: 0.2rem; padding-right: 0.6rem; color: #d4b58e;
+      font-family: 'Cinzel', serif; font-weight: 500; text-shadow: 0 0 20px rgba(212, 181, 142, 0.4);
+    }
+
+    .has-drop-cap {
+      text-indent: 0 !important;
+    }
+    
+    .arch-window { border-radius: 500px 500px 12px 12px; }
+  </style>
+</head>
+<body>
+  <div id="app" v-cloak class="w-screen h-screen flex flex-col bg-[#f8f9fa] overflow-hidden">
+    
+    <!-- 顶栏：系统级始终亮色 -->
+    <header class="h-16 bg-white border-b border-gray-200 flex items-center justify-between px-6 shrink-0 shadow-sm relative z-[200]">
+        <div class="flex items-center gap-4">
+            <a href="index.html" class="w-8 h-8 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30 flex items-center justify-center text-[#d4b58e] hover:bg-[#d4b58e] hover:text-white transition-all shadow-sm shrink-0">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+            </a>
+            
+            <h1 class="font-black text-xl flex items-center gap-2 font-serif-sc tracking-wide shrink-0 text-gray-800">
+                「百科全书」编辑器 <span class="font-mono text-sm font-normal hidden sm:inline text-gray-300">| ENTRIES ARCHIVE</span>
+            </h1>
+            
+            <div class="ml-4 flex items-center rounded-full p-1 border overflow-x-auto custom-scrollbar whitespace-nowrap bg-gray-50 border-gray-200">
+                <button v-for="n in nodesDict" :key="n.id" @click="currentEntry.node_id = n.id" 
+                        :class="currentEntry.node_id === n.id ? 'bg-[#d4b58e]/10 text-[#d4b58e] border border-[#d4b58e]/30 shadow-sm' : 'text-gray-500 hover:text-gray-700 hover:bg-gray-100 border border-transparent'"
+                        class="px-4 py-1 text-xs font-bold rounded-full transition-all tracking-wider shrink-0 flex items-center gap-1">
+                    {{ n.title }}
+                </button>
+            </div>
+        </div>
+        
+        <div class="flex items-center gap-3 shrink-0">
+            <!-- 搜索 -->
+            <div class="relative w-56 z-[300]">
+                <div class="flex items-center border rounded-lg overflow-hidden transition-all relative shadow-inner bg-white border-gray-300 focus-within:border-[#d4b58e] focus-within:ring-2 focus-within:ring-[#d4b58e]/10">
+                    <i data-lucide="search" class="w-3.5 h-3.5 ml-2.5 shrink-0 transition-colors text-gray-400"></i>
+                    <input v-model="searchQuery" @focus="isSearchDropdownOpen = true" @blur="closeSearchDropdown" type="text" placeholder="搜索并加载词条..." 
+                           class="bg-transparent font-bold font-serif-sc text-xs w-full p-2 outline-none transition-colors text-gray-800 placeholder-gray-400">
+                    
+                    <button v-show="searchQuery" @click="searchQuery = ''; isSearchDropdownOpen = true" class="p-1 mr-1 focus:outline-none transition-colors text-gray-400 hover:text-gray-600">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                    </button>
+                </div>
+                
+                <transition name="fade">
+                    <div v-show="isSearchDropdownOpen" class="absolute top-full right-0 w-64 mt-2 border rounded-xl shadow-xl z-[300] overflow-hidden flex flex-col bg-white border-gray-100">
+                        <div class="max-h-60 overflow-y-auto py-1 dark-scrollbar">
+                            <div v-if="filteredRecords.length === 0" class="px-4 py-3 text-center text-xs italic text-gray-400">
+                                未找到相关词条
+                            </div>
+                            <div v-for="record in filteredRecords" :key="record.id"
+                                 @mousedown.prevent="selectRecord(record.id)"
+                                 class="px-3 py-2 text-xs cursor-pointer transition-colors truncate flex flex-col gap-0.5 group text-gray-700 hover:bg-gray-50 hover:text-[#d4b58e]">
+                                <span class="font-bold group-hover:text-[#d4b58e] font-serif-sc text-[13px]">{{ record.title }}</span>
+                                <span class="text-[10px] font-mono tracking-widest transition-colors text-gray-400">{{ record.node_id.toUpperCase() }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </transition>
+            </div>
+            
+            <div class="h-4 w-px mx-1 bg-gray-300"></div>
+            
+            <button @click="createNew" class="px-4 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors shadow-sm shrink-0 border bg-white border-gray-300 text-gray-600 hover:border-[#d4b58e] hover:text-[#d4b58e]">
+                <i data-lucide="file-plus" class="w-3.5 h-3.5"></i> 新建空白词条
+            </button>
+            <button @click="promptDelete" :disabled="!currentEntry.id" class="px-4 py-1.5 text-xs font-bold rounded-lg flex items-center gap-1.5 transition-colors disabled:opacity-50 disabled:cursor-not-allowed shrink-0 border bg-red-50 border-red-200 text-red-500 hover:bg-red-100">
+                <i data-lucide="trash-2" class="w-3.5 h-3.5"></i> 删除词条
+            </button>
+            
+            <button @click="save" :disabled="isSaving" class="px-5 py-1.5 text-xs bg-[#d4b58e] text-white rounded-lg font-bold hover:bg-[#c2a27b] flex items-center gap-2 shadow-md transition-all disabled:opacity-50 shrink-0">
+                <svg v-if="!isSaving" xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 14.899A7 7 0 1 1 15.71 8h1.79a4.5 4.5 0 0 1 2.5 8.242"/><path d="M12 12v9"/><path d="m16 16-4-4-4 4"/></svg>
+                <svg v-else xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5 animate-spin" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+                {{ isSaving ? '上传中...' : '同步至数据库' }}
+            </button>
+        </div>
+    </header>
+
+    <!-- 下方主体 -->
+    <div class="flex-1 flex flex-row overflow-hidden relative z-10">
+        <!-- 侧边栏：系统级始终亮色 -->
+        <aside class="w-20 h-full flex flex-col items-center py-5 gap-5 shrink-0 z-[500] shadow-[4px_0_24px_rgba(0,0,0,0.03)] border-r relative bg-white border-gray-200">
+            <a href="entries_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all bg-[#d4b58e] text-white shadow-md pointer-events-none" title="百科全书编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><ellipse cx="12" cy="5" rx="9" ry="3"/><path d="M3 5V19A9 3 0 0 0 21 19V5"/><path d="M3 12A9 3 0 0 0 21 12"/></svg>
+            </a>
+            <a href="map_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all border bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="海陆图志编辑器">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="3 6 9 3 15 6 21 3 21 18 15 21 9 18 3 21"/><line x1="9" x2="9" y1="3" y2="21"/><line x1="15" x2="15" y1="3" y2="21"/></svg>
+            </a>
+
+            <div class="w-6 h-px rounded-full shrink-0 bg-gray-200"></div>
+
+            <a href="svg_editor.html" class="w-10 h-10 shrink-0 rounded-xl flex items-center justify-center transition-all border bg-gray-50 border-gray-200 text-gray-400 hover:bg-gray-100 hover:text-[#d4b58e]" title="矢量测绘工具">
+                <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19l7-7 3 3-7 7-3-3z"/><path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/><path d="M2 2l7.586 7.586"/><circle cx="11" cy="11" r="2"/></svg>
+            </a>
+
+            <div class="mt-auto flex flex-col gap-5 w-full items-center">
+                <a href="https://www.photopea.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border transition-all opacity-70 hover:opacity-100 flex items-center justify-center bg-gray-50 border-gray-200 hover:border-[#d4b58e]">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=photopea.com" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://squoosh.app/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border transition-all opacity-70 hover:opacity-100 flex items-center justify-center bg-gray-50 border-gray-200 hover:border-[#d4b58e]">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=squoosh.app" class="w-5 h-5 object-contain">
+                </a>
+                <a href="https://tinypng.com/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border transition-all opacity-70 hover:opacity-100 flex items-center justify-center bg-gray-50 border-gray-200 hover:border-[#d4b58e]">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=tinypng.com" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+                <a href="https://www.remove.bg/" target="_blank" class="w-10 h-10 shrink-0 rounded-lg overflow-hidden border transition-all opacity-70 hover:opacity-100 flex items-center justify-center bg-gray-50 border-gray-200 hover:border-[#d4b58e]">
+                    <img src="https://www.google.com/s2/favicons?sz=64&domain=remove.bg" class="w-5 h-5 object-contain rounded-sm">
+                </a>
+            </div>
+        </aside>
+
+        <!-- 编辑器主区域 -->
+        <div class="flex-1 flex items-center justify-center p-4 relative z-10 overflow-hidden bg-[url('https://www.transparenttextures.com/patterns/stardust.png')] bg-opacity-20">
+
+            <!-- ================= 标准亮色分栏编辑器 (!isDarkStyle) ================= -->
+            <div v-if="!isDarkStyle" class="relative w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] bg-white text-gray-800 rounded-2xl shadow-xl flex flex-col md:flex-row p-4 md:p-6 gap-4 md:gap-8 pointer-events-auto z-10 border border-gray-200 transition-opacity duration-300">
+                
+                <!-- 左侧：塔罗牌画框 -->
+                <div class="w-full md:w-1/3 flex-shrink-0 h-[40%] md:h-full relative z-[100] flex items-center justify-center group/portrait pointer-events-none bg-gray-50/50 rounded-xl">
+                    <div class="absolute inset-0 bg-transparent rounded-xl border-[2px] border-[#d4b58e]/30 flex items-center justify-center overflow-hidden pointer-events-none">
+                        <div class="absolute inset-1.5 border border-[#d4b58e]/20 rounded-lg pointer-events-none"></div>
+                        <svg class="absolute top-0 left-0 w-6 h-6 text-[#d4b58e]/60 -translate-x-1 -translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/></svg>
+                        <svg class="absolute top-0 right-0 w-6 h-6 text-[#d4b58e]/60 translate-x-1 -translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/></svg>
+                        <svg class="absolute bottom-0 left-0 w-6 h-6 text-[#d4b58e]/60 -translate-x-1 translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/></svg>
+                        <svg class="absolute bottom-0 right-0 w-6 h-6 text-[#d4b58e]/60 translate-x-1 translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z"/></svg>
+                        <img v-if="currentEntry.bg_image_url" :src="currentEntry.bg_image_url" :style="{ width: (currentEntry.bg_image_scale || 120) + '%', height: (currentEntry.bg_image_scale || 120) + '%' }" class="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-60 mix-blend-multiply transition-all duration-300 pointer-events-none z-10" />
+                    </div>
+
+                    <div class="absolute inset-0 flex items-center justify-center z-[300] pointer-events-none">
+                        <div v-if="currentEntry.image_url" class="relative pointer-events-auto flex-shrink-0 transition-transform duration-300 hover:scale-[1.03]" :style="{ width: (currentEntry.main_image_scale || 100) + '%' }">
+                            <img :src="currentEntry.image_url" class="w-full h-auto max-w-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.15)] block" draggable="false" />
+                            <div class="absolute inset-0 z-10 bg-transparent" @contextmenu.prevent></div>
+                        </div>
+                        <div v-else-if="!currentEntry.bg_image_url" class="flex flex-col items-center text-[#d4b58e] opacity-50 z-20 pointer-events-none">
+                           <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                           <span class="text-sm font-mono tracking-widest text-center font-bold">悬停配置立绘</span>
+                        </div>
+                    </div>
+
+                    <div class="absolute inset-0 bg-white/70 backdrop-blur-sm opacity-0 group-hover/portrait:opacity-100 transition-opacity z-[400] flex flex-col items-center justify-center p-4 rounded-xl pointer-events-auto shadow-inner border border-gray-200">
+                        <div class="bg-white p-5 rounded-2xl shadow-xl w-full max-w-sm flex flex-col gap-3 border border-gray-100 custom-scrollbar overflow-y-auto max-h-[90%]">
+                            <div class="text-center font-bold text-gray-800 text-sm tracking-widest border-b border-gray-100 pb-2 mb-1 font-mono">PORTRAIT VISUAL</div>
+                            <div class="bg-gray-50/50 p-2 rounded border border-gray-100">
+                                <label class="text-[10px] font-bold text-gray-500 mb-1 flex justify-between items-center uppercase tracking-wider font-mono">Character Scale<div class="flex items-center gap-1"><input type="number" v-model.number="currentEntry.main_image_scale" min="10" max="400" class="w-12 bg-white text-gray-800 border border-gray-200 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] font-mono shadow-sm"><span class="text-[#d4b58e]">%</span></div></label>
+                                <input type="range" v-model.number="currentEntry.main_image_scale" min="10" max="400" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer outline-none slider-thumb-style mb-2">
+                                <input v-model="currentEntry.image_url" type="text" placeholder="主立绘 URL" class="w-full bg-white text-gray-800 border border-gray-200 rounded px-2 py-1.5 text-xs outline-none focus:border-[#d4b58e]">
+                            </div>
+                            <div class="bg-gray-50/50 p-2 rounded border border-gray-100">
+                                <label class="text-[10px] font-bold text-gray-500 mb-1 flex justify-between items-center uppercase tracking-wider font-mono">Background Scale<div class="flex items-center gap-1"><input type="number" v-model.number="currentEntry.bg_image_scale" min="10" max="400" class="w-12 bg-white text-gray-800 border border-gray-200 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] font-mono shadow-sm"><span class="text-[#d4b58e]">%</span></div></label>
+                                <input type="range" v-model.number="currentEntry.bg_image_scale" min="10" max="400" class="w-full h-1.5 bg-gray-200 rounded-lg appearance-none cursor-pointer outline-none slider-thumb-style mb-2">
+                                <input v-model="currentEntry.bg_image_url" type="text" placeholder="底图 URL" class="w-full bg-white text-gray-800 border border-gray-200 rounded px-2 py-1.5 text-xs outline-none focus:border-[#d4b58e]">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 右侧：文本信息编辑区 -->
+                <div class="flex-1 h-[60%] md:h-full bg-white flex flex-col z-10 relative pointer-events-auto border border-gray-100 rounded-xl overflow-hidden shadow-sm">
+                  <div class="flex-1 overflow-y-auto px-8 py-10 md:px-12 md:py-14 flex flex-col text-left relative z-0 custom-scrollbar" @scroll="onEditorScroll">
+                    <div class="flex justify-between items-start gap-4">
+                      <div class="flex-1 min-w-0 flex flex-col items-start justify-center">
+                        <div class="flex flex-wrap items-center gap-3 mb-3">
+                            <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-lg w-fit transition-colors hover:border-gray-200">
+                               <i data-lucide="layers" class="w-3.5 h-3.5 text-gray-400"></i>
+                               <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Sort Order</span>
+                               <input type="number" v-model.number="currentEntry.sort_order" class="w-14 bg-white border border-gray-200 rounded px-1.5 py-0.5 text-xs text-center outline-none focus:border-[#d4b58e] text-gray-700 font-mono shadow-sm">
+                            </div>
+                            <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 px-3 py-1.5 rounded-lg transition-colors hover:border-gray-200">
+                               <i data-lucide="image" class="w-3.5 h-3.5 text-gray-400"></i>
+                               <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest hidden md:inline font-mono">Title Icon</span>
+                               <input type="text" v-model="currentEntry.title_icon_url" placeholder="URL..." class="w-24 md:w-32 bg-white border border-gray-200 rounded px-1.5 py-0.5 text-xs outline-none focus:border-[#d4b58e] text-gray-700 font-mono shadow-sm">
+                               <div class="w-px h-3 bg-gray-300 mx-1"></div>
+                               <span class="text-[10px] font-bold text-gray-500 uppercase tracking-widest font-mono">Scale</span>
+                               <input type="range" v-model.number="currentEntry.title_icon_scale" min="20" max="300" class="w-16 md:w-20 h-1 bg-gray-200 rounded-lg appearance-none cursor-pointer slider-thumb-style">
+                               <div class="flex items-center gap-0.5">
+                                   <input type="number" v-model.number="currentEntry.title_icon_scale" min="20" max="300" class="w-12 bg-white border border-gray-200 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] text-gray-700 font-mono shadow-sm">
+                                   <span class="text-[10px] font-mono text-gray-500">%</span>
+                               </div>
+                            </div>
+                        </div>
+                        <div class="w-full flex flex-col gap-2">
+                            <div v-for="(line, idx) in currentEntry.titleLines" :key="'std-title-'+idx" class="flex items-center gap-2 group w-full">
+                                <editable-div v-model="currentEntry.titleLines[idx]" placeholder="大标题" class="text-3xl md:text-4xl font-bold tracking-tight text-gray-900 uppercase focus:bg-gray-50 font-cinzel w-full text-left" style="line-height: 1.2;"></editable-div>
+                                <div class="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity shrink-0 gap-1">
+                                    <button @click="currentEntry.titleLines.splice(idx + 1, 0, '')" class="p-1 text-gray-400 hover:text-gray-600 hover:bg-gray-100 rounded" title="添加一行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+                                    <button @click="currentEntry.titleLines.splice(idx, 1)" v-if="currentEntry.titleLines.length > 1" class="p-1 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded" title="删除此行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                                </div>
+                            </div>
+                        </div>
+                        <editable-div v-model="currentEntry.subtitle" placeholder="副标题" class="text-lg md:text-xl text-gray-500 mt-3 font-light tracking-wide focus:bg-gray-50 font-serif-sc w-full text-left"></editable-div>
+                      </div>
+                      <div v-if="currentEntry.title_icon_url" class="relative shrink-0 w-14 h-14 md:w-20 md:h-20 flex items-center justify-center transition-transform duration-300 hover:scale-[1.05]">
+                          <img :src="currentEntry.title_icon_url" :style="{ transform: 'scale(' + ((currentEntry.title_icon_scale || 100) / 100) + ')' }" class="w-full h-full object-contain opacity-90 drop-shadow-md pointer-events-none select-none block" draggable="false" />
+                      </div>
+                    </div>
+                    
+                    <hr class="border-t border-gray-200 my-8">
+                    
+                    <div v-if="currentEntry.blocks.some(b => b.type === 'key-value')" class="mb-8 pb-6 border-b border-dashed border-gray-200 space-y-4 text-sm relative z-10 leading-[2.25]">
+                        <template v-for="(block, index) in currentEntry.blocks" :key="'kv-'+index">
+                            <div v-if="block.type === 'key-value'" :class="['relative group/block border border-transparent -mx-3 px-3 py-2 rounded-lg transition-colors draggable-block pr-10', dragOverIndex === index ? 'border-t-2 border-t-[#d4b58e] border-dashed bg-[#d4b58e]/5' : 'hover:border-gray-100']" @dragstart="dragStart($event, index)" @dragover.prevent="dragOver($event, index)" @drop="drop($event, index)" @dragend="dragEnd">
+                                <div class="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/block:opacity-100 p-1.5 cursor-move text-gray-300 hover:text-[#d4b58e] transition-colors z-20" @mousedown="enableDrag($event)" @mouseup="disableDrag($event)" title="拖拽排序"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg></div>
+                                <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -right-3 -top-2 opacity-0 group-hover/block:opacity-100 p-1.5 text-gray-400 hover:text-red-500 bg-white border border-gray-200 shadow-sm rounded-full transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+                                <div class="flex items-start">
+                                    <editable-div v-model="block.key" placeholder="正位/逆位/键" class="text-gray-900 font-bold mr-2 w-20 shrink-0 focus:bg-gray-50 font-serif-sc"></editable-div>
+                                    <editable-div v-model="block.value" placeholder="具体的释义与描述内容..." class="text-gray-600 flex-1 focus:bg-gray-50"></editable-div>
+                                </div>
+                            </div>
+                        </template>
+                    </div>
+                    
+                    <div class="space-y-6 text-sm md:text-base leading-[2.25] text-gray-700 relative">
+                      <template v-for="(block, index) in currentEntry.blocks" :key="'main-'+index">
+                        <div v-if="block.type !== 'key-value'" :class="['relative group/block border border-transparent -mx-3 px-3 py-2 rounded-lg transition-colors draggable-block pr-10', dragOverIndex === index ? 'border-t-2 border-t-[#d4b58e] border-dashed bg-[#d4b58e]/5' : 'hover:border-gray-100']" @dragstart="dragStart($event, index)" @dragover.prevent="dragOver($event, index)" @drop="drop($event, index)" @dragend="dragEnd">
+                            <div class="absolute -right-8 top-1/2 -translate-y-1/2 opacity-0 group-hover/block:opacity-100 p-1.5 cursor-move text-gray-300 hover:text-[#d4b58e] transition-colors z-20" @mousedown="enableDrag($event)" @mouseup="disableDrag($event)" title="拖拽排序"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg></div>
+                            <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -right-3 -top-2 opacity-0 group-hover/block:opacity-100 p-1.5 text-gray-400 hover:text-red-500 bg-white border border-gray-200 shadow-sm rounded-full transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+
+                            <template v-if="block.type === 'paragraph'">
+                              <editable-div v-model="block.content" placeholder="输入故事或描述段落..." class="text-justify relative z-10 focus:bg-gray-50 indent-8 font-serif-sc"></editable-div>
+                            </template>
+                            
+                            <template v-else-if="block.type === 'image'">
+                              <div class="flex flex-col items-center my-6 bg-gray-50/50 border border-gray-100 p-6 rounded-xl relative w-full overflow-visible">
+                                <div class="relative transition-transform duration-500 hover:scale-[1.02] flex-shrink-0 mb-6" :style="{ width: block.scale ? block.scale + '%' : '100%' }">
+                                    <img :src="block.url" class="w-full h-auto max-w-none object-contain drop-shadow-xl rounded-md block" onerror="this.src='https://via.placeholder.com/600x300?text=内嵌插图配置区'" draggable="false" />
+                                </div>
+                                <div class="w-full space-y-3 bg-white p-4 rounded-lg shadow-sm border border-gray-200">
+                                    <input v-model="block.url" placeholder="图片 URL" class="w-full text-xs p-2 bg-white text-gray-800 border border-gray-200 rounded outline-none focus:border-[#d4b58e]">
+                                    <input v-model="block.caption" placeholder="图片下方注解 (选填)" class="w-full text-xs p-2 bg-white text-gray-800 border border-gray-200 rounded outline-none text-center focus:border-[#d4b58e]">
+                                    <div class="flex items-center gap-3">
+                                        <span class="text-[10px] font-bold text-gray-400 uppercase w-10 font-mono">Scale</span>
+                                        <input type="range" v-model.number="block.scale" min="10" max="300" class="flex-1 h-1 bg-gray-200 rounded appearance-none cursor-pointer slider-thumb-style">
+                                        <div class="flex items-center gap-0.5">
+                                            <input type="number" v-model.number="block.scale" min="10" max="300" class="w-12 bg-white border border-gray-200 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] text-gray-700 font-mono shadow-sm">
+                                            <span class="text-[10px] font-mono text-gray-500">%</span>
+                                        </div>
+                                    </div>
+                                </div>
+                              </div>
+                            </template>
+
+                            <template v-else-if="block.type === 'quote'">
+                                <div class="my-4 px-4 md:px-8 relative">
+                                    <div class="text-gray-800 text-justify font-normal flex items-start">
+                                        <span class="text-3xl font-serif text-[#d4b58e] mr-2 pt-1 leading-none">“</span>
+                                        <editable-div v-model="block.content" placeholder="输入引用的言论..." class="flex-1 mx-1 focus:bg-gray-50 font-serif-sc"></editable-div>
+                                        <span class="text-3xl font-serif text-[#d4b58e] ml-2 pt-1 leading-none">”</span>
+                                    </div>
+                                    <div class="text-right mt-4 flex justify-end items-center text-sm text-gray-500 tracking-widest font-normal">
+                                        <span>——&nbsp;</span>
+                                        <editable-div v-model="block.author" placeholder="落款 (选填)" class="min-w-[100px] text-left focus:bg-gray-50"></editable-div>
+                                    </div>
+                                </div>
+                            </template>
+                        </div>
+                      </template>
+
+                      <div class="mt-8 pt-6 pb-2 border-t border-gray-100 flex flex-wrap items-center justify-center gap-4 opacity-40 hover:opacity-100 transition-opacity">
+                         <button @click="addBlock('paragraph')" class="text-xs flex items-center gap-1.5 text-gray-500 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono"><i data-lucide="align-left" class="w-3.5 h-3.5"></i> 段落</button>
+                         <button @click="addBlock('quote')" class="text-xs flex items-center gap-1.5 text-gray-500 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono"><i data-lucide="message-square" class="w-3.5 h-3.5"></i> 引用</button>
+                         <button @click="addBlock('image')" class="text-xs flex items-center gap-1.5 text-gray-500 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono"><i data-lucide="image" class="w-3.5 h-3.5"></i> 图片</button>
+                         <button @click="addBlock('key-value')" class="text-xs flex items-center gap-1.5 text-gray-500 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-gray-50 px-4 py-2 rounded-full hover:bg-gray-100 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono"><i data-lucide="list" class="w-3.5 h-3.5"></i> 释义(KV)</button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+            </div>
+
+            <!-- ================= 专属暗黑神祇编辑器 (Aeons 专用) ================= -->
+            <div v-else-if="currentEntry.node_id === 'aeons'" class="relative w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] bg-[#070709] border border-white/5 md:border-[#d4b58e]/20 rounded-2xl shadow-[0_0_100px_rgba(0,0,0,0.9)] flex flex-col pointer-events-auto z-10 overflow-hidden backdrop-blur-3xl transition-opacity duration-300">
+                
+                <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.12] mix-blend-screen" style="mask-image: radial-gradient(circle at center, black 30%, transparent 80%); -webkit-mask-image: radial-gradient(circle at center, black 30%, transparent 80%);">
+                    <img v-if="currentEntry.image_url" :src="currentEntry.image_url" 
+                         :style="{ transform: 'scale(' + ((currentEntry.main_image_scale || 100) / 100) + ')' }" 
+                         class="w-[90%] md:w-[70%] h-auto object-contain blur-[1px] drop-shadow-[0_0_30px_rgba(212,181,142,0.8)] transition-all duration-700" draggable="false" />
+                </div>
+
+                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[800px] h-[600px] bg-[#d4b58e]/10 blur-[120px] pointer-events-none z-0 rounded-full mix-blend-screen"></div>
+
+                <div class="w-full h-full overflow-y-auto extreme-dark-scrollbar relative z-10" @scroll="onEditorScroll">
+                    <div class="w-full min-h-full flex flex-col items-center justify-center py-10 px-6 md:px-20 relative z-10">
+                        
+                        <div class="absolute top-6 inset-x-0 w-full flex justify-center items-center z-[60] px-6">
+                            <div class="flex flex-wrap items-center justify-center gap-3">
+                                <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg transition-colors hover:border-[#d4b58e]/30">
+                                    <i data-lucide="layers" class="w-3.5 h-3.5 text-[#d4b58e]/60"></i>
+                                    <span class="text-[10px] font-bold text-[#d4b58e]/60 uppercase tracking-widest font-mono">Sort Order</span>
+                                    <input type="number" v-model.number="currentEntry.sort_order" class="w-14 bg-black/50 border border-white/20 rounded px-1.5 py-0.5 text-xs text-center outline-none focus:border-[#d4b58e] text-gray-300 font-mono">
+                                </div>
+                                <div class="flex items-center gap-2 bg-white/5 border border-white/10 px-3 py-1.5 rounded-lg transition-colors hover:border-[#d4b58e]/30">
+                                    <i data-lucide="image" class="w-3.5 h-3.5 text-[#d4b58e]/60"></i>
+                                    <span class="text-[10px] font-bold text-[#d4b58e]/60 uppercase tracking-widest font-mono hidden md:inline">Title Icon</span>
+                                    <input type="text" v-model="currentEntry.title_icon_url" placeholder="URL..." class="w-24 md:w-32 bg-black/50 border border-white/20 rounded px-1.5 py-0.5 text-xs outline-none focus:border-[#d4b58e] text-gray-300 font-mono">
+                                    <div class="w-px h-3 bg-white/20 mx-1"></div>
+                                    <span class="text-[10px] font-bold text-[#d4b58e]/60 uppercase tracking-widest font-mono">Scale</span>
+                                    <input type="range" v-model.number="currentEntry.title_icon_scale" min="20" max="300" class="w-16 md:w-20 h-1 bg-white/20 rounded-lg appearance-none cursor-pointer slider-thumb-style">
+                                    <div class="flex items-center gap-0.5">
+                                        <input type="number" v-model.number="currentEntry.title_icon_scale" min="20" max="300" class="w-12 bg-black/50 border border-white/20 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] text-gray-300 font-mono shadow-sm">
+                                        <span class="text-[10px] font-mono text-[#d4b58e]/60">%</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="relative w-full flex justify-center group/portrait">
+                            <div class="absolute top-1/2 left-1/2 w-[120vw] md:w-[450px] aspect-square pointer-events-none opacity-20 mix-blend-screen">
+                                <div class="absolute top-1/2 left-1/2 w-[80%] aspect-square border-[1px] border-[#d4b58e]/40 rounded-full halo-ring-1 border-dashed"></div>
+                                <div class="absolute top-1/2 left-1/2 w-[100%] aspect-square border-[1px] border-[#d4b58e]/20 rounded-full halo-ring-2"></div>
+                                <div class="absolute top-1/2 left-1/2 w-[60%] aspect-square border-[0.5px] border-[#d4b58e]/60 halo-ring-1 rotate-45"></div>
+                            </div>
+
+                            <div class="relative w-[55vw] md:w-[260px] aspect-[1/1.6] arch-window p-[2px] bg-gradient-to-b from-[#d4b58e]/60 via-[#d4b58e]/10 to-transparent shadow-[0_0_50px_rgba(212,181,142,0.15)] pointer-events-none group">
+                                <div class="w-full h-full arch-window overflow-hidden relative bg-black flex items-center justify-center">
+                                    <div class="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
+                                        <img v-if="currentEntry.bg_image_url" :src="currentEntry.bg_image_url" :style="{ width: (currentEntry.bg_image_scale || 100) + '%', height: (currentEntry.bg_image_scale || 100) + '%' }" class="object-cover group-hover:scale-[1.05] transition-transform duration-[2s] ease-out min-w-full min-h-full max-w-none" draggable="false" />
+                                    </div>
+                                    <div v-if="!currentEntry.image_url && !currentEntry.bg_image_url" class="relative z-10 flex flex-col items-center text-[#d4b58e]/50">
+                                       <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 mb-2" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-3.086-3.086a2 2 0 0 0-2.828 0L6 21"/></svg>
+                                       <span class="text-sm font-cinzel tracking-[0.2em] pl-[0.2em] font-bold text-center">悬停配置<br>图腾与神域</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="absolute inset-0 bg-black/80 backdrop-blur-md opacity-0 group-hover/portrait:opacity-100 transition-opacity z-[400] flex flex-col items-center justify-center p-6 arch-window pointer-events-auto border border-[#d4b58e]/30 shadow-[inset_0_0_40px_rgba(212,181,142,0.2)]">
+                                <div class="w-full max-w-sm flex flex-col gap-4 text-left extreme-dark-scrollbar overflow-y-auto">
+                                    <div class="text-center font-bold text-[#d4b58e] text-xs tracking-[0.2em] pl-[0.2em] border-b border-[#d4b58e]/20 pb-2 mb-2 font-cinzel">DIVINE VISUALS</div>
+
+                                    <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                                        <label class="text-[10px] font-bold text-[#d4b58e]/70 mb-2 flex justify-between items-center uppercase tracking-wider font-mono">
+                                            Entity Totem Scale
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" v-model.number="currentEntry.main_image_scale" min="10" max="400" class="w-12 bg-black/50 text-gray-200 border border-white/20 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] font-mono shadow-sm">
+                                                <span class="text-[#d4b58e]/60">%</span>
+                                            </div>
+                                        </label>
+                                        <input type="range" v-model.number="currentEntry.main_image_scale" min="10" max="400" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none slider-thumb-style mb-3">
+                                        <input v-model="currentEntry.image_url" type="text" placeholder="全屏巨型图腾 URL" class="w-full bg-black/50 text-gray-200 border border-white/20 rounded px-2 py-1.5 text-xs outline-none focus:border-[#d4b58e]">
+                                    </div>
+
+                                    <div class="bg-white/5 p-3 rounded-lg border border-white/10">
+                                        <label class="text-[10px] font-bold text-[#d4b58e]/70 mb-2 flex justify-between items-center uppercase tracking-wider font-mono">
+                                            Domain (Bg) Scale
+                                            <div class="flex items-center gap-1">
+                                                <input type="number" v-model.number="currentEntry.bg_image_scale" min="10" max="400" class="w-12 bg-black/50 text-gray-200 border border-white/20 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] font-mono shadow-sm">
+                                                <span class="text-[#d4b58e]/60">%</span>
+                                            </div>
+                                        </label>
+                                        <input type="range" v-model.number="currentEntry.bg_image_scale" min="10" max="400" class="w-full h-1.5 bg-white/20 rounded-lg appearance-none cursor-pointer outline-none slider-thumb-style mb-3">
+                                        <input v-model="currentEntry.bg_image_url" type="text" placeholder="神域底图 URL" class="w-full bg-black/50 text-gray-200 border border-white/20 rounded px-2 py-1.5 text-xs outline-none focus:border-[#d4b58e]">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="absolute bottom-8 inset-x-0 w-full flex flex-col items-center justify-center text-[#d4b58e]/40 animate-bounce pointer-events-none">
+                            <span class="text-[10px] font-cinzel tracking-[0.2em] pl-[0.2em] mb-1">SCROLL</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                        </div>
+                    </div>
+
+                    <div class="w-full flex flex-col items-center px-6 md:px-20 relative z-10 pb-32 pt-12">
+                        <div class="text-center w-full max-w-2xl relative z-20 mb-16 flex flex-col items-center">
+                            <div class="text-[#d4b58e]/60 font-cinzel text-xs md:text-sm tracking-[0.4em] pl-[0.4em] mb-4 uppercase flex items-center justify-center">
+                                <span class="w-8 h-px bg-[#d4b58e]/30 mr-3"></span>
+                                Entity
+                                <span class="w-8 h-px bg-[#d4b58e]/30 ml-3"></span>
+                            </div>
+
+                            <div class="w-full flex flex-col items-center justify-center mb-6 py-2 gap-4">
+                                <div v-for="(line, idx) in currentEntry.titleLines" :key="'aeon-title-'+idx" class="relative group w-full flex justify-center">
+                                    <editable-div v-model="currentEntry.titleLines[idx]" placeholder="输入核心档案名..." class="text-5xl md:text-7xl font-black text-gray-100 tracking-[0.2em] pl-[0.2em] text-center focus:bg-white/5 font-serif-sc border border-transparent focus:border-white/10 rounded px-4 max-w-full" style="text-shadow: 0 0 30px rgba(255,255,255,0.1); line-height: 1.2;"></editable-div>
+                                    <div class="absolute -right-8 md:-right-12 top-1/2 -translate-y-1/2 flex flex-col gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                        <button @click="currentEntry.titleLines.splice(idx + 1, 0, '')" class="p-1 text-gray-500 hover:text-[#d4b58e] hover:bg-white/10 rounded" title="添加一行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+                                        <button @click="currentEntry.titleLines.splice(idx, 1)" v-if="currentEntry.titleLines.length > 1" class="p-1 text-gray-500 hover:text-red-500 hover:bg-white/10 rounded" title="删除此行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div v-if="currentEntry.title_icon_url" class="mb-6 flex justify-center">
+                                <img :src="currentEntry.title_icon_url" :style="{ transform: 'scale(' + ((currentEntry.title_icon_scale || 100) / 100) + ')' }" class="w-16 h-16 object-contain opacity-90 block" draggable="false" />
+                            </div>
+
+                            <div class="w-full flex flex-col items-center justify-center mb-6">
+                                <editable-div v-model="currentEntry.alien_text" placeholder="输入异名/代号 (如 A E O N S)" class="text-[#d4b58e] font-cinzel text-xl md:text-3xl tracking-[0.3em] font-light opacity-90 text-center focus:bg-white/5 border border-transparent focus:border-white/10 rounded px-4 max-w-full"></editable-div>
+                            </div>
+
+                            <div class="w-full flex flex-col items-center justify-center">
+                                <editable-div v-model="currentEntry.subtitle" placeholder="输入副标题描述..." class="text-gray-400 text-lg md:text-xl font-light tracking-[0.15em] pl-[0.15em] text-center focus:bg-white/5 font-serif-sc border border-transparent focus:border-white/10 rounded px-4 max-w-full leading-relaxed"></editable-div>
+                            </div>
+                        </div>
+
+                        <div v-if="currentEntry.blocks.some(b => b.type === 'key-value')" class="w-full max-w-3xl border-y border-[#d4b58e]/10 py-8 mb-16 relative z-20">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-y-6 gap-x-12">
+                                <template v-for="(block, index) in currentEntry.blocks" :key="'kv-dark-'+index">
+                                    <div v-if="block.type === 'key-value'"
+                                         :class="['relative group/block border border-transparent px-3 py-2 rounded-lg transition-colors draggable-block pr-10', dragOverIndex === index ? 'border-t-2 border-t-[#d4b58e] border-dashed bg-[#d4b58e]/5' : 'hover:border-white/10 hover:bg-white/5']"
+                                         @dragstart="dragStart($event, index)" @dragover.prevent="dragOver($event, index)" @drop="drop($event, index)" @dragend="dragEnd">
+
+                                        <div class="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover/block:opacity-100 p-1.5 cursor-move text-gray-500 hover:text-[#d4b58e] transition-colors z-20" @mousedown="enableDrag($event)" @mouseup="disableDrag($event)"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg></div>
+                                        <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -right-3 -top-2 opacity-0 group-hover/block:opacity-100 p-1.5 text-gray-500 hover:text-red-500 bg-[#1a1a1c] border border-white/10 rounded-full transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+
+                                        <div class="flex flex-col items-center md:items-start text-center md:text-left w-full">
+                                            <editable-div v-model="block.key" placeholder="类别 (如 DOMAIN)" class="text-[10px] md:text-xs text-[#d4b58e]/70 font-cinzel tracking-[0.25em] pl-[0.25em] uppercase mb-1 focus:bg-white/10 rounded w-full text-center md:text-left"></editable-div>
+                                            <editable-div v-model="block.value" placeholder="具体描述内容..." class="text-sm md:text-base text-gray-300 font-medium tracking-wider focus:bg-white/10 rounded w-full text-center md:text-left font-serif-sc"></editable-div>
+                                        </div>
+                                    </div>
+                                </template>
+                            </div>
+                        </div>
+
+                        <div class="holy-text w-full max-w-2xl text-gray-300 text-base md:text-lg leading-[2.2] tracking-wide font-serif text-justify relative z-20 space-y-8">
+                            <template v-for="(block, index) in currentEntry.blocks" :key="'main-dark-'+index">
+                                <div v-if="block.type !== 'key-value'"
+                                     :class="['relative group/block border border-transparent px-3 py-2 rounded-lg transition-colors draggable-block pr-16', dragOverIndex === index ? 'border-t-2 border-t-[#d4b58e] border-dashed bg-[#d4b58e]/5' : 'hover:border-white/10 hover:bg-white/5']"
+                                     @dragstart="dragStart($event, index)" @dragover.prevent="dragOver($event, index)" @drop="drop($event, index)" @dragend="dragEnd">
+
+                                    <div class="absolute -right-12 top-1/2 -translate-y-1/2 opacity-0 group-hover/block:opacity-100 flex items-center gap-1 z-20 transition-opacity">
+                                        <button v-if="block.type === 'paragraph'" @click="block.dropCap = !block.dropCap" :class="block.dropCap ? 'text-[#d4b58e] bg-white/10' : 'text-gray-500 hover:text-[#d4b58e] hover:bg-white/5'" class="p-1.5 rounded transition-colors" title="切换首字放大特效">
+                                            <span class="font-cinzel font-bold text-xs leading-none block">A+</span>
+                                        </button>
+                                        
+                                        <div class="p-1.5 cursor-move text-gray-500 hover:text-[#d4b58e] transition-colors" @mousedown="enableDrag($event)" @mouseup="disableDrag($event)" title="拖拽排序">
+                                            <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg>
+                                        </div>
+                                    </div>
+                                    <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -right-3 -top-2 opacity-0 group-hover/block:opacity-100 p-1.5 text-gray-500 hover:text-red-500 bg-[#1a1a1c] border border-white/10 rounded-full transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+
+                                    <template v-if="block.type === 'paragraph'">
+                                        <editable-div v-model="block.content" placeholder="编写神圣典籍或史诗描述..." :class="['text-justify relative z-10 focus:bg-white/10 font-serif-sc rounded opacity-90', block.dropCap ? 'has-drop-cap' : 'indent-8']"></editable-div>
+                                    </template>
+
+                                    <template v-else-if="block.type === 'quote'">
+                                        <div class="my-10 py-6 relative flex flex-col items-center text-center">
+                                            <div class="absolute top-0 w-24 h-px bg-gradient-to-r from-transparent via-[#d4b58e] to-transparent"></div>
+                                            <div class="absolute bottom-0 w-24 h-px bg-gradient-to-r from-transparent via-[#d4b58e] to-transparent"></div>
+                                            <div class="text-2xl md:text-3xl text-[#d4b58e] italic leading-relaxed font-light mb-6 px-4 w-full flex justify-center items-start">
+                                                “<editable-div v-model="block.content" placeholder="输入神谕箴言..." class="mx-1 focus:bg-white/10 rounded font-serif-sc"></editable-div>”
+                                            </div>
+                                            <div class="text-xs md:text-sm text-[#d4b58e]/80 font-cinzel tracking-[0.2em] uppercase flex items-center justify-center">
+                                                <span class="inline-block w-4 h-[1px] bg-[#d4b58e]/80 mr-2"></span>
+                                                <editable-div v-model="block.author" placeholder="出处落款" class="min-w-[100px] text-center focus:bg-white/10 rounded"></editable-div>
+                                                <span class="inline-block w-4 h-[1px] bg-[#d4b58e]/80 ml-2"></span>
+                                            </div>
+                                        </div>
+                                    </template>
+
+                                    <template v-else-if="block.type === 'image'">
+                                        <div class="flex flex-col items-center my-8 bg-white/5 border border-white/10 p-6 rounded-xl relative w-full overflow-visible">
+                                            <div class="relative transition-transform duration-500 hover:scale-[1.02] flex-shrink-0 mb-6" :style="{ width: block.scale ? block.scale + '%' : '100%' }">
+                                                <img :src="block.url" class="w-full h-auto max-w-none object-contain drop-shadow-xl rounded-md block" onerror="this.src='https://via.placeholder.com/600x300/222/d4b58e?text=ARCHIVE+VISUAL'" draggable="false" />
+                                            </div>
+                                            <div class="w-full space-y-3 bg-black/40 p-4 rounded-lg shadow-sm border border-white/5">
+                                                <input v-model="block.url" placeholder="图片 URL" class="w-full text-xs p-2 bg-black/50 text-gray-200 border border-white/10 rounded outline-none focus:border-[#d4b58e]">
+                                                <input v-model="block.caption" placeholder="图片下方注解 (选填)" class="w-full text-xs p-2 bg-black/50 text-gray-200 border border-white/10 rounded outline-none text-center focus:border-[#d4b58e] font-serif-sc">
+                                                <div class="flex items-center gap-3">
+                                                    <span class="text-[10px] font-bold text-[#d4b58e]/50 uppercase w-10 font-mono">Scale</span>
+                                                    <input type="range" v-model.number="block.scale" min="10" max="300" class="flex-1 h-1 bg-white/20 rounded appearance-none cursor-pointer slider-thumb-style">
+                                                    <div class="flex items-center gap-0.5">
+                                                        <input type="number" v-model.number="block.scale" min="10" max="300" class="w-12 bg-black/50 border border-white/10 rounded px-1.5 py-0.5 text-xs text-right outline-none focus:border-[#d4b58e] text-gray-300 font-mono shadow-sm">
+                                                        <span class="text-[10px] font-mono text-[#d4b58e]/50">%</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </template>
+                                </div>
+                            </template>
+                        </div>
+
+                        <div class="mt-12 pt-8 flex flex-wrap items-center justify-center gap-4 opacity-60 hover:opacity-100 transition-opacity relative z-20">
+                            <button @click="addBlock('paragraph')" class="text-xs flex items-center gap-1.5 text-gray-400 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono shadow-sm"><i data-lucide="align-left" class="w-3.5 h-3.5"></i> 段落</button>
+                            <button @click="addBlock('quote')" class="text-xs flex items-center gap-1.5 text-gray-400 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono shadow-sm"><i data-lucide="message-square" class="w-3.5 h-3.5"></i> 核心箴言</button>
+                            <button @click="addBlock('image')" class="text-xs flex items-center gap-1.5 text-gray-400 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono shadow-sm"><i data-lucide="image" class="w-3.5 h-3.5"></i> 图像留影</button>
+                            <button @click="addBlock('key-value')" class="text-xs flex items-center gap-1.5 text-gray-400 hover:text-[#d4b58e] font-bold tracking-wider uppercase bg-white/5 px-5 py-2.5 rounded-full hover:bg-white/10 border border-transparent hover:border-[#d4b58e]/30 transition-all font-mono shadow-sm"><i data-lucide="list" class="w-3.5 h-3.5"></i> 档案(KV)</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ================= 专属留影 (Gallery) 宽银幕编辑器 ================= -->
+            <div v-else-if="currentEntry.node_id === 'gallery'" class="relative w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] bg-[#050505] border border-white/5 md:border-[#d4b58e]/20 rounded-2xl shadow-[0_0_100px_rgba(0,0,0,0.9)] flex flex-col pointer-events-auto z-10 overflow-hidden backdrop-blur-3xl transition-opacity duration-300">
+                
+                <!-- 顶部元数据配置 (悬浮) -->
+                <div class="absolute top-6 inset-x-0 w-full flex justify-center items-center z-[60] px-6 pointer-events-auto opacity-30 hover:opacity-100 transition-opacity">
+                    <div class="flex flex-wrap items-center justify-center gap-3 bg-black/60 p-2 rounded-xl backdrop-blur-md border border-white/10">
+                        <div class="flex items-center gap-2 px-2">
+                            <i data-lucide="layers" class="w-3.5 h-3.5 text-white/60"></i>
+                            <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest font-mono">Sort Order</span>
+                            <input type="number" v-model.number="currentEntry.sort_order" class="w-14 bg-black/50 border border-white/20 rounded px-1.5 py-0.5 text-xs text-center outline-none focus:border-white text-gray-300 font-mono">
+                        </div>
+                        <div class="w-px h-4 bg-white/20"></div>
+                        <div class="flex items-center gap-2 px-2">
+                            <i data-lucide="images" class="w-3.5 h-3.5 text-white/60"></i>
+                            <span class="text-[10px] font-bold text-white/60 uppercase tracking-widest font-mono">轮播图片</span>
+                            <button @click="openGalleryModal" class="px-2.5 py-1 rounded text-xs border border-white/20 bg-white/5 hover:bg-white/10 hover:border-[#d4b58e]/50 hover:text-[#d4b58e] text-white/70 transition-all font-mono flex items-center gap-1.5">
+                                <i data-lucide="list" class="w-3 h-3"></i>
+                                {{ galleryImagesList && galleryImagesList.length > 0 ? galleryImagesList.length + ' 张图片' : '配置图片' }}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 核心结构：图片在上 (21:9)，文本在下 (flex-1) -->
+                <div class="flex-1 w-full h-full flex flex-col relative z-0 min-h-0 bg-[#050505]">
+                    
+                    <!-- 1. 21:9 居中原画区 -->
+                    <div class="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000] max-h-[55%]" style="aspect-ratio: 21/9;">
+                        <img v-if="currentEntry.bg_image_url || currentEntry.image_url" :src="currentEntry.bg_image_url || currentEntry.image_url" class="w-full h-full object-cover transition-transform duration-[25s] ease-out hover:scale-[1.03]" />
+                        <div v-else class="w-full h-full flex flex-col items-center justify-center text-[#d4b58e]/50 font-mono text-sm border-2 border-dashed border-[#d4b58e]/20 m-4 rounded-xl opacity-50">
+                            <i data-lucide="image" class="w-10 h-10 mb-2"></i>
+                            请在上方悬浮栏配置留影图
+                        </div>
+                    </div>
+                    
+                    <!-- 2. 下方信息区 (编辑区) -->
+                    <div class="flex-1 w-full min-h-[45%] relative z-10 bg-[#050505] pointer-events-auto border-t border-white/5">
+                        <div class="absolute inset-0 px-6 py-5 md:px-12 md:py-8 overflow-y-auto md:overflow-hidden extreme-dark-scrollbar flex flex-col md:flex-row gap-6 md:gap-10">
+                            
+                            <!-- 左侧名牌编辑区 -->
+                            <div class="shrink-0 w-full md:w-[35%] flex flex-col justify-start border-l-[2px] border-[#d4b58e]/30 pl-4 md:pl-6 min-h-0">
+                                
+                                <div class="flex-none md:flex-1 overflow-visible md:overflow-y-auto extreme-dark-scrollbar pr-2 flex flex-col w-full">
+                                    <div class="flex flex-col w-full gap-1">
+                                        <editable-div v-model="currentEntry.alien_text" placeholder="外文代号/Kicker..." class="text-[10px] md:text-xs font-medium tracking-[0.2em] text-[#d4b58e]/80 uppercase font-cinzel hover:bg-white/5 border border-transparent focus:border-white/10 rounded px-1 mb-1 max-w-full"></editable-div>
+                                        
+                                        <div v-for="(line, idx) in currentEntry.titleLines" :key="'gal-title-'+idx" class="flex items-center gap-2 group w-full">
+                                            <editable-div v-model="currentEntry.titleLines[idx]" placeholder="英文大标题..." class="text-2xl md:text-3xl font-bold tracking-[0.1em] text-white uppercase font-serif-sc hover:bg-white/5 border border-transparent focus:border-white/10 rounded px-1 max-w-full leading-tight"></editable-div>
+                                            <div class="flex flex-col opacity-0 group-hover:opacity-100 transition-opacity shrink-0 gap-1">
+                                                <button @click="currentEntry.titleLines.splice(idx + 1, 0, '')" class="p-1 text-gray-400 hover:text-white hover:bg-white/10 rounded" title="添加一行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 5v14M5 12h14"/></svg></button>
+                                                <button @click="currentEntry.titleLines.splice(idx, 1)" v-if="currentEntry.titleLines.length > 1" class="p-1 text-gray-400 hover:text-red-500 hover:bg-red-500/20 rounded" title="删除此行"><svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14"/></svg></button>
+                                            </div>
+                                        </div>
+                                        
+                                        <editable-div v-model="currentEntry.subtitle" placeholder="中文副标题..." class="text-[#d4b58e] text-sm tracking-[0.15em] font-medium uppercase hover:bg-white/5 border border-transparent focus:border-white/10 rounded px-1 mt-2 font-serif-sc max-w-full"></editable-div>
+                                    </div>
+                                    
+                                    <!-- 小属性 (地点/分类等) KV 编辑 -->
+                                    <div v-if="currentEntry.blocks.some(b => b.type === 'key-value')" class="mt-4 md:mt-5 flex flex-wrap gap-2 pb-2 border-t border-white/5 pt-4">
+                                        <template v-for="(block, index) in currentEntry.blocks" :key="'kv-edit-'+index">
+                                            <div v-if="block.type === 'key-value'" class="flex items-center gap-2 px-2.5 py-1.5 bg-white/[0.03] border border-white/5 rounded-sm relative group/kv">
+                                                <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -top-2 -right-2 opacity-0 group-hover/kv:opacity-100 bg-red-500 text-white rounded-full p-0.5"><svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg></button>
+                                                <editable-div v-model="block.key" placeholder="类别" class="text-[#d4b58e]/40 font-mono text-[9px] uppercase tracking-[0.2em] w-12 text-center"></editable-div>
+                                                <span class="w-px h-2.5 bg-white/10"></span>
+                                                <editable-div v-model="block.value" placeholder="内容" class="text-white/80 font-mono text-[9px] uppercase tracking-wider min-w-[40px] text-center"></editable-div>
+                                            </div>
+                                        </template>
+                                    </div>
+                                </div>
+                                
+                                <!-- 假目录按钮 -->
+                                <div class="mt-4 pt-3 md:border-t border-white/5 shrink-0 pointer-events-none">
+                                    <div class="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[4px] border border-white/10 bg-white/[0.02] shadow-md opacity-50">
+                                        <svg class="w-3.5 h-3.5 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                                        <span class="text-white/40 font-mono text-[10px] tracking-[0.2em] mt-[1px]">01 / 11</span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- 右侧滚动块编辑区 -->
+                            <div class="flex-1 w-full flex flex-col min-h-0 md:border-l border-white/5 md:pl-8">
+                                <div class="flex-none md:flex-1 overflow-visible md:overflow-y-auto extreme-dark-scrollbar pr-2 md:pr-4" @scroll.stop="onEditorScroll">
+                                    <div class="text-gray-300 text-[12px] md:text-[13px] leading-[2] md:leading-[2.2] tracking-wider text-justify font-sans pb-8 md:pb-0">
+                                        <template v-for="(block, index) in currentEntry.blocks" :key="'gal-'+index">
+                                            <div v-if="block.type !== 'key-value'" class="relative group/block border border-transparent px-3 py-2 rounded-lg transition-colors draggable-block pr-10 hover:bg-white/5 hover:border-white/10 mb-2"
+                                                 @dragstart="dragStart($event, index)" @dragover.prevent="dragOver($event, index)" @drop="drop($event, index)" @dragend="dragEnd">
+                                                 
+                                                <div class="absolute -right-6 top-1/2 -translate-y-1/2 opacity-0 group-hover/block:opacity-100 p-1.5 cursor-move text-gray-500 hover:text-white transition-colors z-20" @mousedown="enableDrag($event)" @mouseup="disableDrag($event)"><svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="9" r="1"/><circle cx="19" cy="9" r="1"/><circle cx="5" cy="9" r="1"/><circle cx="12" cy="15" r="1"/><circle cx="19" cy="15" r="1"/><circle cx="5" cy="15" r="1"/></svg></div>
+                                                <button @click="currentEntry.blocks.splice(index, 1)" class="absolute -right-3 -top-2 opacity-0 group-hover/block:opacity-100 p-1.5 text-gray-500 hover:text-red-500 bg-[#1a1a1c] border border-white/10 rounded-full transition-all z-10"><svg xmlns="http://www.w3.org/2000/svg" class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" x2="10" y1="11" y2="17"/><line x1="14" x2="14" y1="11" y2="17"/></svg></button>
+
+                                                <template v-if="block.type === 'paragraph'">
+                                                    <editable-div v-model="block.content" placeholder="输入留影相关文本..." class="text-justify focus:bg-white/10 font-serif-sc rounded opacity-90 indent-6 mb-3"></editable-div>
+                                                </template>
+                                                <template v-else-if="block.type === 'quote'">
+                                                    <div class="my-4 border-l-[1.5px] border-[#d4b58e]/40 pl-4 italic text-gray-400 bg-white/[0.02] py-2.5 pr-3 rounded-r-md">
+                                                        <editable-div v-model="block.content" placeholder="输入引言内容..." class="focus:bg-white/10 rounded font-serif-sc"></editable-div>
+                                                        <div class="mt-2 text-[10px] tracking-widest uppercase font-cinzel flex items-center">—— <editable-div v-model="block.author" placeholder="出处落款" class="ml-1 focus:bg-white/10 rounded w-[200px]"></editable-div></div>
+                                                    </div>
+                                                </template>
+                                                <template v-else>
+                                                    <div class="text-red-400 text-xs italic bg-red-900/20 p-2 rounded">【留影模式不支持此类型，请将其删除】</div>
+                                                </template>
+                                            </div>
+                                        </template>
+                                        
+                                        <!-- 添加按钮 -->
+                                        <div class="mt-4 pt-4 border-t border-white/10 flex gap-3 opacity-50 hover:opacity-100 transition-opacity">
+                                            <button @click="addBlock('paragraph')" class="text-xs flex items-center gap-1.5 text-white/70 hover:text-white bg-white/10 px-4 py-1.5 rounded-full hover:bg-white/20 transition-all font-mono"><i data-lucide="align-left" class="w-3.5 h-3.5"></i> 段落</button>
+                                            <button @click="addBlock('quote')" class="text-xs flex items-center gap-1.5 text-white/70 hover:text-white bg-white/10 px-4 py-1.5 rounded-full hover:bg-white/20 transition-all font-mono"><i data-lucide="message-square" class="w-3.5 h-3.5"></i> 引言</button>
+                                            <button @click="addBlock('key-value')" class="text-xs flex items-center gap-1.5 text-white/70 hover:text-white bg-white/10 px-4 py-1.5 rounded-full hover:bg-white/20 transition-all font-mono" title="添加至左侧属性栏"><i data-lucide="list" class="w-3.5 h-3.5"></i> 档案(KV)</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Gallery 图片轮播管理弹窗 -->
+                <div v-if="showGalleryModal" class="absolute inset-0 z-[100] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 md:p-8 pointer-events-auto" @click.self="closeGalleryModal">
+                    <div class="bg-[#111] border border-white/10 rounded-2xl shadow-2xl w-full max-w-xl max-h-[80vh] flex flex-col overflow-hidden">
+                        <div class="flex items-center justify-between px-5 py-3 border-b border-white/10 shrink-0">
+                            <h3 class="text-sm font-bold text-white font-serif-sc flex items-center gap-2">
+                                <i data-lucide="images" class="w-4 h-4 text-[#d4b58e]"></i> 轮播图片管理
+                            </h3>
+                            <button @click="closeGalleryModal" class="w-7 h-7 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/40 hover:text-white transition-all">
+                                <svg viewBox="0 0 24 24" class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+                            </button>
+                        </div>
+                        <div class="flex-1 overflow-y-auto p-4 space-y-2 custom-scrollbar">
+                            <div v-if="galleryEditList.length === 0" class="text-center py-8 text-gray-500 font-mono text-xs">暂无图片，点击下方按钮添加</div>
+                            <div v-for="(url, idx) in galleryEditList" :key="'gallery-img-'+idx"
+                                class="group flex items-center gap-3 p-2 rounded-lg border border-white/5 hover:border-[#d4b58e]/30 hover:bg-white/[0.02] transition-all">
+                                <div class="w-16 h-10 shrink-0 rounded overflow-hidden bg-black border border-white/5">
+                                    <img :src="url" class="w-full h-full object-cover" @error="$event.target.style.display='none'" />
+                                </div>
+                                <input type="text" :value="url" @input="galleryEditList[idx] = $event.target.value" class="flex-1 bg-black/50 border border-white/10 rounded px-2 py-1 text-xs font-mono text-gray-300 focus:outline-none focus:border-[#d4b58e] min-w-0" />
+                                <div class="flex items-center gap-1 shrink-0">
+                                    <button @click="moveGalleryImage(idx, -1)" :disabled="idx === 0" class="p-1 text-white/30 hover:text-white disabled:opacity-20 transition-colors"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m18 15-6-6-6 6"/></svg></button>
+                                    <button @click="moveGalleryImage(idx, 1)" :disabled="idx === galleryEditList.length - 1" class="p-1 text-white/30 hover:text-white disabled:opacity-20 transition-colors"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m6 9 6 6 6-6"/></svg></button>
+                                    <button @click="galleryEditList.splice(idx, 1)" class="p-1 text-red-400/50 hover:text-red-400 transition-colors"><svg class="w-3.5 h-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/></svg></button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="flex items-center justify-between px-5 py-3 border-t border-white/10 shrink-0">
+                            <button @click="galleryEditList.push('')" class="text-xs flex items-center gap-1.5 text-white/70 hover:text-[#d4b58e] transition-colors font-mono">
+                                <i data-lucide="plus" class="w-3.5 h-3.5"></i> 添加图片 URL
+                            </button>
+                            <div class="flex gap-2">
+                                <button @click="closeGalleryModal" class="px-3 py-1.5 text-xs text-gray-400 hover:text-white transition-colors font-mono">取消</button>
+                                <button @click="saveGalleryImages" class="px-4 py-1.5 text-xs bg-[#d4b58e] text-white rounded-lg hover:bg-[#c2a27b] transition-colors font-bold font-mono shadow-sm">确认</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- 弹窗：删除确认 (锁定为亮色) -->
+    <div v-if="showDeleteModal" class="fixed inset-0 z-[500] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4 pointer-events-auto">
+        <div class="border p-8 rounded-2xl shadow-2xl max-w-sm w-full text-center relative overflow-hidden bg-white border-gray-100">
+            <div class="absolute top-0 left-0 w-full h-1.5 bg-red-500"></div>
+            <svg xmlns="http://www.w3.org/2000/svg" class="w-12 h-12 text-red-500 mx-auto mb-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><path d="M12 17h.01"/></svg>
+            <h3 class="text-xl font-bold mb-2 tracking-wider font-serif-sc text-gray-800">是否删除当前词条？</h3>
+            <p class="text-xs mb-6 font-mono text-gray-500">请注意：删除操作不可逆。</p>
+            <div class="flex gap-3 justify-center">
+                <button @click="showDeleteModal = false" class="px-5 py-2.5 border rounded-lg text-sm transition-colors font-bold bg-white border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-gray-400">取消</button>
+                <button @click="executeDelete" class="px-5 py-2.5 bg-red-500/10 text-red-500 border border-red-500/20 rounded-lg text-sm hover:bg-red-500/20 transition-colors font-bold">确认抹除</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 提示框始终一致 -->
+    <div id="toast" class="fixed bottom-6 left-1/2 transform -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full shadow-2xl transition-all duration-300 opacity-0 translate-y-4 pointer-events-none z-[600] flex items-center gap-2">
+        <span id="toast-msg" class="text-sm tracking-wide font-medium"></span>
+    </div>
+
+    <!-- 悬浮文字格式化工具栏 (锁定为亮色) -->
+    <div id="floating-toolbar" class="fixed z-[500] border rounded-lg shadow-xl flex items-center px-1.5 py-1.5 gap-1 inactive transition-colors bg-white border-gray-200 text-gray-600">
+        <button onclick="applyFormat('bold')" class="p-1.5 rounded transition-colors hover:bg-gray-100" title="加粗"><i data-lucide="bold" class="w-3.5 h-3.5"></i></button>
+        <button onclick="applyFormat('italic')" class="p-1.5 rounded transition-colors hover:bg-gray-100" title="斜体"><i data-lucide="italic" class="w-3.5 h-3.5"></i></button>
+        <div class="w-px h-4 mx-0.5 bg-gray-200"></div>
+        <div class="flex items-center gap-1.5 px-1">
+            <button onclick="applyFormat('foreColor', '#d4b58e')" class="w-4 h-4 rounded-full bg-[#d4b58e] hover:ring-2 hover:ring-offset-1 ring-[#d4b58e]/50 transition-all hover:ring-offset-white"></button>
+            <button onclick="applyFormat('foreColor', '#ef4444')" class="w-4 h-4 rounded-full bg-red-500 hover:ring-2 hover:ring-offset-1 ring-red-500/50 transition-all hover:ring-offset-white"></button>
+            <button onclick="applyFormat('foreColor', '#3b82f6')" class="w-4 h-4 rounded-full bg-blue-500 hover:ring-2 hover:ring-offset-1 ring-blue-500/50 transition-all hover:ring-offset-white"></button>
+        </div>
+        <div class="w-px h-4 mx-0.5 bg-gray-200"></div>
+        <button onclick="applyFormat('removeFormat')" class="p-1.5 rounded transition-colors hover:bg-red-50 text-gray-400 hover:text-red-500" title="清除样式"><i data-lucide="eraser" class="w-3.5 h-3.5"></i></button>
+    </div>
+  </div>
+
+  <script>
+    const { createApp, ref, computed, onMounted, watch, nextTick } = Vue; 
+
+    const EditableDiv = {
+        props: ['modelValue', 'placeholder'],
+        emits: ['update:modelValue'],
+        template: `<div contenteditable="true" :placeholder="placeholder" @blur="onInput" @input="onInput" class="outline-none empty:before:content-[attr(placeholder)] empty:before:opacity-40 cursor-text min-h-[1.5em] transition-colors -mx-2 px-2 py-1"></div>`,
+        mounted() { this.$el.innerHTML = this.modelValue || ''; },
+        watch: {
+            modelValue(newVal) { if (this.$el.innerHTML !== newVal) this.$el.innerHTML = newVal || ''; }
+        },
+        methods: {
+            onInput(e) { this.$emit('update:modelValue', e.target.innerHTML); }
+        }
+    };
+
+    let supabaseClient = null;
+    try {
+        const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co';
+        const supabaseKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8';
+        supabaseClient = window.supabase.createClient(supabaseUrl, supabaseKey);
+    } catch(e) { console.error('Supabase Failed', e); }
+
+    function generateId() { return Math.random().toString(36).substr(2, 9); }
+    function showToast(msg, isError = false) {
+        const t = document.getElementById('toast'); document.getElementById('toast-msg').innerText = msg;
+        t.className = `fixed bottom-6 left-1/2 transform -translate-x-1/2 px-6 py-3 rounded-full shadow-2xl transition-all duration-300 z-[600] flex items-center gap-2 pointer-events-none ${isError ? 'bg-red-500 text-white' : 'bg-gray-900 text-white'}`;
+        t.classList.remove('opacity-0', 'translate-y-4');
+        setTimeout(() => t.classList.add('opacity-0', 'translate-y-4'), 3000);
+    }
+
+    let activeTextarea = null;
+    function updateToolbarPosition() {
+        const selection = window.getSelection(); const toolbar = document.getElementById('floating-toolbar');
+        if (!selection.rangeCount || selection.isCollapsed) { toolbar.classList.remove('active'); toolbar.classList.add('inactive'); activeTextarea = null; return; }
+        let node = selection.anchorNode; if (node.nodeType === 3) node = node.parentNode;
+        const editable = node.closest('[contenteditable="true"]');
+        if (editable) {
+            activeTextarea = editable; const range = selection.getRangeAt(0); const rect = range.getBoundingClientRect();
+            toolbar.style.left = (rect.left + rect.width / 2) + 'px';
+            toolbar.style.top = (rect.top - 50) + 'px';
+            toolbar.classList.remove('inactive'); toolbar.classList.add('active');
+        } else { toolbar.classList.remove('active'); toolbar.classList.add('inactive'); activeTextarea = null; }
+    }
+    document.addEventListener('selectionchange', () => { setTimeout(updateToolbarPosition, 10); });
+    function applyFormat(command, value = null) {
+        if (!activeTextarea) return; document.execCommand(command, false, value);
+        activeTextarea.dispatchEvent(new Event('input', { bubbles: true }));
+    }
+
+    const app = createApp({
+        components: { EditableDiv },
+        setup() {
+            const nodesDict = [
+                { id: 'aeons', title: '神祇' },
+                { id: 'characters', title: '角色' },
+                { id: 'enemies', title: '敌对物种' },
+                { id: 'relics', title: '圣物' },
+                { id: 'gallery', title: '留影' },
+                { id: 'factions', title: '势力' },
+                { id: 'terms', title: '专有名词' }
+            ];
+
+            const allRecords = ref([]);
+            const searchQuery = ref('');
+            const isSearchDropdownOpen = ref(false);
+            const isSaving = ref(false);
+            const showDeleteModal = ref(false);
+            const showGalleryModal = ref(false);
+            const galleryEditList = ref([]);
+            const draggedIndex = ref(null);
+            const dragOverIndex = ref(null);
+
+            const currentEntry = ref({
+                id: '', node_id: 'aeons', titleLines: [''], subtitle: '', 
+                bg_image_url: '', bg_image_scale: 120, 
+                image_url: '', main_image_scale: 100, 
+                title_icon_url: '', title_icon_scale: 100,
+                alien_text: '',
+                gallery_images: '',
+                sort_order: 0, blocks: []
+            });
+            
+            const isDarkStyle = computed(() => ['aeons', 'gallery'].includes(currentEntry.value.node_id));
+
+            const filteredRecords = computed(() => {
+                if (!searchQuery.value.trim()) return allRecords.value;
+                const query = searchQuery.value.trim().toLowerCase();
+                return allRecords.value.filter(r => (r.title && r.title.toLowerCase().includes(query)));
+            });
+
+            const closeSearchDropdown = () => { isSearchDropdownOpen.value = false; };
+
+            const selectRecord = (id) => {
+                loadEvent(id);
+                isSearchDropdownOpen.value = false;
+                searchQuery.value = ''; 
+            };
+
+            const onEditorScroll = () => {
+                if (activeTextarea) updateToolbarPosition();
+            };
+
+            onMounted(() => {
+                loadEventList();
+                if(window.lucide) window.lucide.createIcons();
+            });
+
+            const loadEventList = async () => {
+                if(!supabaseClient) return;
+                try {
+                    const { data, error } = await supabaseClient.from('entries').select('id, title, node_id').order('created_at', { ascending: false });
+                    if (!error) allRecords.value = data || [];
+                } catch(e) {}
+            };
+
+            const deserializeContent = (rawMarkdown) => {
+                let blocks = []; let mainScale = 100; let bgImageUrl = ""; let bgImageScale = 120; let sortOrder = 0; let titleIconUrl = ''; let titleIconScale = 100; let alienText = ''; let galleryImages = '';
+                if (!rawMarkdown) return { blocks, mainScale, bgImageUrl, bgImageScale, sortOrder, titleIconUrl, titleIconScale, alienText, galleryImages };
+                
+                const scaleMatch = rawMarkdown.match(/^<!--MAIN_IMAGE_SCALE:(\d+)-->/m);
+                if (scaleMatch) mainScale = parseInt(scaleMatch[1], 10);
+
+                const bgMatch = rawMarkdown.match(/^<!--BG_IMAGE_URL:(.*?)-->/m);
+                if (bgMatch && bgMatch[1]) bgImageUrl = bgMatch[1].trim();
+
+                const bgScaleMatch = rawMarkdown.match(/^<!--BG_IMAGE_SCALE:(\d+)-->/m);
+                if (bgScaleMatch) bgImageScale = parseInt(bgScaleMatch[1], 10);
+                
+                const titleIconMatch = rawMarkdown.match(/^<!--TITLE_ICON_URL:(.*?)-->/m);
+                if (titleIconMatch && titleIconMatch[1]) titleIconUrl = titleIconMatch[1].trim();
+
+                const titleIconScaleMatch = rawMarkdown.match(/^<!--TITLE_ICON_SCALE:(\d+)-->/m);
+                if (titleIconScaleMatch) titleIconScale = parseInt(titleIconScaleMatch[1], 10);
+                
+                const alienMatch = rawMarkdown.match(/^<!--ALIEN_TEXT:(.*?)-->/m);
+                if (alienMatch && alienMatch[1]) alienText = alienMatch[1].trim();
+
+                const sortMatch = rawMarkdown.match(/^<!--SORT_ORDER:(-?\d+)-->/m);
+                if (sortMatch && sortMatch[1]) sortOrder = parseInt(sortMatch[1], 10);
+
+                const galleryMatch = rawMarkdown.match(/^<!--GALLERY_IMAGES:(.*?)-->/m);
+                if (galleryMatch && galleryMatch[1]) galleryImages = galleryMatch[1].trim();
+
+                const blockMatch = rawMarkdown.match(/<!--BLOCKS:(.*?)-->/m);
+                if (blockMatch && blockMatch[1]) {
+                    try { 
+                        let aeonFirstParagraphFound = false;
+                        const parsed = JSON.parse(blockMatch[1]); 
+                        parsed.forEach(b => {
+                            if(b.type === 'paragraph' || b.type === 'image' || b.type === 'key-value' || b.type === 'quote') {
+                                if (b.type === 'paragraph') {
+                                    if (b.dropCap === undefined) {
+                                        b.dropCap = !aeonFirstParagraphFound;
+                                        aeonFirstParagraphFound = true;
+                                    }
+                                }
+                                blocks.push(b);
+                            }
+                            else if(b.children) b.children.forEach(c => {
+                                if(c.type === 'paragraph' || c.type === 'image' || c.type === 'key-value' || c.type === 'quote') blocks.push(c);
+                            });
+                        });
+                    } catch(e) {}
+                } else {
+                    blocks = [{ id: generateId(), type: 'paragraph', content: rawMarkdown.replace(/<!--.*?-->/g, '').replace(/\r\n/g, '\n').trim(), dropCap: true }];
+                }
+                return { blocks, mainScale, bgImageUrl, bgImageScale, sortOrder, titleIconUrl, titleIconScale, alienText, galleryImages };
+            };
+
+            const loadEvent = async (id) => {
+                if(!id || !supabaseClient) return;
+                try {
+                    const { data, error } = await supabaseClient.from('entries').select('*').eq('id', id).single();
+                    if (error) throw error;
+                    
+                    const parsed = deserializeContent(data.content);
+                    const isGallery = data.node_id === 'gallery';
+                    currentEntry.value = {
+                        id: data.id, node_id: data.node_id || 'aeons',
+                        titleLines: data.title ? data.title.split('\n') : [''], 
+                        subtitle: data.subtitle || '',
+                        bg_image_url: isGallery ? (data.bg_image_url || parsed.galleryImages || parsed.bgImageUrl || '') : (parsed.bgImageUrl || ''),
+                        bg_image_scale: parsed.bgImageScale,
+                        image_url: data.image_url || '',
+                        main_image_scale: parsed.mainScale,
+                        title_icon_url: parsed.titleIconUrl || '',
+                        title_icon_scale: parsed.titleIconScale || 100,
+                        alien_text: parsed.alienText || '',
+                        gallery_images: isGallery ? (parsed.galleryImages || '') : '',
+                        sort_order: parsed.sortOrder || 0,
+                        blocks: parsed.blocks
+                    };
+                } catch(e) { showToast('读取失败', true); }
+            };
+
+            const createNew = () => {
+                currentEntry.value = { id: '', node_id: 'aeons', titleLines: [''], subtitle: '', bg_image_url: '', bg_image_scale: 120, image_url: '', main_image_scale: 100, title_icon_url: '', title_icon_scale: 100, alien_text: '', gallery_images: '', sort_order: 0, blocks: [{ id: generateId(), type: 'paragraph', content: '', dropCap: true }] };
+                searchQuery.value = ''; 
+            };
+
+            const addBlock = (type) => {
+                currentEntry.value.blocks.push({ id: generateId(), type, content: '', url: '', caption: '', key: '', value: '', scale: 100, author: '', dropCap: false });
+                setTimeout(() => { 
+                    const el = isDarkStyle.value ? document.querySelector('.extreme-dark-scrollbar') : document.querySelector('.custom-scrollbar'); 
+                    if(el) el.scrollTo({ top: el.scrollHeight, behavior: 'smooth' }); 
+                }, 100);
+            };
+
+            const enableDrag = (e) => {
+                const block = e.currentTarget.closest('.draggable-block');
+                if (block) block.setAttribute('draggable', 'true');
+            };
+            const disableDrag = (e) => {
+                const block = e.currentTarget.closest('.draggable-block');
+                if (block) block.setAttribute('draggable', 'false');
+            };
+            const dragStart = (e, index) => {
+                draggedIndex.value = index;
+                e.dataTransfer.effectAllowed = 'move';
+                e.dataTransfer.setData('text/plain', index);
+                setTimeout(() => { e.target.style.opacity = '0.5'; }, 0);
+            };
+            const dragOver = (e, index) => { dragOverIndex.value = index; };
+            const dragLeave = (e) => {};
+            const drop = (e, index) => {
+                if (draggedIndex.value !== null && draggedIndex.value !== index) {
+                    const blocks = currentEntry.value.blocks;
+                    const movedItem = blocks.splice(draggedIndex.value, 1)[0];
+                    blocks.splice(index, 0, movedItem);
+                }
+                dragOverIndex.value = null;
+                draggedIndex.value = null;
+                const block = e.currentTarget.closest('.draggable-block');
+                if (block) { block.setAttribute('draggable', 'false'); block.style.opacity = '1'; }
+            };
+            const dragEnd = (e) => {
+                dragOverIndex.value = null; draggedIndex.value = null;
+                e.target.style.opacity = '1'; e.target.setAttribute('draggable', 'false');
+            };
+
+            const save = async () => {
+                if(!supabaseClient) return showToast('脱机模式，无法保存', true);
+                if(!currentEntry.value.titleLines[0]) return showToast('必须填写大标题', true);
+                
+                isSaving.value = true;
+                let markdown = `<!--MAIN_IMAGE_SCALE:${currentEntry.value.main_image_scale}-->\n<!--BG_IMAGE_URL:${currentEntry.value.bg_image_url}-->\n<!--BG_IMAGE_SCALE:${currentEntry.value.bg_image_scale}-->\n<!--TITLE_ICON_URL:${currentEntry.value.title_icon_url || ''}-->\n<!--TITLE_ICON_SCALE:${currentEntry.value.title_icon_scale || 100}-->\n<!--ALIEN_TEXT:${currentEntry.value.alien_text || ''}-->\n<!--SORT_ORDER:${currentEntry.value.sort_order}-->\n<!--GALLERY_IMAGES:${currentEntry.value.gallery_images || ''}-->\n<!--BLOCKS:${JSON.stringify(currentEntry.value.blocks)}-->\n\n`;
+                currentEntry.value.blocks.forEach(b => {
+                    if (b.type === 'paragraph') markdown += `${b.content}\n\n`;
+                    else if (b.type === 'image') markdown += `![${b.caption || ''}](${b.url || ''})\n\n`;
+                    else if (b.type === 'key-value') markdown += `**${b.key}**: ${b.value}\n\n`;
+                    else if (b.type === 'quote') markdown += `> ${b.content}\n> —— ${b.author}\n\n`;
+                });
+
+                const payload = {
+                    node_id: currentEntry.value.node_id, 
+                    title: currentEntry.value.titleLines.join('\n').trim(),
+                    subtitle: currentEntry.value.subtitle.trim(), image_url: currentEntry.value.image_url,
+                    bg_image_url: currentEntry.value.node_id === 'gallery' ? currentEntry.value.bg_image_url : '',
+                    content: markdown.trim()
+                };
+
+                try {
+                    let res = currentEntry.value.id ? await supabaseClient.from('entries').update(payload).eq('id', currentEntry.value.id) : await supabaseClient.from('entries').insert([payload]).select();
+                    if (res.error) throw res.error; 
+                    showToast('档案同频烧录成功！'); 
+                    await loadEventList();
+                    if (!currentEntry.value.id && res.data && res.data.length > 0) {
+                        currentEntry.value.id = res.data[0].id;
+                    }
+                } catch(e) { showToast('烧录失败: ' + (e.message || '权限不足'), true); }
+                finally { isSaving.value = false; }
+            };
+
+            const promptDelete = () => { showDeleteModal.value = true; };
+            const executeDelete = async () => {
+                try {
+                    const { error } = await supabaseClient.from('entries').delete().eq('id', currentEntry.value.id);
+                    if (error) throw error; 
+                    
+                    showToast('档案已被彻底抹除');
+                    showDeleteModal.value = false;
+                    await loadEventList(); createNew();
+                } catch(e) { showToast('删除失败: ' + (e.message || '权限不足'), true); }
+            };
+
+            const openGalleryModal = () => {
+                let images = []
+                try {
+                    const parsed = JSON.parse(currentEntry.value.bg_image_url || '[]');
+                    if (Array.isArray(parsed)) images = parsed;
+                } catch {}
+                if (images.length === 0 && currentEntry.value.bg_image_url && !currentEntry.value.bg_image_url.startsWith('[')) {
+                    images = [currentEntry.value.bg_image_url]
+                }
+                galleryEditList.value = images;
+                showGalleryModal.value = true;
+                nextTick(() => { if (window.lucide) lucide.createIcons(); });
+            };
+
+            const closeGalleryModal = () => {
+                showGalleryModal.value = false;
+            };
+
+            const saveGalleryImages = () => {
+                const validUrls = galleryEditList.value.filter(u => u.trim() !== '');
+                const json = JSON.stringify(validUrls);
+                currentEntry.value.bg_image_url = json;
+                currentEntry.value.gallery_images = json;
+                showGalleryModal.value = false;
+                showToast('轮播图配置已更新');
+            };
+
+            const moveGalleryImage = (idx, dir) => {
+                const target = idx + dir;
+                if (target < 0 || target >= galleryEditList.value.length) return;
+                const arr = galleryEditList.value;
+                [arr[idx], arr[target]] = [arr[target], arr[idx]];
+            };
+
+            document.addEventListener('paste', function(e) {
+                const target = e.target;
+                if (target.getAttribute('contenteditable') === 'true') {
+                    e.preventDefault(); const text = (e.originalEvent || e).clipboardData.getData('text/plain');
+                    document.execCommand('insertText', false, text);
+                }
+            });
+
+            createNew();
+
+            const galleryImagesList = computed(() => {
+                try {
+                    const parsed = JSON.parse(currentEntry.value.bg_image_url || '[]');
+                    if (Array.isArray(parsed)) return parsed;
+                } catch {}
+                if (currentEntry.value.bg_image_url && !currentEntry.value.bg_image_url.startsWith('[')) {
+                    return [currentEntry.value.bg_image_url];
+                }
+                return [];
+            });
+
+            return {
+                nodesDict, allRecords, currentEntry, isDarkStyle,
+                searchQuery, isSearchDropdownOpen, filteredRecords, closeSearchDropdown, selectRecord,
+                loadEvent, createNew, addBlock, save, isSaving,
+                showDeleteModal, promptDelete, executeDelete, onEditorScroll,
+                showGalleryModal, galleryEditList, openGalleryModal, closeGalleryModal, saveGalleryImages, moveGalleryImage, galleryImagesList,
+                draggedIndex, dragOverIndex, enableDrag, disableDrag, dragStart, dragOver, dragLeave, drop, dragEnd
+            };
+        }
+    });
+
+    app.mount('#app');
+  </script>
+</body>
+</html>
