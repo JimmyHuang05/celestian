@@ -6,6 +6,7 @@ import DataNode from '../components/encyclopedia/DataNode.jsx'
 import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
 import GalleryDetail from '../components/encyclopedia/GalleryDetail.jsx'
 import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
+import ASSETS_BASE from '../constants.js'
 
 const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
 const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
@@ -17,23 +18,23 @@ try {
 }
 
 const desktopNodes = [
-  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: '/data/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
-  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: '/data/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '40%', left: '65%' }, scale: 1.1 },
-  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: '/data/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '30%', left: '35%' }, scale: 0.9 },
-  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: '/data/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '76%', left: '72%' }, scale: 0.85 },
-  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: '/data/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '30%' }, scale: 0.85 },
-  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: '/data/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '50%', left: '18%' }, scale: 0.75 },
-  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: '/data/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '50%', left: '80%' }, scale: 0.75 },
+  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
+  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: ASSETS_BASE + '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '40%', left: '65%' }, scale: 1.1 },
+  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: ASSETS_BASE + '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '30%', left: '35%' }, scale: 0.9 },
+  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: ASSETS_BASE + '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '76%', left: '72%' }, scale: 0.85 },
+  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: ASSETS_BASE + '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '30%' }, scale: 0.85 },
+  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: ASSETS_BASE + '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '50%', left: '18%' }, scale: 0.75 },
+  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: ASSETS_BASE + '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '50%', left: '80%' }, scale: 0.75 },
 ]
 
 const mobileNodes = [
-  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: '/data/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '50%', left: '50%' }, scale: 1.1 },
-  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: '/data/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '32%', left: '25%' }, scale: 0.9 },
-  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: '/data/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '70%', left: '28%' }, scale: 0.8 },
-  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: '/data/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '25%', left: '75%' }, scale: 0.75 },
-  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: '/data/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '75%' }, scale: 0.75 },
-  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: '/data/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '85%', left: '60%' }, scale: 0.65 },
-  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: '/data/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '15%', left: '50%' }, scale: 0.65 },
+  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '50%', left: '50%' }, scale: 1.1 },
+  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: ASSETS_BASE + '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '32%', left: '25%' }, scale: 0.9 },
+  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: ASSETS_BASE + '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '70%', left: '28%' }, scale: 0.8 },
+  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: ASSETS_BASE + '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '25%', left: '75%' }, scale: 0.75 },
+  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: ASSETS_BASE + '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '75%' }, scale: 0.75 },
+  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: ASSETS_BASE + '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '85%', left: '60%' }, scale: 0.65 },
+  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: ASSETS_BASE + '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '15%', left: '50%' }, scale: 0.65 },
 ]
 
 const bgColors = {
@@ -325,8 +326,8 @@ function EncyclopediaPage() {
           </div>
         </div>
 
-        <audio ref={bgmAudioRef} autoPlay loop src="/data/audio/bgm/encyclopedia.mp3" />
-        <audio ref={hoverAudioRef} src="/data/audio/sfx/hover.mp3" />
+        <audio ref={bgmAudioRef} autoPlay loop src={ASSETS_BASE + "/audio/bgm/encyclopedia.mp3"} />
+        <audio ref={hoverAudioRef} src={ASSETS_BASE + "/audio/sfx/hover.mp3"} />
       </div>
 
       {panelStyle && <div style={panelStyle} />}

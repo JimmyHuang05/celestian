@@ -1,8 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
+import ASSETS_BASE from '../constants.js'
 
 const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
+const MAP_IMAGE_PATH = ASSETS_BASE + '/map/basemap.webp'
 const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
 let supabaseClient = null
 try { supabaseClient = createClient(supabaseUrl, supabaseKey) } catch (e) { console.error('Supabase init error', e) }
@@ -11,7 +13,6 @@ const MAP_TRUE_WIDTH = 10800
 const MAP_TRUE_HEIGHT = 5200
 const IMAGE_BOUNDS = [[0, 0], [MAP_TRUE_HEIGHT, MAP_TRUE_WIDTH]]
 const MAX_BOUNDS = [[0, 0], [MAP_TRUE_HEIGHT, MAP_TRUE_WIDTH]]
-const MAP_IMAGE_PATH = '/data/map/basemap.webp'
 
 const filterOptions = ['首都', '主要城市', '城市/城镇', '要塞', '基地', '港口', '遗迹', '据点', '观测站', '异常', '资源', '其他']
 
@@ -214,7 +215,7 @@ function MapPage() {
   }, [renderAllMarkersToLeaflet])
 
   const loadRegionsSVG = useCallback(() => {
-    fetch('/data/map/regions.svg')
+    fetch(ASSETS_BASE + '/map/regions.svg')
       .then(res => { if (!res.ok) throw new Error('SVG load failed'); return res.text() })
       .then(svgText => {
         const parser = new DOMParser()

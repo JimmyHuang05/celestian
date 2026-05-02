@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
+import ASSETS_BASE from '../constants.js'
 
 const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
 const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
@@ -104,7 +105,7 @@ function FunctionsPage() {
 
   const handleStartChat = useCallback(() => {
     setHasStartedChat(true)
-    const audio = new Audio('/data/audio/sfx/uplink.mp3')
+    const audio = new Audio(ASSETS_BASE + '/audio/sfx/uplink.mp3')
     audio.volume = 0.9
     audio.play().catch(() => {})
     setTimeout(() => { if (aiInputRef.current) aiInputRef.current.focus(); scrollToBottom() }, 500)
@@ -123,7 +124,7 @@ function FunctionsPage() {
     })))
 
     const initBgm = () => {
-      const audio = new Audio('/data/audio/bgm/functions.mp3')
+      const audio = new Audio(ASSETS_BASE + '/audio/bgm/functions.mp3')
       audio.loop = true
       audio.volume = 0.10
       bgmAudioRef.current = audio
