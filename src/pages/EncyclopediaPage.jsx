@@ -313,10 +313,16 @@ function EncyclopediaPage() {
     navigate('/')
   }, [navigate])
 
+  const onEntryChange = useCallback((id) => {
+    if (nodeId && id) {
+      navigate(`/encyclopedia/${nodeId}?id=${id}`, { replace: true })
+    }
+  }, [nodeId, navigate])
+
   const renderDetailComponent = () => {
     if (!activeNode) return null
     const compType = currentDetailComponent()
-    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId }
+    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
     if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} />
     if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />

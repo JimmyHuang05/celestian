@@ -1,7 +1,8 @@
 import { useState, useEffect, useCallback } from 'react'
 
-function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
+function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
+  const [ids, setIds] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scrollProgress, setScrollProgress] = useState(0)
@@ -59,6 +60,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
             }
 
             return {
+              id: row.id,
               name: row.title || '未知卷宗',
               title: row.subtitle || '',
               image_url: row.image_url || '',
@@ -74,21 +76,30 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
             }
           })
           parsedData.sort((a, b) => a.sort_order - b.sort_order)
+          const extractedIds = parsedData.map(c => c.id)
+          setIds(extractedIds)
           setCharacters(parsedData)
+
+          if (entryId) {
+            const foundIndex = extractedIds.indexOf(entryId)
+            if (foundIndex !== -1) setCurrentIndex(foundIndex)
+          }
         } else {
           setCharacters([])
+          setIds([])
         }
       } catch (e) {
         setCharacters([])
+        setIds([])
       } finally {
         setIsLoading(false)
       }
     }
     fetchEntries()
-  }, [node, supabaseClient])
+  }, [node, supabaseClient, entryId])
 
-  const prev = () => { if (currentIndex > 0) { setCurrentIndex(prev => prev - 1); setScrollProgress(0) } }
-  const next = () => { if (currentIndex < characters.length - 1) { setCurrentIndex(prev => prev + 1); setScrollProgress(0) } }
+  const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
+  const next = () => { if (currentIndex < characters.length - 1) { const ni = currentIndex + 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
 
   const handleScroll = useCallback((e) => {
     const target = e.target

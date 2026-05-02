@@ -1,7 +1,8 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 
-function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
+function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
+  const [ids, setIds] = useState([])
   const [isLoading, setIsLoading] = useState(true)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [isListOpen, setIsListOpen] = useState(false)
@@ -66,6 +67,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
             }
 
             return {
+              id: row.id,
               name: row.title || '未知卷宗',
               title: row.subtitle || '',
               image_url: row.image_url || '',
@@ -81,29 +83,44 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
             }
           })
           parsedData.sort((a, b) => a.sort_order - b.sort_order)
+          const extractedIds = parsedData.map(c => c.id)
+          setIds(extractedIds)
           setCharacters(parsedData)
+
+          if (entryId) {
+            const foundIndex = extractedIds.indexOf(entryId)
+            if (foundIndex !== -1) {
+              setCurrentIndex(foundIndex)
+            }
+          }
         } else {
           setCharacters([])
+          setIds([])
         }
       } catch (e) {
         setCharacters([])
+        setIds([])
       } finally {
         setIsLoading(false)
       }
     }
     fetchEntries()
-  }, [node, supabaseClient])
+  }, [node, supabaseClient, entryId])
 
   const prev = () => {
     if (currentIndex > 0) {
-      setCurrentIndex(prev => prev - 1)
+      const newIndex = currentIndex - 1
+      setCurrentIndex(newIndex)
       setScrollProgress(0)
+      if (onEntryChange && ids[newIndex]) onEntryChange(ids[newIndex])
     }
   }
   const next = () => {
     if (currentIndex < characters.length - 1) {
-      setCurrentIndex(prev => prev + 1)
+      const newIndex = currentIndex + 1
+      setCurrentIndex(newIndex)
       setScrollProgress(0)
+      if (onEntryChange && ids[newIndex]) onEntryChange(ids[newIndex])
     }
   }
 
@@ -116,6 +133,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId }) {
     setCurrentIndex(index)
     setIsListOpen(false)
     setSearchQuery('')
+    if (onEntryChange && ids[index]) onEntryChange(ids[index])
   }
 
   const handleScroll = useCallback((e) => {
