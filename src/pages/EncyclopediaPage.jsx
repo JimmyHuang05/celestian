@@ -7,8 +7,8 @@ import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
 import GalleryDetail from '../components/encyclopedia/GalleryDetail.jsx'
 import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
 
-const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co'
-const supabaseKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8'
+const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
+const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
 let supabaseClient = null
 try {
   supabaseClient = createClient(supabaseUrl, supabaseKey)

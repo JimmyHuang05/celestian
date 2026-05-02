@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co'
-const supabaseKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8'
+const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
+const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
 let supabaseClient = null
 try { supabaseClient = createClient(supabaseUrl, supabaseKey) } catch (e) { console.error('Supabase init error', e) }
 
@@ -76,8 +76,8 @@ function FunctionsPage() {
     scrollToBottom()
 
     try {
-      const SUPABASE_URL = "https://gqoolicfujukmbwtmwrx.supabase.co"
-      const ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdxb29saWNmdWp1a21id3Rtd3J4Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU5MTM2MTEsImV4cCI6MjA5MTQ4OTYxMX0.2aDsxTyQ2JJoFKwbq5t9a4IAc4jWC-y53X9bI9l9Wy0"
+      const SUPABASE_URL = "https://qunhjfulchaurfxtjoeg.supabase.co"
+      const ANON_KEY = "sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T"
       const res = await fetch(`${SUPABASE_URL}/functions/v1/Deepseek_API`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${ANON_KEY}`, 'apikey': ANON_KEY },

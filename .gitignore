@@ -25,3 +25,7 @@ dist-ssr
 
 # Supabase secrets
 supabase.txt
+
+# Migration data exports
+scripts/migrate_data.json
+scripts/migrate_extra_data.json

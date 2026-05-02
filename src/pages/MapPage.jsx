@@ -2,8 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = 'https://gqoolicfujukmbwtmwrx.supabase.co'
-const supabaseKey = 'sb_publishable_bA8GyCFtyp98rCzpgD5Gkw_EAwUuCU8'
+const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
+const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
 let supabaseClient = null
 try { supabaseClient = createClient(supabaseUrl, supabaseKey) } catch (e) { console.error('Supabase init error', e) }
 
