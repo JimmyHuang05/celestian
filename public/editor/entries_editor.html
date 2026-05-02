@@ -865,58 +865,27 @@
                 } catch(e) {}
             };
 
-            const deserializeContent = (rawMarkdown) => {
-                let blocks = []; let mainScale = 100; let bgImageUrl = ""; let bgImageScale = 120; let sortOrder = 0; let titleIconUrl = ''; let titleIconScale = 100; let alienText = ''; let galleryImages = '';
-                if (!rawMarkdown) return { blocks, mainScale, bgImageUrl, bgImageScale, sortOrder, titleIconUrl, titleIconScale, alienText, galleryImages };
-                
-                const scaleMatch = rawMarkdown.match(/^<!--MAIN_IMAGE_SCALE:(\d+)-->/m);
-                if (scaleMatch) mainScale = parseInt(scaleMatch[1], 10);
-
-                const bgMatch = rawMarkdown.match(/^<!--BG_IMAGE_URL:(.*?)-->/m);
-                if (bgMatch && bgMatch[1]) bgImageUrl = bgMatch[1].trim();
-
-                const bgScaleMatch = rawMarkdown.match(/^<!--BG_IMAGE_SCALE:(\d+)-->/m);
-                if (bgScaleMatch) bgImageScale = parseInt(bgScaleMatch[1], 10);
-                
-                const titleIconMatch = rawMarkdown.match(/^<!--TITLE_ICON_URL:(.*?)-->/m);
-                if (titleIconMatch && titleIconMatch[1]) titleIconUrl = titleIconMatch[1].trim();
-
-                const titleIconScaleMatch = rawMarkdown.match(/^<!--TITLE_ICON_SCALE:(\d+)-->/m);
-                if (titleIconScaleMatch) titleIconScale = parseInt(titleIconScaleMatch[1], 10);
-                
-                const alienMatch = rawMarkdown.match(/^<!--ALIEN_TEXT:(.*?)-->/m);
-                if (alienMatch && alienMatch[1]) alienText = alienMatch[1].trim();
-
-                const sortMatch = rawMarkdown.match(/^<!--SORT_ORDER:(-?\d+)-->/m);
-                if (sortMatch && sortMatch[1]) sortOrder = parseInt(sortMatch[1], 10);
-
-                const galleryMatch = rawMarkdown.match(/^<!--GALLERY_IMAGES:(.*?)-->/m);
-                if (galleryMatch && galleryMatch[1]) galleryImages = galleryMatch[1].trim();
-
-                const blockMatch = rawMarkdown.match(/<!--BLOCKS:(.*?)-->/m);
-                if (blockMatch && blockMatch[1]) {
-                    try { 
-                        let aeonFirstParagraphFound = false;
-                        const parsed = JSON.parse(blockMatch[1]); 
-                        parsed.forEach(b => {
+            const deserializeContent = (row) => {
+                let blocks = [];
+                if (row.blocks) {
+                    try {
+                        let firstParagraphFound = false;
+                        JSON.parse(row.blocks).forEach(b => {
                             if(b.type === 'paragraph' || b.type === 'image' || b.type === 'key-value' || b.type === 'quote') {
-                                if (b.type === 'paragraph') {
-                                    if (b.dropCap === undefined) {
-                                        b.dropCap = !aeonFirstParagraphFound;
-                                        aeonFirstParagraphFound = true;
-                                    }
+                                if (b.type === 'paragraph' && b.dropCap === undefined) {
+                                    b.dropCap = !firstParagraphFound;
+                                    firstParagraphFound = true;
                                 }
                                 blocks.push(b);
                             }
-                            else if(b.children) b.children.forEach(c => {
-                                if(c.type === 'paragraph' || c.type === 'image' || c.type === 'key-value' || c.type === 'quote') blocks.push(c);
-                            });
                         });
                     } catch(e) {}
+                } else if (row.content) {
+                    blocks = [{ id: generateId(), type: 'paragraph', content: row.content, dropCap: true }];
                 } else {
-                    blocks = [{ id: generateId(), type: 'paragraph', content: rawMarkdown.replace(/<!--.*?-->/g, '').replace(/\r\n/g, '\n').trim(), dropCap: true }];
+                    blocks = [{ id: generateId(), type: 'paragraph', content: '', dropCap: true }];
                 }
-                return { blocks, mainScale, bgImageUrl, bgImageScale, sortOrder, titleIconUrl, titleIconScale, alienText, galleryImages };
+                return { blocks };
             };
 
             const loadEvent = async (id) => {
@@ -925,28 +894,36 @@
                     const { data, error } = await supabaseClient.from('entries').select('*').eq('id', id).single();
                     if (error) throw error;
                     
-                    const parsed = deserializeContent(data.content);
+                    const parsed = deserializeContent(data);
                     const isGallery = data.node_id === 'gallery';
                     currentEntry.value = {
                         id: data.id, node_id: data.node_id || 'aeons',
                         titleLines: data.title ? data.title.split('\n') : [''], 
                         subtitle: data.subtitle || '',
-                        bg_image_url: isGallery ? (data.bg_image_url || parsed.galleryImages || parsed.bgImageUrl || '') : (parsed.bgImageUrl || ''),
-                        bg_image_scale: parsed.bgImageScale,
+                        bg_image_url: isGallery ? (data.bg_image_url || '') : (data.bg_image_url || ''),
+                        bg_image_scale: data.bg_image_scale || 120,
                         image_url: data.image_url || '',
-                        main_image_scale: parsed.mainScale,
-                        title_icon_url: parsed.titleIconUrl || '',
-                        title_icon_scale: parsed.titleIconScale || 100,
-                        alien_text: parsed.alienText || '',
-                        gallery_images: isGallery ? (parsed.galleryImages || '') : '',
-                        sort_order: parsed.sortOrder || 0,
+                        main_image_scale: data.main_image_scale || 100,
+                        title_icon_url: data.title_icon_url || '',
+                        title_icon_scale: data.title_icon_scale || 100,
+                        alien_text: data.alien_text || '',
+                        gallery_images: isGallery ? (data.gallery_images || '') : '',
+                        sort_order: data.sort_order || 0,
                         blocks: parsed.blocks
                     };
                 } catch(e) { showToast('读取失败', true); }
             };
 
-            const createNew = () => {
-                currentEntry.value = { id: '', node_id: 'aeons', titleLines: [''], subtitle: '', bg_image_url: '', bg_image_scale: 120, image_url: '', main_image_scale: 100, title_icon_url: '', title_icon_scale: 100, alien_text: '', gallery_images: '', sort_order: 0, blocks: [{ id: generateId(), type: 'paragraph', content: '', dropCap: true }] };
+            const createNew = async () => {
+                const targetNode = currentEntry.value.node_id || 'aeons';
+                let nextSort = 0;
+                if (supabaseClient) {
+                    try {
+                        const { data } = await supabaseClient.from('entries').select('sort_order').eq('node_id', targetNode).order('sort_order', { ascending: false }).limit(1);
+                        if (data && data.length > 0) nextSort = (data[0].sort_order || 0) + 1;
+                    } catch(e) {}
+                }
+                currentEntry.value = { id: '', node_id: targetNode, titleLines: [''], subtitle: '', bg_image_url: '', bg_image_scale: 120, image_url: '', main_image_scale: 100, title_icon_url: '', title_icon_scale: 100, alien_text: '', gallery_images: '', sort_order: nextSort, blocks: [{ id: generateId(), type: 'paragraph', content: '', dropCap: true }] };
                 searchQuery.value = ''; 
             };
 
@@ -995,20 +972,30 @@
                 if(!currentEntry.value.titleLines[0]) return showToast('必须填写大标题', true);
                 
                 isSaving.value = true;
-                let markdown = `<!--MAIN_IMAGE_SCALE:${currentEntry.value.main_image_scale}-->\n<!--BG_IMAGE_URL:${currentEntry.value.bg_image_url}-->\n<!--BG_IMAGE_SCALE:${currentEntry.value.bg_image_scale}-->\n<!--TITLE_ICON_URL:${currentEntry.value.title_icon_url || ''}-->\n<!--TITLE_ICON_SCALE:${currentEntry.value.title_icon_scale || 100}-->\n<!--ALIEN_TEXT:${currentEntry.value.alien_text || ''}-->\n<!--SORT_ORDER:${currentEntry.value.sort_order}-->\n<!--GALLERY_IMAGES:${currentEntry.value.gallery_images || ''}-->\n<!--BLOCKS:${JSON.stringify(currentEntry.value.blocks)}-->\n\n`;
+
+                let contentText = '';
                 currentEntry.value.blocks.forEach(b => {
-                    if (b.type === 'paragraph') markdown += `${b.content}\n\n`;
-                    else if (b.type === 'image') markdown += `![${b.caption || ''}](${b.url || ''})\n\n`;
-                    else if (b.type === 'key-value') markdown += `**${b.key}**: ${b.value}\n\n`;
-                    else if (b.type === 'quote') markdown += `> ${b.content}\n> —— ${b.author}\n\n`;
+                    if (b.type === 'paragraph') contentText += `${b.content}\n\n`;
+                    else if (b.type === 'image') contentText += `![${b.caption || ''}](${b.url || ''})\n\n`;
+                    else if (b.type === 'key-value') contentText += `**${b.key}**: ${b.value}\n\n`;
+                    else if (b.type === 'quote') contentText += `> ${b.content}\n> —— ${b.author}\n\n`;
                 });
 
                 const payload = {
                     node_id: currentEntry.value.node_id, 
                     title: currentEntry.value.titleLines.join('\n').trim(),
-                    subtitle: currentEntry.value.subtitle.trim(), image_url: currentEntry.value.image_url,
-                    bg_image_url: currentEntry.value.node_id === 'gallery' ? currentEntry.value.bg_image_url : '',
-                    content: markdown.trim()
+                    subtitle: currentEntry.value.subtitle.trim(),
+                    image_url: currentEntry.value.image_url,
+                    main_image_scale: currentEntry.value.main_image_scale,
+                    bg_image_url: currentEntry.value.node_id === 'gallery' ? currentEntry.value.bg_image_url : currentEntry.value.bg_image_url,
+                    bg_image_scale: currentEntry.value.bg_image_scale,
+                    title_icon_url: currentEntry.value.title_icon_url || '',
+                    title_icon_scale: currentEntry.value.title_icon_scale || 100,
+                    alien_text: currentEntry.value.alien_text || '',
+                    gallery_images: currentEntry.value.node_id === 'gallery' ? (currentEntry.value.gallery_images || '') : '',
+                    sort_order: currentEntry.value.sort_order,
+                    blocks: JSON.stringify(currentEntry.value.blocks),
+                    content: contentText.trim()
                 };
 
                 try {
