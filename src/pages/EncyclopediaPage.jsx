@@ -196,7 +196,12 @@ function EncyclopediaPage() {
     if (isTransitioning) return
     setIsTransitioning(true)
 
-    const lightColor = (node.id === 'gallery' || node.id === 'aeons') ? 'black' : 'white'
+    const bgColors = {
+      aeons: '#070709',
+      gallery: '#050505',
+    }
+    const bgColor = bgColors[node.id] || '#f9fafb'
+    const isDark = bgColor !== '#f9fafb'
 
     let cx = window.innerWidth / 2
     let cy = window.innerHeight / 2
@@ -223,35 +228,29 @@ function EncyclopediaPage() {
       opacity: 1,
       transform: 'translate(-50%, -50%)',
       transition: 'none',
-      backgroundColor: lightColor === 'black' ? '#0a0a0a' : '#f9fafb',
-      boxShadow: lightColor === 'black' ? '0 0 80px rgba(0,0,0,0.8)' : '0 0 80px rgba(255,255,255,0.2)',
+      backgroundColor: bgColor,
+      boxShadow: isDark ? '0 0 80px rgba(0,0,0,0.8)' : '0 0 80px rgba(255,255,255,0.2)',
     })
 
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         setLightStyle(prev => ({
           ...prev,
-          transition: 'width 0.6s cubic-bezier(0.4, 0, 0.2, 1), height 0.6s cubic-bezier(0.4, 0, 0.2, 1), left 0.6s cubic-bezier(0.4, 0, 0.2, 1), top 0.6s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.6s cubic-bezier(0.4, 0, 0.2, 1)',
+          transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
           left: '50%',
           top: '50%',
           width: targetW + 'px',
           height: targetH + 'px',
           borderRadius: targetRadius,
           transform: 'translate(-50%, -50%)',
-          backgroundColor: lightColor === 'black' ? '#0a0a0a' : '#f9fafb',
+          backgroundColor: bgColor,
         }))
 
         setTimeout(() => {
           navigate(`/encyclopedia/${node.id}`)
-        }, 350)
-
-        setTimeout(() => {
-          setLightStyle(prev => ({ ...prev, transition: 'opacity 0.6s ease', opacity: 0 }))
-          setTimeout(() => {
-            setLightStyle(prev => ({ ...prev, display: 'none' }))
-            setIsTransitioning(false)
-          }, 600)
-        }, 600)
+          setLightStyle(prev => ({ ...prev, display: 'none' }))
+          setIsTransitioning(false)
+        }, 500)
       })
     })
   }, [isMobile, isTransitioning, navigate])
