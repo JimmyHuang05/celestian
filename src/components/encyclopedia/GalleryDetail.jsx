@@ -23,36 +23,23 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
         if (error) throw error
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
-            let mainScale = 100, bgImageUrl = '', bgImageScale = 120, titleIconUrl = '', titleIconScale = 100, sortOrder = 0, alienText = ''
-            const content = row.content || ''
-            const scaleMatch = content.match(/^<!--MAIN_IMAGE_SCALE:(\d+)-->/m)
-            if (scaleMatch) mainScale = parseInt(scaleMatch[1], 10)
-            const bgMatch = content.match(/^<!--BG_IMAGE_URL:(.*?)-->/m)
-            if (bgMatch) bgImageUrl = bgMatch[1].trim()
-            const bgScaleMatch = content.match(/^<!--BG_IMAGE_SCALE:(\d+)-->/m)
-            if (bgScaleMatch) bgImageScale = parseInt(bgScaleMatch[1], 10)
-            const alienMatch = content.match(/^<!--ALIEN_TEXT:(.*?)-->/m)
-            if (alienMatch) alienText = alienMatch[1].trim()
-            const sortMatch = content.match(/^<!--SORT_ORDER:(-?\d+)-->/m)
-            if (sortMatch) sortOrder = parseInt(sortMatch[1], 10)
-
             let galleryImages = []
-            const galleryMatch = content.match(/^<!--GALLERY_IMAGES:(.*?)-->/m)
-            if (galleryMatch && galleryMatch[1].trim()) {
-              try { galleryImages = JSON.parse(galleryMatch[1].trim()) } catch (e) {}
+            if (row.gallery_images) {
+              try { galleryImages = JSON.parse(row.gallery_images) } catch (e) {}
             }
 
             const blocksArr = []
             const kv = []
-            const blockMatch = content.match(/<!--BLOCKS:(.*?)-->/m)
-            if (blockMatch && blockMatch[1]) {
+            if (row.blocks) {
               try {
-                JSON.parse(blockMatch[1]).forEach(b => {
+                JSON.parse(row.blocks).forEach(b => {
                   if (b.type === 'paragraph' && b.content) blocksArr.push({ type: 'paragraph', content: b.content })
                   if (b.type === 'key-value' && b.key) kv.push({ key: b.key, value: b.value })
                   if (b.type === 'quote' && b.content) blocksArr.push({ type: 'quote', content: b.content, author: b.author })
                 })
               } catch (e) {}
+            } else if (row.content) {
+              blocksArr.push({ type: 'paragraph', content: row.content })
             }
 
             return {
@@ -60,14 +47,13 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
               name: row.title || '未知卷宗',
               title: row.subtitle || '',
               image_url: row.image_url || '',
-              bg_image_url: bgImageUrl,
-              bg_image_url_db: row.bg_image_url || '',
-              bg_image_scale: bgImageScale,
-              main_image_scale: mainScale,
-              title_icon_url: titleIconUrl,
-              title_icon_scale: titleIconScale,
-              alien_text: alienText,
-              sort_order: sortOrder,
+              bg_image_url: row.bg_image_url || '',
+              bg_image_scale: row.bg_image_scale || 120,
+              main_image_scale: row.main_image_scale || 100,
+              title_icon_url: row.title_icon_url || '',
+              title_icon_scale: row.title_icon_scale || 100,
+              alien_text: row.alien_text || '',
+              sort_order: row.sort_order || 0,
               blocks: blocksArr,
               kv,
               gallery_images: galleryImages,
@@ -102,13 +88,13 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
   }, [ids])
 
   const currentImages = character ? (() => {
-    const fromDb = character.bg_image_url_db
-    if (fromDb) {
-      try { const p = JSON.parse(fromDb); if (Array.isArray(p) && p.length > 0) return p } catch (e) {}
-      if (typeof fromDb === 'string' && fromDb.startsWith('http')) return [fromDb]
+    const bgUrl = character.bg_image_url
+    if (bgUrl) {
+      try { const p = JSON.parse(bgUrl); if (Array.isArray(p) && p.length > 0) return p } catch (e) {}
+      if (typeof bgUrl === 'string' && bgUrl.startsWith('http')) return [bgUrl]
     }
     if (character.gallery_images && character.gallery_images.length > 0) return character.gallery_images
-    if (character.bg_image_url || character.image_url) return [character.bg_image_url || character.image_url]
+    if (character.image_url) return [character.image_url]
     return []
   })() : []
   const hasMultipleImages = currentImages.length > 1

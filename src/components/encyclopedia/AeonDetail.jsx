@@ -19,39 +19,23 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
         if (error) throw error
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
-            let mainScale = 100, bgImageUrl = '', bgImageScale = 100, titleIconUrl = '', titleIconScale = 100, sortOrder = 0, alienText = ''
-            const content = row.content || ''
-            const scaleMatch = content.match(/^<!--MAIN_IMAGE_SCALE:(\d+)-->/m)
-            if (scaleMatch) mainScale = parseInt(scaleMatch[1], 10)
-            const bgMatch = content.match(/^<!--BG_IMAGE_URL:(.*?)-->/m)
-            if (bgMatch) bgImageUrl = bgMatch[1].trim()
-            const bgScaleMatch = content.match(/^<!--BG_IMAGE_SCALE:(\d+)-->/m)
-            if (bgScaleMatch) bgImageScale = parseInt(bgScaleMatch[1], 10)
-            const titleIconMatch = content.match(/^<!--TITLE_ICON_URL:(.*?)-->/m)
-            if (titleIconMatch) titleIconUrl = titleIconMatch[1].trim()
-            const titleIconScaleMatch = content.match(/^<!--TITLE_ICON_SCALE:(\d+)-->/m)
-            if (titleIconScaleMatch) titleIconScale = parseInt(titleIconScaleMatch[1], 10)
-            const alienMatch = content.match(/^<!--ALIEN_TEXT:(.*?)-->/m)
-            if (alienMatch) alienText = alienMatch[1].trim()
-            const sortMatch = content.match(/^<!--SORT_ORDER:(-?\d+)-->/m)
-            if (sortMatch) sortOrder = parseInt(sortMatch[1], 10)
-
             const blocksArr = []
             const kv = []
-            const blockMatch = content.match(/<!--BLOCKS:(.*?)-->/m)
-            if (blockMatch && blockMatch[1]) {
+            if (row.blocks) {
               try {
-                let aeonFirstParagraphFound = false
-                JSON.parse(blockMatch[1]).forEach(b => {
+                let firstParagraphFound = false
+                JSON.parse(row.blocks).forEach(b => {
                   if (b.type === 'paragraph' && b.content) {
-                    if (b.dropCap === undefined) b.dropCap = !aeonFirstParagraphFound
-                    aeonFirstParagraphFound = true
+                    if (b.dropCap === undefined) b.dropCap = !firstParagraphFound
+                    firstParagraphFound = true
                     blocksArr.push({ type: 'paragraph', content: b.content, dropCap: b.dropCap })
                   }
                   if (b.type === 'key-value' && b.key) kv.push({ key: b.key, value: b.value })
                   if (b.type === 'quote' && b.content) blocksArr.push({ type: 'quote', content: b.content, author: b.author })
                 })
               } catch (e) {}
+            } else if (row.content) {
+              blocksArr.push({ type: 'paragraph', content: row.content, dropCap: true })
             }
 
             return {
@@ -59,13 +43,13 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
               name: row.title || '未知卷宗',
               title: row.subtitle || '',
               image_url: row.image_url || '',
-              bg_image_url: bgImageUrl,
-              bg_image_scale: bgImageScale,
-              main_image_scale: mainScale,
-              title_icon_url: titleIconUrl,
-              title_icon_scale: titleIconScale,
-              alien_text: alienText,
-              sort_order: sortOrder,
+              bg_image_url: row.bg_image_url || '',
+              bg_image_scale: row.bg_image_scale || 120,
+              main_image_scale: row.main_image_scale || 100,
+              title_icon_url: row.title_icon_url || '',
+              title_icon_scale: row.title_icon_scale || 100,
+              alien_text: row.alien_text || '',
+              sort_order: row.sort_order || 0,
               blocks: blocksArr,
               kv,
             }
