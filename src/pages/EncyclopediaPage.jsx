@@ -257,52 +257,9 @@ function EncyclopediaPage() {
   }, [isMobile, isTransitioning, navigate])
 
   const executeCloseDetail = useCallback(() => {
-    if (currentPage !== 'detail' || isTransitioning) return
-    setIsTransitioning(true)
-
-    const lc = (activeNode && (activeNode.id === 'gallery' || activeNode.id === 'aeons')) ? 'black' : 'white'
-    let targetW = 1024, targetH = window.innerHeight * 0.75, targetRadius = '1rem'
-    if (isMobile) { targetW = window.innerWidth; targetH = window.innerHeight; targetRadius = '0' }
-    else if (window.innerWidth >= 768 && window.innerWidth * 0.8333 < 1024) targetW = window.innerWidth * 0.8333
-
-    setLightStyle({
-      display: 'block',
-      position: 'fixed',
-      pointerEvents: 'none',
-      zIndex: 200,
-      left: '50%',
-      top: '50%',
-      width: targetW + 'px',
-      height: targetH + 'px',
-      borderRadius: targetRadius,
-      opacity: 0,
-      transform: 'translate(-50%, -50%)',
-      transition: 'none',
-      backgroundColor: lc === 'black' ? '#0a0a0a' : '#f9fafb',
-      boxShadow: lc === 'black' ? '0 0 80px rgba(0,0,0,0.8)' : '0 0 80px rgba(255,255,255,0.2)',
-    })
-
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        setLightStyle(prev => ({ ...prev, transition: 'opacity 0.4s ease', opacity: 1 }))
-        setTimeout(() => {
-          setLightStyle(prev => ({
-            ...prev,
-            transition: 'width 0.5s cubic-bezier(0.4, 0, 0.2, 1), height 0.5s cubic-bezier(0.4, 0, 0.2, 1), left 0.5s cubic-bezier(0.4, 0, 0.2, 1), top 0.5s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.5s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.5s ease',
-            width: '10px',
-            height: '10px',
-            borderRadius: '50%',
-            opacity: 0,
-          }))
-          setTimeout(() => {
-            navigate('/encyclopedia')
-            setLightStyle(prev => ({ ...prev, display: 'none' }))
-            setIsTransitioning(false)
-          }, 500)
-        }, 400)
-      })
-    })
-  }, [currentPage, isTransitioning, activeNode, isMobile, navigate])
+    if (currentPage !== 'detail') return
+    navigate('/encyclopedia')
+  }, [currentPage, navigate])
 
   const closeDetail = useCallback(() => {
     if (currentPage !== 'detail') return
