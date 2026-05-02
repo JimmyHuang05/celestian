@@ -94,7 +94,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
   return (
     <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
       <div className="relative w-full h-full flex items-center justify-center">
-        <div className={`relative flex flex-col z-10 shadow-[0_0_100px_rgba(0,0,0,0.9)] overflow-hidden bg-[#070709] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/5 md:border-gold/10 backdrop-blur-3xl'}`}>
+        <div className={`relative flex flex-col z-10 overflow-hidden bg-[#070709] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/5 md:border-gold/10 backdrop-blur-3xl'}`}>
         
         <button onClick={onClose} className={`z-[400] w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all cursor-pointer hover:scale-110 ${isMobile ? 'fixed top-4 right-4' : 'absolute top-5 right-5'}`}>
           <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>

@@ -127,7 +127,7 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
   return (
     <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
       <div className="relative w-full h-full flex items-center justify-center">
-        <div className={`relative flex flex-col z-10 shadow-[0_0_80px_rgba(0,0,0,0.8)] overflow-hidden bg-[#050505] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/10'}`}>
+        <div className={`relative flex flex-col z-10 overflow-hidden bg-[#050505] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/10'}`}>
         
         <button onClick={onClose} className={`absolute z-[400] w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all cursor-pointer hover:scale-110 ${isMobile ? 'top-4 right-4' : 'top-5 right-5'}`}>
           <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
