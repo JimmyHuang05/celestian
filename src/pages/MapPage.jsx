@@ -27,7 +27,6 @@ function getGeoSvg(type, color, size = 32) {
 }
 
 function MapPage() {
-  const navigate = useNavigate()
   const mapContainerRef = useRef(null)
   const adminMapRef = useRef(null)
   const mapMarkersLayerRef = useRef(null)
