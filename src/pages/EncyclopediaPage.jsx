@@ -83,6 +83,9 @@ function EncyclopediaPage() {
     }
     if (!nodeId) {
       hasEverHadEntryId.current = false
+      setPanelStyle(null)
+      setIsClosing(false)
+      setIsTransitioning(false)
     }
   }, [entryId, nodeId, navigate])
 
