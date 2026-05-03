@@ -13,4 +13,13 @@ export default defineConfig({
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
+  server: {
+    proxy: {
+      '/api/zeoseven': {
+        target: 'https://fontsapi.zeoseven.com',
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/api\/zeoseven/, ''),
+      },
+    },
+  },
 })

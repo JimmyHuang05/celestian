@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 
 function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -7,6 +7,9 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isTocOpen, setIsTocOpen] = useState(false)
+  const [galleryImageIndex, setGalleryImageIndex] = useState(0)
+  const [isPaused, setIsPaused] = useState(false)
+  const carouselTimerRef = useRef(null)
 
   const character = characters[currentIndex] || null
 
@@ -95,6 +98,19 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
     return []
   })() : []
 
+  useEffect(() => {
+    setGalleryImageIndex(0)
+  }, [currentIndex])
+
+  useEffect(() => {
+    const images = currentImages
+    if (images.length <= 1 || isPaused) return
+    carouselTimerRef.current = setInterval(() => {
+      setGalleryImageIndex(prev => (prev + 1) % images.length)
+    }, 4000)
+    return () => { if (carouselTimerRef.current) clearInterval(carouselTimerRef.current) }
+  }, [currentImages.length, isPaused, currentIndex])
+
   const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
   const next = () => { if (currentIndex < characters.length - 1) { const ni = currentIndex + 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
   const toggleToc = () => setIsTocOpen(prev => !prev)
@@ -139,11 +155,27 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
             </div>
 
             <div className="flex-1 w-full h-full flex flex-col relative z-0 min-h-0 bg-[#050505]">
-              <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}>
+              <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}
+                onMouseEnter={() => setIsPaused(true)} onMouseLeave={() => setIsPaused(false)}>
                 {currentImages.length > 0 && (
-                  <img key={'gallery-img-' + currentIndex}
-                    src={currentImages[0]}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
+                  <>
+                    <div className="flex h-full w-full transition-transform duration-500 ease-out"
+                      style={{ transform: `translateX(-${galleryImageIndex * 100}%)` }}>
+                      {currentImages.map((src, i) => (
+                        <div key={i} className="w-full h-full shrink-0">
+                          <img src={src} className="w-full h-full object-cover" draggable="false" />
+                        </div>
+                      ))}
+                    </div>
+                    {currentImages.length > 1 && (
+                      <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-2 z-20">
+                        {currentImages.map((_, i) => (
+                          <button key={i} onClick={(e) => { e.stopPropagation(); setGalleryImageIndex(i) }}
+                            className={`w-2 h-2 rounded-full transition-all duration-300 ${i === galleryImageIndex ? 'bg-white w-5' : 'bg-white/40 hover:bg-white/70'}`} />
+                        ))}
+                      </div>
+                    )}
+                  </>
                 )}
               </div>
 
