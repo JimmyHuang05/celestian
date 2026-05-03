@@ -625,7 +625,7 @@ function MapPage() {
             <i data-lucide="minus" className="w-5 h-5" />
           </button>
         </div>
-        <VersionBadge position="bottom-right" />
+        <VersionBadge position="bottom-left" />
       </div>
     </div>
   )
