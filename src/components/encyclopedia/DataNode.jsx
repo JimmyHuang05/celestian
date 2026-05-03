@@ -1,5 +1,7 @@
 import ProgressIcon from './ProgressIcon.jsx'
 
+import BlobImage from '../BlobImage.jsx'
+
 function DataNode({ node, mouseX, mouseY, isMobile, onHoverNode, onClickNode }) {
   const handleClick = (e) => {
     if (onClickNode) onClickNode(node, e)
@@ -28,7 +30,7 @@ function DataNode({ node, mouseX, mouseY, isMobile, onHoverNode, onClickNode }) 
           <div className="absolute -right-[4px] w-2 h-2 bg-[#44403c] rotate-45 border border-[#1c1917] group-hover:bg-[#d4b58e] transition-colors" />
           <div className="relative w-[118px] h-[118px] rounded-full bg-transparent overflow-hidden border border-[#d4b58e]/30 flex items-center justify-center">
             {node.icon ? (
-              <img src={node.icon} className="node-image w-full h-full object-cover rounded-full opacity-80 group-hover:opacity-100" draggable="false" onError={(e) => { e.target.style.display = 'none' }} />
+              <BlobImage src={node.icon} className="node-image w-full h-full object-cover rounded-full opacity-80 group-hover:opacity-100" draggable="false" onError={(e) => { e.target.style.display = 'none' }} />
             ) : (
               <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#d4b58e] to-[#44403c] blur-md opacity-50 group-hover:opacity-80 transition-opacity" />
             )}

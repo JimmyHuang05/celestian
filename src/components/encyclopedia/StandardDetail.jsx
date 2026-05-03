@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
+import BlobImage from '../BlobImage.jsx'
 
 function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -152,7 +153,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
             <svg className="absolute bottom-0 left-0 w-6 h-6 text-[#d4b58e]/80 -translate-x-1 translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z" /></svg>
             <svg className="absolute bottom-0 right-0 w-6 h-6 text-[#d4b58e]/80 translate-x-1 translate-y-1" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0L14 10L24 12L14 14L12 24L10 14L0 12L10 10Z" /></svg>
             {character && character.bg_image_url && (
-              <img key={'bg-' + character.bg_image_url} src={character.bg_image_url}
+              <BlobImage key={'bg-' + character.bg_image_url} src={character.bg_image_url}
                 style={{ width: (character.bg_image_scale || 120) + '%', height: (character.bg_image_scale || 120) + '%' }}
                 className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 object-cover opacity-40 mix-blend-multiply transition-all duration-300 pointer-events-none z-10" draggable="false" />
             )}
@@ -162,13 +163,13 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
             {character && character.image_url ? (
               <div key={'img-' + character.image_url} className="relative pointer-events-auto flex-shrink-0 transition-transform duration-500 hover:scale-[1.03]"
                 style={isMobile ? { width: '100%', height: '100%' } : { width: (character.main_image_scale || 100) + '%' }}>
-                <img src={character.image_url}
+                <BlobImage src={character.image_url}
                   className={`max-w-none object-contain drop-shadow-[0_20px_40px_rgba(0,0,0,0.25)] block ${isMobile ? 'w-full h-full p-4' : 'w-full h-auto'}`} draggable="false" />
               </div>
             ) : node && node.icon ? (
               <div key={'icon-' + node.icon} className="relative pointer-events-auto flex-shrink-0 transition-transform duration-300 hover:scale-[1.03]"
                 style={isMobile ? { width: '60%', height: '100%' } : { width: ((character ? (character.main_image_scale || 100) : 100) * 0.6) + '%' }}>
-                <img src={node.icon}
+                <BlobImage src={node.icon}
                   className={`max-w-none object-contain opacity-80 drop-shadow-[0_15px_35px_rgba(0,0,0,0.15)] block ${isMobile ? 'w-full h-full p-4' : 'w-full h-auto'}`} draggable="false" />
               </div>
             ) : null}
@@ -209,7 +210,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
                     </div>
                     {character && character.title_icon_url && !isMobile && (
                       <div className="relative shrink-0 w-14 h-14 md:w-20 md:h-20 flex items-center justify-center transition-transform duration-300 hover:scale-[1.05]">
-                        <img src={character.title_icon_url}
+                        <BlobImage src={character.title_icon_url}
                           style={{ transform: 'scale(' + ((character.title_icon_scale || 100) / 100) + ')' }}
                           className="w-full h-full object-contain opacity-90 drop-shadow-md pointer-events-none select-none block" draggable="false" />
                       </div>
@@ -231,7 +232,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
                         return (
                           <div key={'block-' + index} className="flex flex-col items-center my-8 md:my-10 relative z-50 w-full overflow-visible">
                             <div className="relative transition-transform duration-500 hover:scale-[1.02] flex-shrink-0" style={{ width: block.scale ? block.scale + '%' : '100%' }}>
-                              <img src={block.url} className="w-full h-auto max-w-none object-contain drop-shadow-xl rounded-md block" draggable="false" />
+                              <BlobImage src={block.url} className="w-full h-auto max-w-none object-contain drop-shadow-xl rounded-md block" draggable="false" />
                             </div>
                             {block.caption && <span className="text-xs text-gray-500 mt-4 tracking-widest bg-white border border-gray-100 px-3 py-1 rounded-full relative z-50">{block.caption}</span>}
                           </div>
@@ -244,7 +245,7 @@ function StandardDetail({ node, isMobile, onClose, supabaseClient, entryId, onEn
                               <span className="flex-1" dangerouslySetInnerHTML={{ __html: block.content }} />
                               <span className="text-3xl font-serif text-[#d4b58e] ml-2 pt-1 leading-none">"</span>
                             </div>
-                            {block.author && <div className="text-right mt-4 text-sm text-gray-500 tracking-widest font-normal">—— <span dangerouslySetInnerHTML={{ __html: block.author }} /></div>}
+                            {block.author && <div className="text-right mt-4 text-sm text-gray-500 tracking-widest font-normal">— <span dangerouslySetInnerHTML={{ __html: block.author }} /></div>}
                           </div>
                         )
                       }
