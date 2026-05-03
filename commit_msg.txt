@@ -1,0 +1,9 @@
+fix: 夸克浏览器兼容性、卡片错位、页面白屏、音频后台播放等问题
+
+- 修复首页卡片在夸克浏览器中错位（aspect-ratio + container-type 兼容）
+- 修复百科/Functions页面在夸克浏览器中白屏（Three.js/Canvas try-catch）
+- 添加 ErrorBoundary 组件防止渲染崩溃导致白屏
+- 修复 Functions 页 carg 标签页元素闪烁震动（uptime 定时器+useMemo优化）
+- 所有页面添加 visibilitychange 监听，后台自动暂停音乐
+- 移除 Gallery 图片轮播底部导航小圆点
+- 移除多余百度站点验证文件
