@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
+import ErrorBoundary from './components/ErrorBoundary.jsx'
 import EncyclopediaPage from './pages/EncyclopediaPage.jsx'
 import MapPage from './pages/MapPage.jsx'
 import FunctionsPage from './pages/FunctionsPage.jsx'
@@ -90,7 +91,19 @@ function App() {
       }
     }
     window.addEventListener('beforeunload', handleBeforeUnload)
-    return () => window.removeEventListener('beforeunload', handleBeforeUnload)
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && bgMusicRef.current) {
+        bgMusicRef.current.pause()
+        setIsMusicPlaying(false)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      window.removeEventListener('beforeunload', handleBeforeUnload)
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   useEffect(() => {
@@ -499,10 +512,10 @@ function App() {
   return (
     <>
       <Routes>
-        <Route path="/encyclopedia" element={<EncyclopediaPage />} />
-        <Route path="/encyclopedia/:nodeId" element={<EncyclopediaPage />} />
+        <Route path="/encyclopedia" element={<ErrorBoundary><EncyclopediaPage /></ErrorBoundary>} />
+        <Route path="/encyclopedia/:nodeId" element={<ErrorBoundary><EncyclopediaPage /></ErrorBoundary>} />
         <Route path="/map" element={<MapPage />} />
-        <Route path="/functions" element={<FunctionsPage />} />
+        <Route path="/functions" element={<ErrorBoundary><FunctionsPage /></ErrorBoundary>} />
         <Route path="/functions/badge" element={<BadgePage />} />
         <Route path="/" element={
           <>
@@ -533,7 +546,7 @@ function App() {
                     <div
                       ref={heroPlaceholderRef}
                       id="hero-card-placeholder"
-                      className="w-full lg:w-auto h-auto lg:h-full aspect-[3/4] shrink-0 relative perspective-[2000px] z-30"
+                      className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[3/4] shrink-0 relative perspective-[2000px] z-30"
                     >
                       <svg viewBox="0 0 3 4" className="w-full h-full opacity-0 pointer-events-none" />
 
@@ -640,7 +653,7 @@ function App() {
                       <a
                         href="/encyclopedia/"
                         draggable="false"
-                        className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
+                        className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
                           src={ASSETS_BASE + "/images/cards/encyclopedia-card.webp"}
@@ -671,7 +684,7 @@ function App() {
                       <a
                         href="/map/"
                         draggable="false"
-                        className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
+                        className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
                           src={ASSETS_BASE + "/images/cards/map-card.webp"}
@@ -702,7 +715,7 @@ function App() {
                       <a
                         href="/functions/"
                         draggable="false"
-                        className="w-full lg:w-auto h-auto lg:h-full aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
+                        className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
                           src={ASSETS_BASE + "/images/cards/functions-card.webp"}

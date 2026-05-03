@@ -154,6 +154,18 @@ function EncyclopediaPage() {
       })
     }
     if (hoverAudioRef.current) hoverAudioRef.current.volume = 0.05
+
+    const handleVisibilityChange = () => {
+      if (document.hidden && bgmAudioRef.current) {
+        bgmAudioRef.current.pause()
+        setIsPlayingBgm(false)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+    }
   }, [])
 
   useEffect(() => {

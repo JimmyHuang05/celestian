@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { createClient } from '@supabase/supabase-js'
 import ASSETS_BASE from '../constants.js'
@@ -29,6 +29,24 @@ function FunctionsPage() {
   const [customLogoPath] = useState('')
 
   const getIcon = (name, cls = '') => `<i data-lucide="${name}" class="${cls}"></i>`
+
+  const logElements = useMemo(() => logs.map((log, idx) => (
+    <div key={idx} className="relative pl-10 group">
+      <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full border border-stoneBorder flex items-center justify-center bg-[#1c1917] z-10">
+        <div className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#d4b58e] shadow-[0_0_8px_#d4b58e]' : 'bg-stoneBorder'}`} />
+      </div>
+      <div className="bg-stoneCard/80 border border-stoneBorder rounded-xl p-4 md:p-5 hover:border-[#d4b58e]/50 transition-all">
+        <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 border-b border-stoneBorder pb-2 gap-2">
+          <div className="flex items-center gap-3">
+            <span className={`px-2 py-0.5 rounded text-[11px] font-mono-ef border ${idx === 0 ? 'text-[#d4b58e] border-[#d4b58e]/30' : 'text-[#a8a29e] border-stoneBorder'} uppercase`}>{log.code}</span>
+            <h4 className="font-serif-sc font-bold text-[#e7e5e4] text-sm md:text-base group-hover:text-[#d4b58e] transition-colors">{log.title}</h4>
+          </div>
+          <span className="text-[11px] font-mono-ef text-[#a8a29e] tracking-tighter">{log.time}</span>
+        </div>
+        <p className="text-xs text-[#a8a29e] leading-relaxed whitespace-pre-wrap">{log.desc}</p>
+      </div>
+    </div>
+  )), [logs])
 
   const subsystems = [
     { name: '统一制证服务平台', icon: 'shield', statusIcon: 'activity', desc: '本平台为巴别塔联合工业集群干员提供各类身份凭证的在线办理与统一管理服务。', actionText: 'Access Terminal', url: 'badge' },
@@ -146,13 +164,28 @@ function FunctionsPage() {
       } catch (e) { setDailyUsageCount(0) }
     }
 
+    const handleVisibilityChange = () => {
+      if (document.hidden && bgmAudioRef.current) {
+        bgmAudioRef.current.pause()
+        setIsBgmPlaying(false)
+      }
+    }
+    document.addEventListener('visibilitychange', handleVisibilityChange)
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange)
+      if (bgmAudioRef.current) { bgmAudioRef.current.pause(); bgmAudioRef.current = null }
+    }
+  }, [])
+
+  useEffect(() => {
+    if (activePage !== 'carg') return
     const timer = setInterval(() => {
       const now = new Date()
       setUptime(now.toTimeString().split(' ')[0])
     }, 1000)
-
-    return () => { clearInterval(timer); if (bgmAudioRef.current) { bgmAudioRef.current.pause(); bgmAudioRef.current = null } }
-  }, [])
+    return () => clearInterval(timer)
+  }, [activePage])
 
   useEffect(() => {
     if (!supabaseClient) return
@@ -167,72 +200,81 @@ function FunctionsPage() {
     threeInitRef.current = true
     const THREE = window.THREE
 
-    const scene = new THREE.Scene()
-    const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
-    const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-    renderer.setSize(window.innerWidth, window.innerHeight)
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
-    container.appendChild(renderer.domElement)
+    try {
+      const scene = new THREE.Scene()
+      const camera = new THREE.PerspectiveCamera(50, window.innerWidth / window.innerHeight, 0.1, 1000)
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
+      renderer.setSize(window.innerWidth, window.innerHeight)
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      container.appendChild(renderer.domElement)
 
-    const geometry = new THREE.PlaneGeometry(80, 80, 256, 256)
-    const material = new THREE.ShaderMaterial({
-      vertexShader: `
-        varying vec2 vUv;
-        varying float vElevation;
-        vec2 hash( vec2 p ) { p = vec2( dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)) ); return -1.0 + 2.0*fract(sin(p)*43758.5453123); }
-        float noise( in vec2 p ) { const float K1 = 0.366025404; const float K2 = 0.211324865; vec2 i = floor( p + (p.x+p.y)*K1 ); vec2 a = p - i + (i.x+i.y)*K2; float m = step( a.y, a.x ); vec2 o = vec2( m, 1.0 - m ); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2; vec3 h = max( 0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 ); vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0))); return dot( n, vec3(70.0) ); }
-        float fbm(vec2 p) { float f = 0.0; float w = 0.5; for(int i = 0; i < 4; i++) { f += w * noise(p); p *= 1.8; w *= 0.45; } return f; }
-        void main() { vUv = uv; float elevation = fbm(uv * 2.2) * 16.0; vElevation = elevation; vec3 newPos = position; newPos.z += elevation; gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0); }
-      `,
-      fragmentShader: `
-        varying vec2 vUv;
-        varying float vElevation;
-        void main() {
-          float density = 8.0; float phase = vElevation * density;
-          float f = abs(fract(phase) - 0.5); float line = smoothstep(0.42, 0.5, f);
-          vec3 baseColor = vec3(0.11, 0.10, 0.09); vec3 lineColor = vec3(0.83, 0.71, 0.55);
-          vec3 finalColor = mix(baseColor, lineColor, line * 0.85);
-          float dist = distance(vUv, vec2(0.5)); float vignette = smoothstep(0.7, 0.1, dist);
-          gl_FragColor = vec4(finalColor, vignette);
+      const geometry = new THREE.PlaneGeometry(80, 80, 256, 256)
+      const material = new THREE.ShaderMaterial({
+        vertexShader: `
+          varying vec2 vUv;
+          varying float vElevation;
+          vec2 hash( vec2 p ) { p = vec2( dot(p,vec2(127.1,311.7)), dot(p,vec2(269.5,183.3)) ); return -1.0 + 2.0*fract(sin(p)*43758.5453123); }
+          float noise( in vec2 p ) { const float K1 = 0.366025404; const float K2 = 0.211324865; vec2 i = floor( p + (p.x+p.y)*K1 ); vec2 a = p - i + (i.x+i.y)*K2; float m = step( a.y, a.x ); vec2 o = vec2( m, 1.0 - m ); vec2 b = a - o + K2; vec2 c = a - 1.0 + 2.0*K2; vec3 h = max( 0.5-vec3(dot(a,a), dot(b,b), dot(c,c) ), 0.0 ); vec3 n = h*h*h*h*vec3( dot(a,hash(i+0.0)), dot(b,hash(i+o)), dot(c,hash(i+1.0))); return dot( n, vec3(70.0) ); }
+          float fbm(vec2 p) { float f = 0.0; float w = 0.5; for(int i = 0; i < 4; i++) { f += w * noise(p); p *= 1.8; w *= 0.45; } return f; }
+          void main() { vUv = uv; float elevation = fbm(uv * 2.2) * 16.0; vElevation = elevation; vec3 newPos = position; newPos.z += elevation; gl_Position = projectionMatrix * modelViewMatrix * vec4(newPos, 1.0); }
+        `,
+        fragmentShader: `
+          varying vec2 vUv;
+          varying float vElevation;
+          void main() {
+            float density = 8.0; float phase = vElevation * density;
+            float f = abs(fract(phase) - 0.5); float line = smoothstep(0.42, 0.5, f);
+            vec3 baseColor = vec3(0.11, 0.10, 0.09); vec3 lineColor = vec3(0.83, 0.71, 0.55);
+            vec3 finalColor = mix(baseColor, lineColor, line * 0.85);
+            float dist = distance(vUv, vec2(0.5)); float vignette = smoothstep(0.7, 0.1, dist);
+            gl_FragColor = vec4(finalColor, vignette);
+          }
+        `,
+        transparent: true,
+        side: THREE.DoubleSide,
+      })
+
+      const terrain = new THREE.Mesh(geometry, material)
+      terrain.rotation.x = -Math.PI / 2.2
+      terrain.position.y = -6
+      scene.add(terrain)
+      camera.position.z = 14
+      camera.position.y = 1.8
+
+      let mouseX = 0, mouseY = 0
+      const mouseHandler = (e) => { mouseX = (e.clientX / window.innerWidth) - 0.5; mouseY = (e.clientY / window.innerHeight) - 0.5 }
+      document.addEventListener('mousemove', mouseHandler)
+
+      const animate = () => {
+        requestAnimationFrame(animate)
+        try {
+          const time = Date.now() * 0.0002
+          terrain.rotation.z = time * 0.3
+          terrain.rotation.x = -Math.PI / 2.2 + Math.sin(time * 0.5) * 0.1
+          terrain.rotation.y = Math.cos(time * 0.4) * 0.08
+          terrain.position.x = Math.sin(time * 0.6) * 2.5
+          terrain.position.z = Math.cos(time * 0.5) * 2.5
+          camera.position.x += (mouseX * 4.0 - camera.position.x) * 0.03
+          camera.position.y += (-mouseY * 3.5 + 1.8 - camera.position.y) * 0.03
+          camera.lookAt(0, -1, 0)
+          renderer.render(scene, camera)
+        } catch (e) {
+          console.warn('Three.js animate error', e)
         }
-      `,
-      transparent: true,
-      side: THREE.DoubleSide,
-    })
+      }
+      animate()
 
-    const terrain = new THREE.Mesh(geometry, material)
-    terrain.rotation.x = -Math.PI / 2.2
-    terrain.position.y = -6
-    scene.add(terrain)
-    camera.position.z = 14
-    camera.position.y = 1.8
+      const resize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight) }
+      window.addEventListener('resize', resize)
 
-    let mouseX = 0, mouseY = 0
-    const mouseHandler = (e) => { mouseX = (e.clientX / window.innerWidth) - 0.5; mouseY = (e.clientY / window.innerHeight) - 0.5 }
-    document.addEventListener('mousemove', mouseHandler)
-
-    const animate = () => {
-      requestAnimationFrame(animate)
-      const time = Date.now() * 0.0002
-      terrain.rotation.z = time * 0.3
-      terrain.rotation.x = -Math.PI / 2.2 + Math.sin(time * 0.5) * 0.1
-      terrain.rotation.y = Math.cos(time * 0.4) * 0.08
-      terrain.position.x = Math.sin(time * 0.6) * 2.5
-      terrain.position.z = Math.cos(time * 0.5) * 2.5
-      camera.position.x += (mouseX * 4.0 - camera.position.x) * 0.03
-      camera.position.y += (-mouseY * 3.5 + 1.8 - camera.position.y) * 0.03
-      camera.lookAt(0, -1, 0)
-      renderer.render(scene, camera)
-    }
-    animate()
-
-    const resize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight) }
-    window.addEventListener('resize', resize)
-
-    return () => {
-      document.removeEventListener('mousemove', mouseHandler)
-      window.removeEventListener('resize', resize)
-      renderer.dispose()
+      return () => {
+        document.removeEventListener('mousemove', mouseHandler)
+        window.removeEventListener('resize', resize)
+        renderer.dispose()
+      }
+    } catch (e) {
+      console.warn('Three.js 初始化失败，跳过三维场景渲染', e)
+      threeInitRef.current = false
     }
   }, [])
 
@@ -479,23 +521,7 @@ function FunctionsPage() {
                   </div>
                   <div className="flex-1 overflow-y-auto pr-2 md:pr-4 space-y-6 relative pb-10">
                     <div className="absolute left-[11px] top-4 bottom-4 w-[1px] bg-stoneBorder" />
-                    {logs.map((log, idx) => (
-                      <div key={idx} className="relative pl-10 group">
-                        <div className="absolute left-0 top-1.5 w-6 h-6 rounded-full border border-stoneBorder flex items-center justify-center bg-[#1c1917] z-10">
-                          <div className={`w-2 h-2 rounded-full ${idx === 0 ? 'bg-[#d4b58e] shadow-[0_0_8px_#d4b58e]' : 'bg-stoneBorder'}`} />
-                        </div>
-                        <div className="bg-stoneCard/80 border border-stoneBorder rounded-xl p-4 md:p-5 hover:border-[#d4b58e]/50 transition-all">
-                          <div className="flex flex-col md:flex-row md:justify-between md:items-center mb-3 border-b border-stoneBorder pb-2 gap-2">
-                            <div className="flex items-center gap-3">
-                              <span className={`px-2 py-0.5 rounded text-[11px] font-mono-ef border ${idx === 0 ? 'text-[#d4b58e] border-[#d4b58e]/30' : 'text-[#a8a29e] border-stoneBorder'} uppercase`}>{log.code}</span>
-                              <h4 className="font-serif-sc font-bold text-[#e7e5e4] text-sm md:text-base group-hover:text-[#d4b58e] transition-colors">{log.title}</h4>
-                            </div>
-                            <span className="text-[11px] font-mono-ef text-[#a8a29e] tracking-tighter">{log.time}</span>
-                          </div>
-                          <p className="text-xs text-[#a8a29e] leading-relaxed whitespace-pre-wrap">{log.desc}</p>
-                        </div>
-                      </div>
-                    ))}
+                    {logElements}
                   </div>
                 </div>
 
