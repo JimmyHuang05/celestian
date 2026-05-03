@@ -1,3 +1,5 @@
+@import './fonts/yishan.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
