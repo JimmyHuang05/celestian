@@ -1,8 +1,7 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
+import BackButton from '../components/BackButton.jsx'
 
 function BadgePage() {
-  const navigate = useNavigate()
 
   useEffect(() => {
     if (window.lucide) requestAnimationFrame(() => window.lucide.createIcons())
@@ -385,12 +384,10 @@ function BadgePage() {
     )
   }
 
-  const handleBack = () => navigate('/functions/')
-
   return (
     <div id="badge-app" className="w-full h-full relative" ref={mainContentRef}
       style={{ fontFamily: "'Noto Serif SC', serif", backgroundColor: '#050505', color: '#e7e5e4', overflow: 'hidden' }}>
-      <div className="noise-bg" />
+      <div className="noise-overlay fixed inset-0 z-[-1]" />
       <main className="w-full h-full relative flex items-center justify-center"
         style={{ background: 'radial-gradient(ellipse at center, #1a1816, #0a0a0a, black)' }}>
         
@@ -546,10 +543,10 @@ function BadgePage() {
             className="w-14 h-14 bg-[#111] border border-stoneBorder hover:border-red-500 text-gray-400 hover:text-red-500 rounded-full shadow-2xl flex items-center justify-center transition-all group relative overflow-hidden">
             <i data-lucide="flame" className="w-6 h-6 relative z-10 group-hover:scale-110 transition-transform" />
           </button>
-          <button onClick={handleBack}
+          <BackButton to="/functions/"
             className="w-14 h-14 bg-[#111] border border-stoneBorder hover:border-[#d4b58e] text-gray-400 hover:text-[#d4b58e] rounded-full shadow-2xl flex items-center justify-center transition-all">
             <i data-lucide="arrow-left" className="w-6 h-6" />
-          </button>
+          </BackButton>
         </div>
       </main>
     </div>

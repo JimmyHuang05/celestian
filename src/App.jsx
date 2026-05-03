@@ -1,6 +1,7 @@
 ﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
+import VersionBadge from './components/VersionBadge.jsx'
 import EncyclopediaPage from './pages/EncyclopediaPage.jsx'
 import MapPage from './pages/MapPage.jsx'
 import FunctionsPage from './pages/FunctionsPage.jsx'
@@ -525,7 +526,7 @@ function App() {
 
             <div className="fixed inset-0 z-0 pointer-events-none">
               <canvas ref={bgCanvasRef} id="bg-canvas" className="w-full h-full block" />
-              <div className="noise-overlay" />
+              <div className="noise-overlay absolute inset-0 z-[1]" />
             </div>
 
             <button
@@ -747,6 +748,7 @@ function App() {
                 </main>
               </div>
             </div>
+            <VersionBadge position="bottom-left" />
           </>
         } />
       </Routes>

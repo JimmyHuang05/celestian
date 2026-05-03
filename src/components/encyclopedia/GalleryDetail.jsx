@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -7,9 +7,6 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isTocOpen, setIsTocOpen] = useState(false)
-  const [galleryImageIndex, setGalleryImageIndex] = useState(0)
-  const [isHoveringImage, setIsHoveringImage] = useState(false)
-  const carouselTimerRef = useRef(null)
 
   const character = characters[currentIndex] || null
 
@@ -98,18 +95,23 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
     return []
   })() : []
   const hasMultipleImages = currentImages.length > 1
+  const [galleryIndex, setGalleryIndex] = useState(0)
+  const [isHoveringCarousel, setIsHoveringCarousel] = useState(false)
+  const [noTransition, setNoTransition] = useState(false)
 
   useEffect(() => {
-    setGalleryImageIndex(0)
+    setNoTransition(true)
+    setGalleryIndex(0)
+    requestAnimationFrame(() => setNoTransition(false))
   }, [currentIndex])
 
   useEffect(() => {
-    if (!hasMultipleImages || isHoveringImage) return
-    carouselTimerRef.current = setInterval(() => {
-      setGalleryImageIndex(prev => (prev + 1) % currentImages.length)
+    if (!hasMultipleImages || isHoveringCarousel) return
+    const timer = setInterval(() => {
+      setGalleryIndex(prev => (prev + 1) % currentImages.length)
     }, 4000)
-    return () => { if (carouselTimerRef.current) clearInterval(carouselTimerRef.current) }
-  }, [hasMultipleImages, isHoveringImage, currentImages.length])
+    return () => clearInterval(timer)
+  }, [hasMultipleImages, isHoveringCarousel, currentImages.length])
 
 
   const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
@@ -156,12 +158,31 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
             </div>
 
             <div className="flex-1 w-full h-full flex flex-col relative z-0 min-h-0 bg-[#050505]">
-              <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}
-                onMouseEnter={() => setIsHoveringImage(true)} onMouseLeave={() => setIsHoveringImage(false)}>
-                {currentImages.length > 0 && (
-                  <img key={'gallery-img-' + currentIndex + '-' + galleryImageIndex}
-                    src={currentImages[galleryImageIndex]}
-                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
+              <div className="w-full shrink-0 relative z-10 bg-[#000000] overflow-hidden"
+                style={{ aspectRatio: '21/9' }}
+                onMouseEnter={() => setIsHoveringCarousel(true)}
+                onMouseLeave={() => setIsHoveringCarousel(false)}>
+                <div className={`flex h-full ${noTransition ? '' : 'transition-transform duration-500 ease-out'}`}
+                  style={{ transform: `translateX(-${galleryIndex * 100}%)` }}>
+                  {currentImages.length > 0 ? currentImages.map((imgSrc, imgIdx) => (
+                    <div key={'gal-img-' + imgIdx} className="relative flex-[0_0_100%] min-w-0 h-full">
+                      <img src={imgSrc} className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" draggable="false" />
+                    </div>
+                  )) : (
+                    <div className="flex-[0_0_100%] min-w-0 h-full flex items-center justify-center">
+                      <span className="text-white/20 font-mono text-xs tracking-widest">NO IMAGE</span>
+                    </div>
+                  )}
+                </div>
+                {hasMultipleImages && (
+                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
+                    {currentImages.map((_, dotIdx) => (
+                      <button key={'dot-' + dotIdx} onClick={() => setGalleryIndex(dotIdx)}
+                        className={`w-2 h-2 rounded-full transition-colors duration-300 cursor-pointer
+                          ${dotIdx === galleryIndex ? 'bg-white' : 'bg-white/30'}`}
+                      />
+                    ))}
+                  </div>
                 )}
               </div>
 

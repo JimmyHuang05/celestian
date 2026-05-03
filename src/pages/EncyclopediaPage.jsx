@@ -1,21 +1,14 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import { createClient } from '@supabase/supabase-js'
+import supabaseClient from '../lib/supabaseClient'
 import Starfield from '../components/encyclopedia/Starfield.jsx'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
 import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
 import GalleryDetail from '../components/encyclopedia/GalleryDetail.jsx'
 import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
+import BackButton from '../components/BackButton.jsx'
+import VersionBadge from '../components/VersionBadge.jsx'
 import ASSETS_BASE from '../constants.js'
-
-const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
-const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
-let supabaseClient = null
-try {
-  supabaseClient = createClient(supabaseUrl, supabaseKey)
-} catch (e) {
-  console.error('Supabase 初始化失败', e)
-}
 
 const desktopNodes = [
   { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
@@ -270,10 +263,6 @@ function EncyclopediaPage() {
     }, 380)
   }, [isTransitioning, navigate])
 
-  const handleBack = useCallback(() => {
-    navigate('/')
-  }, [navigate])
-
   const onEntryChange = useCallback((id) => {
     if (nodeId && id) {
       navigate(`/encyclopedia/${nodeId}?id=${id}`, { replace: true })
@@ -298,14 +287,14 @@ function EncyclopediaPage() {
         <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
 
         <div className="absolute top-6 left-6 z-[150]">
-          <button onClick={handleBack}
+          <BackButton to="/"
             className="flex items-center gap-2 text-[#d4b58e]/40 hover:text-[#d4b58e]/80 transition-colors text-[10px] font-mono tracking-[0.4em] uppercase cursor-pointer group"
           >
             <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
               <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
             </svg>
             <span>HOME</span>
-          </button>
+          </BackButton>
         </div>
 
         <div className="absolute inset-0 z-10">
@@ -331,10 +320,7 @@ function EncyclopediaPage() {
             <span className="w-12 h-px bg-[#d4b58e]/30" /> D A T A B A N K // G A L A X Y
           </div>
 
-          <div className="absolute bottom-4 left-6 flex items-center gap-3 hardware-accelerated" style={{ zIndex: 30 }}>
-            <div className="w-1 h-1 bg-[#d4b58e] opacity-50 rounded-full animate-ping" />
-            <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest">SYS.UID: 1008611</div>
-          </div>
+          <VersionBadge position="bottom-left" />
 
           <div className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
             <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest group-hover:text-[#d4b58e]/80 transition-colors uppercase drop-shadow-md">

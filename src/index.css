@@ -48,11 +48,8 @@ body {
 ::-webkit-scrollbar-thumb:hover { background: #c2a27b; }
 
 .noise-overlay {
-    position: absolute;
-    inset: 0;
     background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.06%22/%3E%3C/svg%3E');
     pointer-events: none;
-    z-index: 1;
 }
 
 .vertical-text {
@@ -258,12 +255,6 @@ body {
 #map-app ::-webkit-scrollbar-track { background: transparent; }
 #map-app ::-webkit-scrollbar-thumb { background: #d4b58e; border-radius: 10px; }
 
-#map-app .noise-overlay-map {
-    position: fixed; inset: 0;
-    background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.06%22/%3E%3C/svg%3E');
-    pointer-events: none; z-index: 1000;
-}
-
 #map-app .map-container-leaflet { width: 100vw; height: 100%; background-color: #050505; cursor: grab; }
 #map-app .leaflet-grab { cursor: grab !important; }
 #map-app .leaflet-dragging .leaflet-grab { cursor: grabbing !important; }
@@ -293,7 +284,6 @@ body {
 #functions-app .font-mono-ef { font-family: 'JetBrains Mono', monospace; }
 #functions-app .font-serif-sc { font-family: 'Noto Serif SC', serif; }
 #functions-app .italic, #functions-app em, #functions-app i, #functions-app cite { font-style: normal !important; }
-#functions-app .noise-overlay-fn { position: fixed; inset: 0; background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.06%22/%3E%3C/svg%3E'); pointer-events: none; z-index: 1; }
 #functions-app .bg-overlay-fn { position: fixed; inset: 0; background: linear-gradient(to bottom, rgba(28, 25, 23, 0.3) 0%, rgba(28, 25, 23, 0.9) 100%); z-index: 1; pointer-events: none; }
 #functions-app .ambient-glow-fn { position: fixed; inset: 0; background: radial-gradient(circle at 35% 50%, rgba(212, 181, 142, 0.05) 0%, transparent 60%); z-index: 2; pointer-events: none; }
 #functions-app .hud-container-fn { position: fixed; top: 50%; left: 25%; transform: translate(-50%, -50%); width: 900px; height: 900px; pointer-events: none; z-index: 3; opacity: 0.15; transition: left 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
@@ -321,7 +311,6 @@ body {
 #badge-app { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #e7e5e4; overflow: hidden; }
 #badge-app .font-serif-sc { font-family: 'Noto Serif SC', serif; }
 #badge-app .signature-font { font-family: 'Mrs Saint Delafield', cursive; }
-#badge-app .noise-bg { position: fixed; inset: 0; background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.06%22/%3E%3C/svg%3E'); pointer-events: none; z-index: -1; }
 #badge-app .dynamic-radar { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center; }
 #badge-app .radar-circle { position: absolute; border: 1px solid rgba(212, 181, 142, 0.15); border-radius: 50%; opacity: 0; animation: radarExpand 10s cubic-bezier(0.1, 0.5, 0.9, 0.5) infinite; box-shadow: inset 0 0 40px rgba(212, 181, 142, 0.05); }
 #badge-app .radar-circle:nth-child(1) { animation-delay: 0s; }

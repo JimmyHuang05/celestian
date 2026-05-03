@@ -1,32 +1,28 @@
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { createClient } from '@supabase/supabase-js'
+import supabaseClient from '../lib/supabaseClient'
+import useBgm from '../hooks/useBgm'
+import BackButton from '../components/BackButton.jsx'
 import ASSETS_BASE from '../constants.js'
-
-const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
-const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
-let supabaseClient = null
-try { supabaseClient = createClient(supabaseUrl, supabaseKey) } catch (e) { console.error('Supabase init error', e) }
 
 function FunctionsPage() {
   const navigate = useNavigate()
   const [activePage, setActivePage] = useState('overview')
   const [particles, setParticles] = useState([])
-  const [uptime, setUptime] = useState('00:00:00')
   const [dailyUsageCount, setDailyUsageCount] = useState(0)
   const [hasStartedChat, setHasStartedChat] = useState(false)
   const [isAiLoading, setIsAiLoading] = useState(false)
   const [aiQuery, setAiQuery] = useState('')
-  const [isBgmPlaying, setIsBgmPlaying] = useState(false)
   const [logs, setLogs] = useState([])
   const [chatHistory, setChatHistory] = useState([
     { role: 'assistant', content: '欢迎接入「全知之眼」在轨平台，我是逻各斯。\n巴别塔通用计算有限公司承诺：无论您身处何方，我们都将为您提供高速、稳定、不受限制的全球计算和通信链路服务。' }
   ])
   const chatContainerRef = useRef(null)
   const aiInputRef = useRef(null)
-  const bgmAudioRef = useRef(null)
   const threeInitRef = useRef(false)
   const [customLogoPath] = useState('')
+
+  const { isPlaying: isBgmPlaying, toggle: toggleBgm } = useBgm(ASSETS_BASE + '/audio/bgm/functions.mp3', { volume: 0.10 })
 
   const getIcon = (name, cls = '') => `<i data-lucide="${name}" class="${cls}"></i>`
 
@@ -68,7 +64,7 @@ function FunctionsPage() {
     { name: 'ZeoSeven™ Fonts', role: 'Typography Engine', icon: 'type' },
   ]
 
-  const returnHome = () => navigate('/')
+
   const openLink = (url) => {
     if (url === 'badge') navigate('/functions/badge')
     else if (url === 'editor') navigate('/editor')
@@ -129,32 +125,11 @@ function FunctionsPage() {
     setTimeout(() => { if (aiInputRef.current) aiInputRef.current.focus(); scrollToBottom() }, 500)
   }, [])
 
-  const toggleBgm = useCallback(() => {
-    if (!bgmAudioRef.current) return
-    if (isBgmPlaying) { bgmAudioRef.current.pause(); setIsBgmPlaying(false) }
-    else { bgmAudioRef.current.play().catch(() => {}); setIsBgmPlaying(true) }
-  }, [isBgmPlaying])
-
   useEffect(() => {
     setParticles(Array.from({ length: 45 }).map((_, i) => ({
       id: i, size: Math.random() * 2 + 1, left: Math.random() * 100,
       duration: Math.random() * 15 + 10, delay: Math.random() * -20, drift: (Math.random() - 0.5) * 150
     })))
-
-    const initBgm = () => {
-      const audio = new Audio(ASSETS_BASE + '/audio/bgm/functions.mp3')
-      audio.loop = true
-      audio.volume = 0.10
-      bgmAudioRef.current = audio
-      audio.play().then(() => setIsBgmPlaying(true)).catch(() => {
-        const startBgm = () => {
-          if (bgmAudioRef.current) bgmAudioRef.current.play().then(() => setIsBgmPlaying(true)).catch(() => {})
-          window.removeEventListener('click', startBgm)
-        }
-        window.addEventListener('click', startBgm)
-      })
-    }
-    initBgm()
 
     const stored = localStorage.getItem('babel_ai_quota')
     if (stored) {
@@ -163,29 +138,7 @@ function FunctionsPage() {
         setDailyUsageCount(data.date === getTodayString() ? data.count : 0)
       } catch (e) { setDailyUsageCount(0) }
     }
-
-    const handleVisibilityChange = () => {
-      if (document.hidden && bgmAudioRef.current) {
-        bgmAudioRef.current.pause()
-        setIsBgmPlaying(false)
-      }
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      if (bgmAudioRef.current) { bgmAudioRef.current.pause(); bgmAudioRef.current = null }
-    }
   }, [])
-
-  useEffect(() => {
-    if (activePage !== 'carg') return
-    const timer = setInterval(() => {
-      const now = new Date()
-      setUptime(now.toTimeString().split(' ')[0])
-    }, 1000)
-    return () => clearInterval(timer)
-  }, [activePage])
 
   useEffect(() => {
     if (!supabaseClient) return
@@ -285,7 +238,7 @@ function FunctionsPage() {
   return (
     <div id="functions-app" className="w-full h-full relative">
       <div id="three-canvas-container-fn" style={{ position: 'fixed', inset: 0, zIndex: 0, pointerEvents: 'none', opacity: 0.85 }} />
-      <div className="noise-overlay-fn" />
+      <div className="noise-overlay fixed inset-0 z-[1]" />
       <div className="bg-overlay-fn" />
       <div className="ambient-glow-fn" />
 
@@ -338,9 +291,9 @@ function FunctionsPage() {
             <button onClick={() => window.open('/editor/', '_blank')} className="hover:text-[#d4b58e] transition-colors" aria-label="开发者中心">
                <span dangerouslySetInnerHTML={{ __html: getIcon('code-2', 'w-5 h-5') }} />
             </button>
-            <button onClick={returnHome} className="hover:text-[#d4b58e] transition-colors" aria-label="电源">
+            <BackButton to="/" className="hover:text-[#d4b58e] transition-colors" aria-label="电源">
               <span dangerouslySetInnerHTML={{ __html: getIcon('power', 'w-5 h-5') }} />
-            </button>
+            </BackButton>
           </div>
         </aside>
 
@@ -507,9 +460,6 @@ function FunctionsPage() {
                 <div className="flex items-center gap-4">
                   <span dangerouslySetInnerHTML={{ __html: getIcon('activity', 'text-red-500 w-6 h-6 shrink-0') }} />
                   <h2 className="text-xl md:text-3xl font-serif-sc font-black tracking-widest uppercase text-[#e7e5e4]">C.A.R.G. 实时监控</h2>
-                </div>
-                <div className="inline-flex items-center self-start md:self-auto text-[11px] font-mono-ef tracking-widest text-[#d4b58e] uppercase px-3 py-1 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30">
-                  <div className="w-1.5 h-1.5 rounded-full bg-[#d4b58e] mr-2 animate-pulse" /> Cruising_Uptime: {uptime}
                 </div>
               </header>
 

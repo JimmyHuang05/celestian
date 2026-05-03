@@ -1,13 +1,10 @@
 import { useState, useEffect, useRef, useCallback } from 'react'
-import { useNavigate } from 'react-router-dom'
-import { createClient } from '@supabase/supabase-js'
+import supabaseClient from '../lib/supabaseClient'
+import BackButton from '../components/BackButton.jsx'
+import VersionBadge from '../components/VersionBadge.jsx'
 import ASSETS_BASE from '../constants.js'
 
-const supabaseUrl = 'https://qunhjfulchaurfxtjoeg.supabase.co'
 const MAP_IMAGE_PATH = ASSETS_BASE + '/map/basemap.webp'
-const supabaseKey = 'sb_publishable_Nkbcb5N92HUqJAGB9TYnJQ_W_09BC-T'
-let supabaseClient = null
-try { supabaseClient = createClient(supabaseUrl, supabaseKey) } catch (e) { console.error('Supabase init error', e) }
 
 const MAP_TRUE_WIDTH = 10800
 const MAP_TRUE_HEIGHT = 5200
@@ -470,11 +467,9 @@ function MapPage() {
   const toggleFilterMenu = () => setIsFilterMenuOpen(prev => !prev)
   const setFilter = (type) => { setFilterType(type); setIsFilterMenuOpen(false) }
 
-  const handleBack = () => navigate('/')
-
   return (
     <div id="map-app" className="w-full h-full relative" onContextMenu={(e) => e.preventDefault()}>
-      <div className="noise-overlay-map" />
+      <div className="noise-overlay fixed inset-0 z-[1000]" />
 
       {!isMapReady && (
         <div className="fixed inset-0 z-[3000] bg-[#050505] flex flex-col items-center justify-center p-6 pointer-events-auto">
@@ -504,9 +499,9 @@ function MapPage() {
 
       <div className="absolute top-4 sm:top-6 left-4 sm:left-6 z-[1000] w-[calc(100vw-2rem)] sm:w-[400px] flex flex-col gap-2 pointer-events-none">
         <div className="bg-[#141211]/95 backdrop-blur-md rounded-xl shadow-[0_10px_30px_rgba(0,0,0,0.8)] border border-gray-800 flex items-center px-4 py-3 pointer-events-auto transition-all focus-within:border-[#d4b58e] focus-within:shadow-[0_0_20px_rgba(212,181,142,0.15)]">
-          <button className="mr-3 text-gray-500 hover:text-[#d4b58e] transition-colors" title="菜单" onClick={handleBack}>
+          <BackButton to="/" className="mr-3 text-gray-500 hover:text-[#d4b58e] transition-colors" title="菜单">
             <i data-lucide="menu" className="w-5 h-5" />
-          </button>
+          </BackButton>
           <div className="h-5 w-[1px] bg-gray-800 mr-3" />
           <input type="text" value={searchInput} onChange={(e) => setSearchInput(e.target.value)} onFocus={() => setShowDropdown(true)}
             className="flex-1 bg-transparent border-none text-sm text-gray-200 focus:outline-none focus:ring-0 font-serif-sc placeholder:text-gray-600"
@@ -631,9 +626,7 @@ function MapPage() {
             <i data-lucide="minus" className="w-5 h-5" />
           </button>
         </div>
-        <button className="pointer-events-auto w-10 h-10 mt-2 bg-[#1a1817]/90 backdrop-blur text-gray-400 hover:text-[#d4b58e] rounded-xl shadow-xl border border-gray-700 flex items-center justify-center transition-all hover:scale-110">
-          <i data-lucide="layers" className="w-5 h-5" />
-        </button>
+        <VersionBadge position="bottom-right" />
       </div>
     </div>
   )
