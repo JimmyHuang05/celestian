@@ -106,10 +106,6 @@ body {
     position: relative;
     z-index: 10;
 }
-
-#main-content {
-    font-family: '峄山碑篆体', serif;
-}
 @media (min-width: 1024px) {
     #app-container {
         aspect-ratio: 16 / 9;

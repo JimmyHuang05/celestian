@@ -12,6 +12,7 @@ function FunctionsPage() {
   const navigate = useNavigate()
   const [activePage, setActivePage] = useState('overview')
   const [particles, setParticles] = useState([])
+  const [uptime, setUptime] = useState('00:00:00')
   const [dailyUsageCount, setDailyUsageCount] = useState(0)
   const [hasStartedChat, setHasStartedChat] = useState(false)
   const [isAiLoading, setIsAiLoading] = useState(false)
@@ -176,6 +177,15 @@ function FunctionsPage() {
       if (bgmAudioRef.current) { bgmAudioRef.current.pause(); bgmAudioRef.current = null }
     }
   }, [])
+
+  useEffect(() => {
+    if (activePage !== 'carg') return
+    const timer = setInterval(() => {
+      const now = new Date()
+      setUptime(now.toTimeString().split(' ')[0])
+    }, 1000)
+    return () => clearInterval(timer)
+  }, [activePage])
 
   useEffect(() => {
     if (!supabaseClient) return
@@ -497,6 +507,9 @@ function FunctionsPage() {
                 <div className="flex items-center gap-4">
                   <span dangerouslySetInnerHTML={{ __html: getIcon('activity', 'text-red-500 w-6 h-6 shrink-0') }} />
                   <h2 className="text-xl md:text-3xl font-serif-sc font-black tracking-widest uppercase text-[#e7e5e4]">C.A.R.G. 实时监控</h2>
+                </div>
+                <div className="inline-flex items-center self-start md:self-auto text-[11px] font-mono-ef tracking-widest text-[#d4b58e] uppercase px-3 py-1 rounded bg-[#d4b58e]/10 border border-[#d4b58e]/30">
+                  <div className="w-1.5 h-1.5 rounded-full bg-[#d4b58e] mr-2 animate-pulse" /> Cruising_Uptime: {uptime}
                 </div>
               </header>
 

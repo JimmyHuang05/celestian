@@ -1,11 +1,11 @@
-import { useState, useEffect, useRef, useCallback } from 'react'
+﻿import { useState, useEffect, useRef, useCallback } from 'react'
 import { Routes, Route, useLocation } from 'react-router-dom'
 import ErrorBoundary from './components/ErrorBoundary.jsx'
 import EncyclopediaPage from './pages/EncyclopediaPage.jsx'
 import MapPage from './pages/MapPage.jsx'
 import FunctionsPage from './pages/FunctionsPage.jsx'
 import BadgePage from './pages/BadgePage.jsx'
-import ASSETS_BASE, { BUILD_HASH } from './constants.js'
+import ASSETS_BASE from './constants.js'
 
 function App() {
   const bgCanvasRef = useRef(null)
@@ -745,9 +745,6 @@ function App() {
                     </div>
                   </div>
                 </main>
-                <div className="absolute bottom-4 left-6 z-30">
-                  <span className="font-mono text-[10px] tracking-[0.2em] text-stone-600/40 select-none">{BUILD_HASH}</span>
-                </div>
               </div>
             </div>
           </>
