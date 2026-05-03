@@ -111,7 +111,7 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
     return () => { if (carouselTimerRef.current) clearInterval(carouselTimerRef.current) }
   }, [hasMultipleImages, isHoveringImage, currentImages.length])
 
-  const goToImage = (idx) => { setGalleryImageIndex(idx); if (carouselTimerRef.current) { clearInterval(carouselTimerRef.current); carouselTimerRef.current = null } }
+  const goToImage = (idx) => { setGalleryImageIndex(idx) }
 
   const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
   const next = () => { if (currentIndex < characters.length - 1) { const ni = currentIndex + 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
@@ -145,13 +145,13 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
           </div>
         ) : (
           <>
-            <div className="absolute top-0 bottom-0 left-0 w-1/5 md:w-24 z-[200] flex items-center justify-start group/navleft pointer-events-auto cursor-pointer" onClick={prev}>
-              <button disabled={currentIndex === 0} className="ml-4 md:ml-6 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 opacity-0 group-hover/navleft:opacity-100 disabled:opacity-0 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50">
+            <div className="absolute top-0 bottom-0 left-0 w-1/5 md:w-24 z-[200] flex items-center justify-start md:group/navleft pointer-events-auto cursor-pointer" onClick={prev}>
+              <button disabled={currentIndex === 0} className={`ml-2 md:ml-6 w-9 h-9 md:w-12 md:h-12 rounded-full bg-black/50 md:bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50 ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100 md:opacity-0 md:group-hover/navleft:opacity-100'}`}>
                 <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
               </button>
             </div>
-            <div className="absolute top-0 bottom-0 right-0 w-1/5 md:w-24 z-[200] flex items-center justify-end group/navright pointer-events-auto cursor-pointer" onClick={next}>
-              <button disabled={currentIndex === characters.length - 1} className="mr-4 md:mr-6 w-10 h-10 md:w-12 md:h-12 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 opacity-0 group-hover/navright:opacity-100 disabled:opacity-0 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50">
+            <div className="absolute top-0 bottom-0 right-0 w-1/5 md:w-24 z-[200] flex items-center justify-end md:group/navright pointer-events-auto cursor-pointer" onClick={next}>
+              <button disabled={currentIndex === characters.length - 1} className={`mr-2 md:mr-6 w-9 h-9 md:w-12 md:h-12 rounded-full bg-black/50 md:bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50 ${currentIndex === characters.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100 md:opacity-0 md:group-hover/navright:opacity-100'}`}>
                 <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
               </button>
             </div>
@@ -165,10 +165,10 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
                 )}
                 {hasMultipleImages && (
-                  <div className="absolute bottom-2 right-2 flex items-center gap-1.5 z-20">
+                  <div className="absolute bottom-3 right-3 flex items-center gap-1.5 z-20">
                     {currentImages.map((_, idx) => (
                       <button key={idx} onClick={(e) => { e.stopPropagation(); goToImage(idx) }}
-                        className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === galleryImageIndex ? 'bg-white/90 shadow-[0_0_6px_rgba(255,255,255,0.5)] w-3' : 'bg-white/30 hover:bg-white/60'}`} />
+                        className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === galleryImageIndex ? 'bg-white/90 w-2.5' : 'bg-white/30 hover:bg-white/60'}`} />
                     ))}
                   </div>
                 )}
