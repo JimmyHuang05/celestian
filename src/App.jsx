@@ -5,7 +5,6 @@ import MapPage from './pages/MapPage.jsx'
 import FunctionsPage from './pages/FunctionsPage.jsx'
 import BadgePage from './pages/BadgePage.jsx'
 import ASSETS_BASE from './constants.js'
-import BlobImage from './components/BlobImage.jsx'
 
 function App() {
   const bgCanvasRef = useRef(null)
@@ -553,7 +552,7 @@ function App() {
                             id="hero-card-front"
                             className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_0_25px_rgba(212,181,142,0.4)] border border-[#d4b58e]/80 bg-stoneBg [backface-visibility:hidden] animate-pulse-slow transition-all duration-500"
                           >
-                            <BlobImage
+                            <img
                               ref={heroBgImgRef}
                               id="hero-bg-img"
                               src={ASSETS_BASE + "/images/cards/hero-front.webp"}
@@ -567,7 +566,7 @@ function App() {
                               id="hero-hover-layer"
                               className="absolute inset-0 transition-all duration-500 opacity-0 pointer-events-none bg-black/40"
                             >
-                              <BlobImage
+                              <img
                                 src={ASSETS_BASE + "/images/cards/hero-hover.webp"}
                                 loading="lazy"
                                 decoding="async"
@@ -599,7 +598,7 @@ function App() {
 
                           <div className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-[#d4b58e]/60 bg-stoneCard [transform:rotateY(180deg)] [backface-visibility:hidden] vignette-overlay">
                             <div id="back-layer-poem" className="absolute inset-0 flex flex-col items-center justify-center p-[clamp(1rem,6cqw,2rem)] text-center transition-opacity duration-700 opacity-100">
-                              <BlobImage
+                              <img
                                 src={ASSETS_BASE + "/images/cards/hero-back.webp"}
                                 loading="lazy"
                                 decoding="async"

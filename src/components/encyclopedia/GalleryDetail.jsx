@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback, useRef } from 'react'
-import BlobImage from '../BlobImage.jsx'
 
 function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -161,7 +160,7 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
               <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}
                 onMouseEnter={() => setIsHoveringImage(true)} onMouseLeave={() => setIsHoveringImage(false)}>
                 {currentImages.length > 0 && (
-                  <BlobImage key={'gallery-img-' + currentIndex + '-' + galleryImageIndex}
+                  <img key={'gallery-img-' + currentIndex + '-' + galleryImageIndex}
                     src={currentImages[galleryImageIndex]}
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
                 )}
@@ -228,7 +227,7 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
                               return (
                                 <div key={'block-' + index} className="my-4 border-l-[1.5px] border-[#d4b58e]/40 pl-4 italic text-gray-400 bg-white/[0.02] py-2.5 pr-3 rounded-r-md">
                                   <span dangerouslySetInnerHTML={{ __html: block.content }} />
-                                  {block.author && <div className="mt-2 text-[10px] tracking-widest uppercase font-cinzel">—�?<span dangerouslySetInnerHTML={{ __html: block.author }} /></div>}
+                                  {block.author && <div className="mt-2 text-[10px] tracking-widest uppercase font-cinzel">—— <span dangerouslySetInnerHTML={{ __html: block.author }} /></div>}
                                 </div>
                               )
                             }

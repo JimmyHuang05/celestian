@@ -1,5 +1,4 @@
 import { useState, useEffect, useCallback } from 'react'
-import BlobImage from '../BlobImage.jsx'
 
 function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -104,7 +103,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
         <div className="absolute inset-0 z-0 flex items-center justify-center pointer-events-none opacity-[0.12] mix-blend-screen"
           style={{ maskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)', WebkitMaskImage: 'radial-gradient(circle at center, black 30%, transparent 80%)' }}>
           {character && character.image_url && (
-            <BlobImage src={character.image_url}
+            <img src={character.image_url}
               style={{ transform: 'scale(' + ((character.main_image_scale || 100) / 100) + ')' }}
               className="w-[90%] md:w-[70%] h-auto object-contain blur-[1px] drop-shadow-[0_0_30px_rgba(212,181,142,0.8)] transition-all duration-700" draggable="false" />
           )}
@@ -139,7 +138,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
                       <div className="w-full h-full arch-window overflow-hidden relative bg-black flex items-center justify-center">
                         {character && character.bg_image_url && (
                           <div className="absolute inset-0 z-0 flex items-center justify-center overflow-hidden pointer-events-none">
-                            <BlobImage src={character.bg_image_url}
+                            <img src={character.bg_image_url}
                               style={{ width: (character.bg_image_scale || 100) + '%', height: (character.bg_image_scale || 100) + '%' }}
                               className="object-cover group-hover:scale-[1.05] transition-transform duration-[2s] ease-out min-w-full min-h-full max-w-none" draggable="false" />
                           </div>
@@ -173,7 +172,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
 
                     {character.title_icon_url && (
                       <div className="mb-6 flex justify-center">
-                        <BlobImage src={character.title_icon_url}
+                        <img src={character.title_icon_url}
                           style={{ transform: 'scale(' + ((character.title_icon_scale || 100) / 100) + ')' }}
                           className="w-16 h-16 object-contain opacity-90 block" draggable="false" />
                       </div>
