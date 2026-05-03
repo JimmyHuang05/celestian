@@ -165,7 +165,7 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
                 )}
                 {hasMultipleImages && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 flex items-center gap-1.5 z-20">
+                  <div className="absolute flex items-center gap-1.5 z-20" style={{ bottom: '0.75rem', left: '50%', transform: 'translateX(-50%)' }}>
                     {currentImages.map((_, idx) => (
                       <button key={idx} onClick={(e) => { e.stopPropagation(); goToImage(idx) }}
                         className={`w-2 h-2 rounded-full transition-all duration-300 ${idx === galleryImageIndex ? 'bg-white/90' : 'bg-white/30 hover:bg-white/60'}`} />
