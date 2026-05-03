@@ -12,7 +12,6 @@
 }
 
 .font-yishan {
-    font-family: '峄山碑篆体', serif;
     opacity: 0;
     transform: translateY(10px);
     transition: opacity 0.8s ease-out, transform 0.8s ease-out;
