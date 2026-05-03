@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 
 function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
@@ -7,9 +7,6 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
   const [currentIndex, setCurrentIndex] = useState(0)
   const [scrollProgress, setScrollProgress] = useState(0)
   const [isTocOpen, setIsTocOpen] = useState(false)
-  const [galleryImageIndex, setGalleryImageIndex] = useState(0)
-  const [isHoveringImage, setIsHoveringImage] = useState(false)
-  const carouselTimerRef = useRef(null)
 
   const character = characters[currentIndex] || null
 
@@ -97,20 +94,6 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
     if (character.image_url) return [character.image_url]
     return []
   })() : []
-  const hasMultipleImages = currentImages.length > 1
-
-  useEffect(() => {
-    setGalleryImageIndex(0)
-  }, [currentIndex])
-
-  useEffect(() => {
-    if (!hasMultipleImages || isHoveringImage) return
-    carouselTimerRef.current = setInterval(() => {
-      setGalleryImageIndex(prev => (prev + 1) % currentImages.length)
-    }, 4000)
-    return () => { if (carouselTimerRef.current) clearInterval(carouselTimerRef.current) }
-  }, [hasMultipleImages, isHoveringImage, currentImages.length])
-
 
   const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
   const next = () => { if (currentIndex < characters.length - 1) { const ni = currentIndex + 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
@@ -156,11 +139,10 @@ function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEnt
             </div>
 
             <div className="flex-1 w-full h-full flex flex-col relative z-0 min-h-0 bg-[#050505]">
-              <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}
-                onMouseEnter={() => setIsHoveringImage(true)} onMouseLeave={() => setIsHoveringImage(false)}>
+              <div className="w-full shrink-0 relative flex items-center justify-center overflow-hidden z-10 bg-[#000000]" style={{ aspectRatio: '21/9' }}>
                 {currentImages.length > 0 && (
-                  <img key={'gallery-img-' + currentIndex + '-' + galleryImageIndex}
-                    src={currentImages[galleryImageIndex]}
+                  <img key={'gallery-img-' + currentIndex}
+                    src={currentImages[0]}
                     className="absolute inset-0 w-full h-full object-cover transition-opacity duration-500" draggable="false" />
                 )}
               </div>
