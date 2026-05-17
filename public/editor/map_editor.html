@@ -541,7 +541,7 @@
                 crs: L.CRS.Simple, minZoom: -5, maxZoom: 2, 
                 zoomControl: true, attributionControl: false 
             });
-            const mapImagePath = '../data/map/basemap.webp';
+            const mapImagePath = 'https://assets.jimmyhuang.cn/map/basemap.webp';
 
             L.imageOverlay(mapImagePath, MAP_BOUNDS, { opacity: 1 }).addTo(adminMap);
             adminMap.setMaxBounds(MAP_BOUNDS);
@@ -613,7 +613,7 @@
         let currentSvgOverlay = null;
 
         function loadRegionsSVG() {
-            fetch('../data/map/regions.svg')
+            fetch('https://assets.jimmyhuang.cn/map/regions.svg')
                 .then(res => res.text())
                 .then(svgText => {
                     const parser = new DOMParser();
