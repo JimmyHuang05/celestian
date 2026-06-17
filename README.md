@@ -1,6 +1,7 @@
 # Celestian — 无光的伊甸园
 
 一个基于 **React + Vite** 构建的世界构建与百科管理平台，包含百科全书、交互地图、AI 对话等功能。
+预览：https://celestian.jimmyhuang.cn/
 
 ## 技术栈
 
