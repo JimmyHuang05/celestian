@@ -10,6 +10,9 @@ import {renderDossier} from './profile-content.js'
 import {mountProfileGalaxy} from './profile-galaxy.jsx'
 import {mountProfileSound} from './profile-sound.js'
 import {mountPortraitMotion} from './profile-portrait-motion.js'
+import {connectProfileNavigation} from './profile-navigation.js'
+
+connectProfileNavigation()
 
 const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy'))
 if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
@@ -147,6 +150,7 @@ async function init(){
     const url=new URL(location.href)
     url.searchParams.set('id',entry.id)
     history.replaceState(null,'',url)
+    if(window.parent!==window)window.parent.postMessage({type:'profile:selection',id:entry.id},location.origin)
     document.title=`${entry.name} · 众生录`
     document.querySelector('#name').textContent=entry.name
     document.querySelector('#profession').textContent=entry.title

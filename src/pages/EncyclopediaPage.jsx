@@ -11,6 +11,7 @@ import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
 import BackButton from '../components/BackButton.jsx'
 import VersionBadge from '../components/VersionBadge.jsx'
 import ASSETS_BASE from '../constants.js'
+import { openCharacterProfile } from '../profile-navigation.js'
 
 const desktopNodes = [
   { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
@@ -170,7 +171,9 @@ function EncyclopediaPage() {
   useEffect(() => {
     if (nodeFromUrl) {
       if (nodeFromUrl.id === 'characters') {
-        window.location.replace(`/character-profile.html${window.location.search}`)
+        const target = `/character-profile.html${window.location.search}`
+        navigate('/encyclopedia', { replace: true })
+        setTimeout(() => openCharacterProfile(target), 0)
         return
       }
       setActiveNode(nodeFromUrl)
@@ -181,7 +184,7 @@ function EncyclopediaPage() {
 
   const openDetail = useCallback((node, event) => {
     if (node.id === 'characters') {
-      window.location.assign('/character-profile.html')
+      openCharacterProfile('/character-profile.html')
       return
     }
     if (isTransitioning) return

@@ -40,6 +40,7 @@ def dependency(relative):
         dependency(match.lstrip('/'))
 
 dependency('src/character-profile.js')
+shutil.copy2(repo / 'src/main.jsx', out / 'src/main.jsx')
 shutil.copy2(repo / 'character-profile.html', out / 'character-profile.html')
 assets = {'character-profile/characters.json', 'character-profile/star-dust.svg', 'character-profile/medic.png'}
 entries = json.loads((repo / 'public/character-profile/characters.json').read_text(encoding='utf-8'))
@@ -55,14 +56,17 @@ for name in assets:
 page = out / 'src/pages/EncyclopediaPage.jsx'
 text = page.read_text(encoding='utf-8')
 assert "apiGet('/entries/counts')" in text, 'Production API baseline required'
+text = text.replace("import ASSETS_BASE from '../constants.js'", "import ASSETS_BASE from '../constants.js'\nimport { openCharacterProfile } from '../profile-navigation.js'")
 text = text.replace('    if (nodeFromUrl) {', '''    if (nodeFromUrl) {
       if (nodeFromUrl.id === 'characters') {
-        window.location.replace(`/character-profile.html${window.location.search}`)
+        const target = `/character-profile.html${window.location.search}`
+        navigate('/encyclopedia', { replace: true })
+        setTimeout(() => openCharacterProfile(target), 0)
         return
       }''')
 text = text.replace('  const openDetail = useCallback((node, event) => {', '''  const openDetail = useCallback((node, event) => {
     if (node.id === 'characters') {
-      window.location.assign('/character-profile.html')
+      openCharacterProfile('/character-profile.html')
       return
     }''')
 page.write_text(text, encoding='utf-8')
