@@ -3,6 +3,10 @@
 
 .profile-back{position:fixed;left:20px;top:16px;z-index:100;color:#baa77f;font:12px/1.5 sans-serif;text-decoration:none;letter-spacing:.08em;padding:6px 10px;background:#101827a6;border:1px solid #baa77f30}
 .profile-back:hover,.profile-back:focus-visible{color:#eee5cf;border-color:#baa77f}
+.identity{isolation:isolate}
+.identity-portrait{position:absolute;inset:0;overflow:hidden;z-index:-1;pointer-events:none;opacity:.14;mask-image:linear-gradient(180deg,transparent 12%,#000 27%,#000 68%,transparent 100%)}
+.identity-portrait img{position:absolute;left:50%;top:var(--backdrop-top,8%);height:165%;width:auto;max-width:none;transform:translateX(var(--backdrop-anchor,-52%));filter:grayscale(1) sepia(.25) hue-rotate(165deg) saturate(.45);pointer-events:none}
+.identity-portrait img[hidden]{display:none}
 /* An inscription within the existing vertical band, rather than a filled badge. */
 .identity-signature{width:100%;max-width:340px;position:relative}
 .identity-crown{display:flex;align-items:center;gap:14px;height:20px;color:#b39b6e;margin-bottom:clamp(14px,2vh,22px)}

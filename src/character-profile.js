@@ -28,6 +28,8 @@ async function init(){
   const initialId=new URLSearchParams(location.search).get('id')
   let active=Math.max(0,operators.findIndex(entry=>entry.id===initialId)),rotating=false,wheelTimer,dialAngle=0,wheelGeometry
   let requested=active
+  let backdropVersion=0
+  const backdrop=document.querySelector('#identity-portrait')
   const sound=mountProfileSound(()=>operators[active].id)
   if(import.meta.hot)import.meta.hot.dispose(sound.destroy)
   const portraitMotion=mountPortraitMotion(document.querySelector('#portrait'))
@@ -157,6 +159,16 @@ async function init(){
     portrait.style.setProperty('--portrait-top',`${(frame ? .95-frame.sole*height : .95-height)*100}%`)
     portrait.style.setProperty('--portrait-anchor',`${frame?.anchor??50}%`)
     void portraitMotion.select(entry)
+    // Reuse the current portrait download, but keep this enlarged backdrop still.
+    // Clear it immediately so a slow response never shows the previous person.
+    const backdropRequest=++backdropVersion
+    backdrop.hidden=true
+    backdrop.style.setProperty('--backdrop-top',`${(0.28-(frame?.eye??.15)*1.65)*100}%`)
+    backdrop.style.setProperty('--backdrop-anchor',`${-(frame?.faceX??.5)*100}%`)
+    backdrop.src=entry.image
+    backdrop.decode().then(()=>{
+      if(backdropRequest===backdropVersion)backdrop.hidden=false
+    }).catch(()=>{/* Decorative backdrop stays hidden if the portrait fails. */})
     const emblem=document.querySelector('#emblem')
     emblem.src=entry.emblem
     emblem.alt=`${entry.name}的档案徽章`
