@@ -36,6 +36,17 @@ void main(){
   vec2 neck=p-vec2(557.0,375.0);
   vec2 shift=breathing*parent+(turn(neck,.0012*breath)-neck)*max(head,hair);
 
+  // Only the exposed halo above the headdress floats. Its hidden lower arc
+  // stays anchored behind the hat; feather the boundary to avoid pulling it.
+  float hatTop=p.x<425.0?228.0:
+    p.x<520.0?mix(194.0,128.0,(p.x-425.0)/95.0):
+    p.x<567.0?mix(128.0,120.0,(p.x-520.0)/47.0):
+    p.x<610.0?mix(120.0,149.0,(p.x-567.0)/43.0):
+    mix(149.0,220.0,clamp((p.x-610.0)/40.0,0.0,1.0));
+  float halo=box(p,vec4(306.0,-15.0,700.0,260.0),8.0)
+    *(1.0-ramp(hatTop-14.0,hatTop-2.0,p.y));
+  shift.y-=1.8*followBreath(.06)*halo;
+
   // The fuller supported volumes have the largest local follow-through.
   // Both cups rise/fall with the torso; only lateral settling has a short lag.
   // the neckline, central ornament and underbust remain attached.
@@ -88,6 +99,37 @@ void main(){
 
 const fragmentSource=createBlinkFragment({
   crop:[430,190,210,190],bounds:[267,318],
+  declarations:`
+uniform float u_phase;
+uniform float u_strength;
+`,
+  finish:`
+  // Animate the blue crystal interior only. The rim, gold clasps and original
+  // glass highlights remain fixed, and no extra image needs to be downloaded.
+  vec2 crystal=(p-vec2(837.0,199.0))/vec2(34.0,32.0);
+  float crystalRadius=length(crystal);
+  if(crystalRadius<1.0 && u_strength>0.0){
+    vec3 rgb=color.rgb/max(color.a,.001);
+    float blueGlass=smoothstep(.025,.15,max(rgb.b,rgb.g)-rgb.r);
+    float highlights=1.0-smoothstep(.73,.96,min(rgb.r,min(rgb.g,rgb.b)));
+    float interior=(1.0-smoothstep(.76,.98,crystalRadius))*blueGlass*highlights*u_strength;
+    // Soft, overlapping color clouds drift and mix without a rotational
+    // center, bright ribbons or orbiting sparks. All phases loop in 12 seconds.
+    vec2 mistWarp=vec2(
+      sin(crystal.y*2.1+u_phase),
+      cos(crystal.x*1.8-u_phase))*.42;
+    vec2 mistPoint=crystal+mistWarp;
+    float cloudA=sin(mistPoint.x*2.4+mistPoint.y*1.3-u_phase);
+    float cloudB=cos(mistPoint.y*2.7-mistPoint.x*1.1+u_phase);
+    float blend=.5+.25*cloudA+.25*cloudB;
+    vec2 drift=mistWarp*3.8*interior;
+    vec4 refracted=texture2D(u_image,(p+drift)/vec2(1086.0,1448.0));
+    vec3 element=mix(vec3(.42,.39,.76),vec3(.26,.72,.84),blend);
+    vec3 flowing=mix(refracted.rgb,element*color.a,.34);
+    flowing+=vec3(.08,.15,.19)*color.a*(.5+.5*cloudB)*.12;
+    color.rgb=mix(color.rgb,min(flowing,vec3(color.a)),interior);
+  }
+`,
   eyes:[
     {center:[522,286],radius:[25,16],slope:.08,range:[503,541],upper:[280,278,278,284],closed:[283,285,287,289],lower:[283,294,294,284]},
     {center:[581,295],radius:[23,17],slope:.24,range:[564,600],upper:[290,288,287.5,298],closed:[292,296,300,303],lower:[292,302,304,300]},
