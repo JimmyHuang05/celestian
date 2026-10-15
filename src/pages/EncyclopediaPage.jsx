@@ -2,6 +2,8 @@ import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import supabaseClient from '../lib/supabaseClient'
 import Starfield from '../components/encyclopedia/Starfield.jsx'
+import GalaxyVeil from '../components/encyclopedia/GalaxyVeil.jsx'
+import { galaxyTextureMask } from '../components/encyclopedia/galaxyDensity.js'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
 import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
 import GalleryDetail from '../components/encyclopedia/GalleryDetail.jsx'
@@ -51,7 +53,6 @@ function EncyclopediaPage() {
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
   const [isPlayingBgm, setIsPlayingBgm] = useState(true)
-  const [ripples, setRipples] = useState([])
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
 
@@ -103,16 +104,16 @@ function EncyclopediaPage() {
   const onMouseMove = useCallback((e) => {
     const w = window.innerWidth || 1
     const h = window.innerHeight || 1
-    targetX.current = (e.clientX / w - 0.5) * 2
-    targetY.current = (e.clientY / h - 0.5) * 2
+    targetX.current = e.clientX / w - 0.5
+    targetY.current = e.clientY / h - 0.5
   }, [])
 
   const onTouchMove = useCallback((e) => {
     if (e.touches.length > 0) {
       const w = window.innerWidth || 1
       const h = window.innerHeight || 1
-      targetX.current = (e.touches[0].clientX / w - 0.5) * 2
-      targetY.current = (e.touches[0].clientY / h - 0.5) * 2
+      targetX.current = e.touches[0].clientX / w - 0.5
+      targetY.current = e.touches[0].clientY / h - 0.5
     }
   }, [])
 
@@ -124,40 +125,29 @@ function EncyclopediaPage() {
   }, [])
 
   const toggleBgm = useCallback(() => {
-    if (!bgmAudioRef.current) return
-    if (isPlayingBgm) {
-      bgmAudioRef.current.pause()
-    } else {
-      bgmAudioRef.current.play().catch(() => {})
-    }
     setIsPlayingBgm(prev => !prev)
-  }, [isPlayingBgm])
+  }, [])
 
   useEffect(() => {
-    if (bgmAudioRef.current) {
-      bgmAudioRef.current.volume = 0.25
-      bgmAudioRef.current.play().catch((e) => {
-        const startBgm = () => {
-          if (isPlayingBgm && bgmAudioRef.current) bgmAudioRef.current.play().catch(() => {})
-          document.removeEventListener('click', startBgm)
-          document.removeEventListener('touchstart', startBgm)
-        }
-        document.addEventListener('click', startBgm)
-        document.addEventListener('touchstart', startBgm)
-      })
-    }
+    const audio = bgmAudioRef.current
+    audio.volume = 0.25
+    const startBgm = () => { if (audio.paused && !document.hidden) audio.play().catch(() => {}) }
+    startBgm()
+    document.addEventListener('click', startBgm)
+    document.addEventListener('keydown', startBgm)
     if (hoverAudioRef.current) hoverAudioRef.current.volume = 0.05
 
     const handleVisibilityChange = () => {
-      if (document.hidden && bgmAudioRef.current) {
-        bgmAudioRef.current.pause()
-        setIsPlayingBgm(false)
-      }
+      if (document.hidden) audio.pause()
+      else startBgm()
     }
     document.addEventListener('visibilitychange', handleVisibilityChange)
 
     return () => {
       document.removeEventListener('visibilitychange', handleVisibilityChange)
+      document.removeEventListener('click', startBgm)
+      document.removeEventListener('keydown', startBgm)
+      audio.pause()
     }
   }, [])
 
@@ -281,10 +271,11 @@ function EncyclopediaPage() {
 
   return (
     <div id="encyclopedia-app">
-      <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]"
+      <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
-        <Starfield mouseX={mouseX} mouseY={mouseY} onRipples={setRipples} />
+        <div className="absolute inset-0 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ maskImage: galaxyTextureMask, maskSize: '100% 100%', maskRepeat: 'no-repeat' }} aria-hidden="true" />
+        <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} />
 
         <div className="absolute top-6 left-6 z-[150]">
           <BackButton to="/"
@@ -298,8 +289,8 @@ function EncyclopediaPage() {
         </div>
 
         <div className="absolute inset-0 z-10">
-          <div className="absolute inset-0 pointer-events-none z-[1]" style={{ transform: `translate(${-mouseX * 8}px, ${-mouseY * 8}px)` }}>
-            <div className="milky-way" />
+          <div className="absolute inset-0 pointer-events-none z-[1]">
+            <GalaxyVeil />
           </div>
 
           <div className="absolute inset-0" style={{ zIndex: 20 }}>
@@ -322,9 +313,9 @@ function EncyclopediaPage() {
 
           <VersionBadge position="bottom-left" />
 
-          <div className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
+          <button type="button" aria-label={isPlayingBgm ? '静音背景音乐' : '取消背景音乐静音'} aria-pressed={!isPlayingBgm} className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
             <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest group-hover:text-[#d4b58e]/80 transition-colors uppercase drop-shadow-md">
-              {isPlayingBgm ? 'BGM : ON' : 'BGM : OFF'}
+              {isPlayingBgm ? 'BGM : ON' : 'BGM : MUTED'}
             </div>
             <div className="w-8 h-8 rounded-full border border-[#d4b58e]/20 flex items-center justify-center group-hover:border-[#d4b58e]/60 group-hover:bg-[#d4b58e]/10 transition-all bg-black/20 backdrop-blur-sm">
               {isPlayingBgm ? (
@@ -338,10 +329,10 @@ function EncyclopediaPage() {
                 </svg>
               )}
             </div>
-          </div>
+          </button>
         </div>
 
-        <audio ref={bgmAudioRef} autoPlay loop src={ASSETS_BASE + "/audio/bgm/encyclopedia.mp3"} />
+        <audio ref={bgmAudioRef} autoPlay loop muted={!isPlayingBgm} src="/audio/bgm/encyclopedia.mp3" />
         <audio ref={hoverAudioRef} src={ASSETS_BASE + "/audio/sfx/hover.mp3"} />
       </div>
 

@@ -1,34 +1,31 @@
-import { useRef, useEffect } from 'react'
+import { useRef, useEffect, useState, useCallback } from 'react'
+import useMusicBeats from './useMusicBeats.js'
+import { galaxyDensity } from './galaxyDensity.js'
 
-function Starfield({ mouseX, mouseY, onRipples }) {
+function Starfield({ mouseX, mouseY, audioRef }) {
   const canvasRef = useRef(null)
-  const ripples = useRef([])
+  const [ripples, setRipples] = useState([])
   const rippleIdCounter = useRef(0)
-  const rippleTimerRef = useRef(null)
-
-  const createRandomRipple = () => {
+  const timers = useRef(new Set())
+  const onBeat = useCallback(({ strength }) => {
     const id = rippleIdCounter.current++
-    const newRipple = {
-      id,
-      top: (Math.random() * 80 + 10) + '%',
-      left: (Math.random() * 80 + 10) + '%',
-      size: (Math.random() * 150 + 150) + 'px',
-      delays: [0],
-    }
-    ripples.current = [...ripples.current, newRipple]
-    if (onRipples) onRipples(ripples.current)
-    setTimeout(() => {
-      ripples.current = ripples.current.filter(r => r.id !== id)
-      if (onRipples) onRipples(ripples.current)
-    }, 4200)
-  }
-
-  const scheduleNextRipple = () => {
-    rippleTimerRef.current = setTimeout(() => {
-      createRandomRipple()
-      scheduleNextRipple()
-    }, Math.random() * 3000 + 1500)
-  }
+    let x, y
+    do { x = .08 + Math.random() * .84; y = .12 + Math.random() * .76 }
+    while (Math.random() > galaxyDensity(x, y))
+    const ripple = { id, top: y * 100 + '%', left: x * 100 + '%',
+      size: (110 + strength * 110) + 'px', strength, delays: [0] }
+    setRipples(old => [...old.slice(-1), ripple])
+    const timer = setTimeout(() => {
+      timers.current.delete(timer)
+      setRipples(old => old.filter(item => item.id !== id))
+    }, 2200)
+    timers.current.add(timer)
+  }, [])
+  useMusicBeats(audioRef, onBeat)
+  useEffect(() => {
+    const pending = timers.current
+    return () => { pending.forEach(clearTimeout); pending.clear() }
+  }, [])
 
   useEffect(() => {
     const canvas = canvasRef.current
@@ -44,17 +41,11 @@ function Starfield({ mouseX, mouseY, onRipples }) {
       stars.length = 0
       meteors.length = 0
       for (let i = 0; i < 450; i++) {
-        let isMilkyWay = Math.random() < 0.88
         let x, y
-        if (isMilkyWay) {
-          let t = (Math.random() - 0.5) * 1.6
-          let spread = (Math.random() + Math.random() + Math.random() - 1.5) * 0.18
-          x = 0.5 + t * 0.866 + spread * 0.5
-          y = 0.5 + t * -0.5 + spread * 0.866
-        } else {
+        do {
           x = Math.random()
           y = Math.random()
-        }
+        } while (Math.random() > galaxyDensity(x, y))
         let depthRandom = Math.random()
         let layer = depthRandom > 0.85 ? 3 : (depthRandom > 0.4 ? 2 : 1)
         let size = layer === 3 ? (Math.random() * 0.8 + 0.6) : (layer === 2 ? (Math.random() * 0.5 + 0.3) : (Math.random() * 0.3 + 0.1))
@@ -67,15 +58,7 @@ function Starfield({ mouseX, mouseY, onRipples }) {
           rgb: Math.random() > 0.65 ? '212, 181, 142' : '255, 255, 255',
         })
       }
-      for (let i = 0; i < 6; i++) {
-        meteors.push({
-          x: Math.random() * width + width * 0.2,
-          y: Math.random() * height * 0.5 - height * 0.5,
-          length: Math.random() * 100 + 50,
-          speed: Math.random() * 0.8 + 0.5,
-          delay: Math.random() * 3000 + 1000,
-        })
-      }
+      // Meteors are disabled; retain the starfield and ripple effects.
     }
 
     const drawCanvas = (currentTime) => {
@@ -164,24 +147,21 @@ function Starfield({ mouseX, mouseY, onRipples }) {
 
     handleResize()
     window.addEventListener('resize', handleResize)
-    requestAnimationFrame(loop)
+    animationFrameId = requestAnimationFrame(loop)
 
-    createRandomRipple()
-    scheduleNextRipple()
 
     return () => {
       cancelAnimationFrame(animationFrameId)
       window.removeEventListener('resize', handleResize)
-      if (rippleTimerRef.current) clearTimeout(rippleTimerRef.current)
     }
   }, [])
 
   return (
     <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
       <canvas ref={canvasRef} className="block absolute inset-0" />
-      <div style={{ transform: `translate(${-mouseX * 12}px, ${-mouseY * 12}px)` }}>
-        {ripples.current && ripples.current.map(ripple => (
-          <div key={'ripple' + ripple.id} className="absolute" style={{ top: ripple.top, left: ripple.left }}>
+      <div className="absolute inset-0" style={{ transform: `translate(${-mouseX * 12}px, ${-mouseY * 12}px)` }}>
+        {ripples.map(ripple => (
+          <div key={'ripple' + ripple.id} className="absolute" style={{ top: ripple.top, left: ripple.left, opacity: .6 + ripple.strength * .4 }}>
             {ripple.delays.map((delay, index) => (
               <div key={'point' + index} className="space-ripple-point" style={{ width: ripple.size, height: ripple.size, animationDelay: delay + 's' }} />
             ))}

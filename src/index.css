@@ -160,19 +160,19 @@ body {
 #encyclopedia-app .space-ripple-point {
     position: absolute; top: 0; left: 0;
     border-radius: 50%; border-style: solid; border-color: rgba(212, 181, 142, 0.8);
-    animation: space-ripple 4s cubic-bezier(0.1, 0.8, 0.3, 1) both; pointer-events: none; will-change: transform, opacity;
+    animation: space-ripple 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) both; pointer-events: none; will-change: transform, opacity;
 }
 
 @keyframes core-fade {
-    0% { opacity: 0; transform: translate(-50%, -50%) scale(0.5); }
-    10% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+    10% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.15); }
     100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
 }
 #encyclopedia-app .space-ripple-core {
     position: absolute; top: 0; left: 0;
     width: 6px; height: 6px; background-color: #d4b58e; border-radius: 50%;
     box-shadow: 0 0 12px 2px #d4b58e; opacity: 0;
-    animation: core-fade 4s cubic-bezier(0.2, 0.8, 0.3, 1) both; transform-origin: center; will-change: transform, opacity;
+    animation: core-fade 2.2s cubic-bezier(0.2, 0.8, 0.3, 1) both; transform-origin: center; will-change: transform, opacity;
 }
 
 #encyclopedia-app .no-scrollbar::-webkit-scrollbar { display: none; }

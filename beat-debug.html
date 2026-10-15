@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BGM 重音测试</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#10151d;color:#dce2e9;font:14px system-ui,sans-serif}main{max-width:840px;margin:40px auto;padding:0 24px}h1{font-size:24px;font-weight:500}p{color:#9ba7b7;line-height:1.8}.stage{height:210px;display:grid;place-content:center;text-align:center;border:1px solid #303946;border-radius:10px;margin:24px 0}.lamp{width:62px;height:62px;border-radius:50%;background:#344051;margin:auto;transition:background .08s,box-shadow .08s}.stage.hit .lamp{background:#f4d08c;box-shadow:0 0 45px #eac16b88}.stage p{margin-bottom:0;font-variant-numeric:tabular-nums}audio{width:100%;margin-bottom:15px}canvas{display:block;width:100%;height:180px;background:#151d28;border:1px solid #303946;border-radius:6px}.legend{font-size:12px;margin:10px 0}.legend span{margin-right:20px}dl{display:grid;grid-template-columns:1fr 1fr;gap:10px}dt,dd{margin:0;padding:10px;background:#19212d}dd{font-family:monospace}.explain{font-size:12px;border-top:1px solid #303946;margin-top:24px;padding-top:12px}button{background:#202c3b;color:#dce2e9;border:1px solid #47566b;border-radius:5px;padding:8px 14px;cursor:pointer}button:disabled{opacity:.4}code{color:#e9c88d}#status{font-size:12px}@media(max-width:600px){main{margin-top:24px;padding:0 16px}.stage{height:170px}dl{font-size:11px}.legend span{margin-right:10px}}
+</style></head>
+<body><main><h1>BGM × 重音触发器</h1><p>听到音乐时，对照圆点是否在你认为的重音上亮起。</p>
+<div class="stage" id="stage"><div class="lamp"></div><p id="event" aria-live="off">等待播放</p></div>
+<audio id="music" controls preload="auto" src="/audio/bgm/encyclopedia.mp3"></audio>
+<button id="restart" disabled>从头重播</button><span id="status" role="status"> 正在分析原 BGM…</span>
+<p class="legend"><span style="color:#91baf0">蓝：音量包络</span><span style="color:#e9c88d">金：音量突增</span><span style="color:#d78693">红：触发阈值</span><span>竖线：触发时刻 · 金圈：保留峰 · 灰叉：舍弃候选</span></p>
+<canvas id="chart" aria-label="当前播放位置前后四秒的音量、突增、阈值和重音标记"></canvas>
+<p class="legend">左键：在该时间新增触发点（绿色竖线）；右键：删除附近触发点。建议暂停后编辑，再播放试听。手动点强度为 1，仅用于此测试页。</p>
+<p id="edit-status" role="status">修改自动保存在本机浏览器。</p>
+<button id="export" disabled>导出触发点</button>
+<dl><dt>当前位置的音量突增</dt><dd id="flux">—</dd><dt>当前位置的阈值</dt><dd id="threshold">—</dd><dt>上一次触发时间 / 强度</dt><dd id="last">—</dd></dl>
+<p class="explain">直接使用主页面的 <code>buildBeatMap</code>，没有另写一套检测算法。<br>① 每 512 个采样点计算一次音量：全频 RMS + 0.8 × 180Hz 低通 RMS。<br>② 只取相邻两帧音量的正向增加量。<br>③ 阈值 = 前后约 0.4 秒的平均增加量 × 2.8，最低 0.004。<br>④ 候选须满足：突增局部峰值、音量 ≥ 0.025。取起音后 0.1 秒内达到的音量峰值作为评分。<br>⑤ 按评分从强到弱选择，0.35 秒内重复候选只保留更强者；闪光对齐起音，金圈标出对应峰顶。<br>这是音乐突增检测，不是每拍必触发，也不保证选中的峰就是听感上最强的重音。整首歌预先分析，再按播放进度触发；播放器静音不影响闪光。图中三条曲线使用同一数值坐标，蓝线通常较高。</p>
+</main><script type="module" src="/src/beat-debug.js"></script></body></html>
+
