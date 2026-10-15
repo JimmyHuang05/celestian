@@ -1,0 +1,19 @@
+Character entrance sound design
+
+Source recordings: CC0 1.0, URLs and preview provenance in sources.json.
+Godowan: small bird wing flaps (240476), slowed and shaped for Elowen.
+Sylvia: loudernoises, Sword Clash (334169), CC0 1.0. Composite blade collision recording, slowed to 0.8 speed with a quiet 0.58-speed layer for body; onset trim, tail fade and level adjustment.
+https://freesound.org/people/loudernoises/sounds/334169/
+https://cdn.freesound.org/previews/334/334169_5859881-hq.mp3
+Euphemia: dsp9000, Old Church Bell, CC0 1.0. Two strikes at original pitch, 1.6 seconds apart with overlapping natural decay, trimmed and faded.
+https://freesound.org/people/dsp9000/sounds/76405/
+https://cdn.freesound.org/previews/76/76405_1020096-hq.mp3
+Xianna: amholma, Gentle Waves - Quiet Beach, CC0 1.0. Excerpt 5–11.5 seconds, fades and level adjustment only. No synthesized layers or added reverb.
+https://freesound.org/people/amholma/sounds/376795/
+https://cdn.freesound.org/previews/376/376795_6128004-hq.mp3
+Day Fourteen: original DAY 14 Morse synthesis (-.. .- -.-- / .---- ....-), 1120 Hz with a quiet second harmonic. Dot unit 75 ms, standard 1:3 tone and 1:3:7 gap ratios, soft edges, no voice or added reverb. Rebuild with design/character-sfx/build_day_fourteen_morse.py.
+Elowen: wing recording only, no added wind layer.
+The unused bell source remains in sources.json as version 1 provenance.
+
+All cues edited, enveloped, spatialized and level-limited locally.
+Reproducible source: design/character-sfx/build_sfx.py in the workspace.

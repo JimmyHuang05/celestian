@@ -1,0 +1,25 @@
+@font-face{font-family:'Archive Serif';font-style:normal;font-weight:400;font-display:swap;src:url('/src/fonts/identity/noto-serif-sc-400.ttf') format('truetype')}
+@font-face{font-family:'Archive Serif';font-style:normal;font-weight:500;font-display:swap;src:url('/src/fonts/identity/noto-serif-sc-500.ttf') format('truetype')}
+
+.profile-back{position:fixed;left:20px;top:16px;z-index:100;color:#baa77f;font:12px/1.5 sans-serif;text-decoration:none;letter-spacing:.08em;padding:6px 10px;background:#101827a6;border:1px solid #baa77f30}
+.profile-back:hover,.profile-back:focus-visible{color:#eee5cf;border-color:#baa77f}
+/* An inscription within the existing vertical band, rather than a filled badge. */
+.identity-signature{width:100%;max-width:340px;position:relative}
+.identity-crown{display:flex;align-items:center;gap:14px;height:20px;color:#b39b6e;margin-bottom:clamp(14px,2vh,22px)}
+.identity-crown svg{width:94px;height:20px;flex:none}
+.identity-crown span{font:11px/1 Georgia,serif;letter-spacing:.16em;color:#a08d69}
+.identity .name-row h1{font-family:'Archive Serif','Songti SC',SimSun,serif;font-size:clamp(29px,min(2.65vw,4.9vh),54px);font-weight:500;line-height:1.25;letter-spacing:.08em;color:#e6dfcf;text-shadow:0 2px 18px #08101b55;font-synthesis:none}
+.identity-rule{height:1px;width:100%;max-width:285px;margin:clamp(15px,2vh,22px) 0 clamp(12px,1.6vh,18px);background:linear-gradient(90deg,#af946760,#af946730 60%,transparent);position:relative}
+.identity-rule:before{content:'';position:absolute;left:0;top:-1px;width:3px;height:3px;transform:rotate(45deg);background:#bea77a}
+.identity .profession{display:flex;align-items:baseline;width:100%;max-width:100%;height:auto;min-height:0;margin:0;padding:0;background:none;gap:10px;color:#bca982}
+.identity .profession:before{content:none}
+.identity .profession>span{font-size:14px;line-height:1;align-self:center;opacity:.75}
+.identity .profession strong{font-family:'Archive Serif','Songti SC',SimSun,serif;font-size:clamp(12px,min(.88vw,1.65vh),16px);font-weight:400;line-height:1.7;letter-spacing:.16em;overflow-wrap:anywhere;font-synthesis:none}
+/* A: a restrained wordmark with a small gold title accent. */
+.identity-signature{aspect-ratio:auto;container-type:inline-size;text-align:left}
+.identity-orbit{display:none}
+.identity-signature>.name-row{position:relative;top:auto;left:auto;width:100%}
+.identity .name-row h1{font-family:'Microsoft YaHei','Noto Sans SC',sans-serif;font-size:clamp(24px,14.8cqw,52px);font-weight:600;line-height:1.25;letter-spacing:.015em;color:#e8e0cf;text-shadow:0 2px 12px #08101b88}
+.identity .profession{position:relative;top:auto;left:auto;display:flex;align-items:center;gap:12px;width:100%;max-width:100%;height:auto;min-height:0;margin:18px 0 0;padding:0;background:none;color:#bca57c}
+.identity .profession:before{content:'';position:static;display:block;width:15px;height:2px;flex:none;background:#b69d6b}
+.identity .profession strong{font-family:'Microsoft YaHei',sans-serif;font-size:clamp(11px,4cqw,14px);font-weight:400;line-height:1.8;letter-spacing:.22em}

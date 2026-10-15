@@ -1,0 +1,26 @@
+{
+  "character": "汐安娜",
+  "original": "/character-profile/redraws/xianna-v1.png",
+  "generator": "Built-in image_gen tool",
+  "usage": "Generated texture is sampled only within small feathered eye masks. Original portrait remains unchanged.",
+  "assets": [
+    {
+      "file": "closed-eyes.png",
+      "sourceCrop": [
+        475,
+        140,
+        210,
+        180
+      ],
+      "registration": [
+        475,
+        140,
+        210,
+        180
+      ],
+      "reference": "design/xianna-motion/face-original.png",
+      "prompt": "Use case: precise-object-edit. Asset type: tiny closed-eye keyframe for natural blinking in an existing anime character animation. Input image 1 is the EDIT TARGET, an exact face crop. Change ONLY the two visible eyes into gently fully closed eyelids in a calm natural blink, with thin curved upper lashes meeting the original lower lids. No iris visible. Preserve exact original eye corners, head angle, face positioning and scale, mouth, expression, eyebrows, skin shading, nose, hairstyle, every hair lock, accessories, costume and original painted anime style. Do not beautify, redraw, change framing, zoom, add a smile, or move anything. Only immediate eyelids may change; all other pixels remain unchanged. Keep the exact crop proportions and transparency. Return one image, no text, guides or montage. The girl has blue eyes, white hair and a small existing open-mouth smile: preserve that smile exactly. Her eye on the VIEWER'S LEFT is partly obscured by an overlapping white fringe; preserve this fringe precisely over the closed eye, do not move it away or draw eyelids on top of hair."
+    }
+  ],
+  "motion": "One four-second breath drives torso, chest, head, attached hair, hands, skirt, tails and slight leg settling; inhalation raises the chest and exhalation lowers it. Whole-body lift stays at 0.3 source pixels, local bodice amplitudes at 4.4/3.8, and hands/skirt grips at 3.5/3.1. Hair and fabric ends follow by at most 0.22 seconds. Tail roots and fin flexibility remain separate from the skirt but no longer use an independent cycle. Center jewel, waist, hips and ankles stay anchored. Natural blinking, the floating sprite and water retain their existing ambient animation."
+}

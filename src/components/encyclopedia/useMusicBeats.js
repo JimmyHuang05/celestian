@@ -57,7 +57,8 @@ export default function useMusicBeats(audioRef, onBeat) {
   const callback = useRef(onBeat)
   useEffect(() => { callback.current = onBeat }, [onBeat])
   useEffect(() => {
-    const audio = audioRef.current
+    const audio = audioRef?.current
+    if (!audio) return
     const motion = matchMedia('(prefers-reduced-motion: reduce)')
     const cues = approvedBeats.cues
     let frame, index = 0, previousTime = null

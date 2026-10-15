@@ -1,0 +1,5 @@
+.profile{background:#111827}
+.profile .profile-galaxy{position:absolute;inset:0;overflow:hidden;background:#111827;pointer-events:none;z-index:0}
+.profile .profile-galaxy::after{content:none}
+.profile-galaxy-texture{position:absolute;inset:0;background-image:url('https://www.transparenttextures.com/patterns/stardust.png');mask-size:100% 100%;mask-repeat:no-repeat;pointer-events:none}
+.profile .story-scroll{text-shadow:0 1px 3px #111827}

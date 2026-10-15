@@ -1,0 +1,26 @@
+{
+  "character": "第十四天",
+  "original": "/character-profile/redraws/day-fourteen-v1.png",
+  "generator": "Built-in image_gen tool",
+  "usage": "Generated texture is sampled only within small feathered eye masks. Original portrait remains unchanged.",
+  "assets": [
+    {
+      "file": "closed-eyes.png",
+      "sourceCrop": [
+        560,
+        137,
+        200,
+        180
+      ],
+      "registration": [
+        559,
+        137,
+        200,
+        180
+      ],
+      "reference": "design/day-fourteen-motion/face-original.png",
+      "prompt": "Use case: precise-object-edit. Asset type: tiny closed-eye keyframe for natural blinking in an existing anime character animation. Input image 1 is the EDIT TARGET, an exact face crop. Change ONLY the two visible eyes into gently fully closed eyelids in a calm natural blink, with thin curved upper lashes meeting the original lower lids. No iris visible. Preserve exact original eye corners, head angle, face positioning and scale, mouth, expression, eyebrows, skin shading, nose, hairstyle, every hair lock, accessories, costume and original painted anime style. Do not beautify, redraw, change framing, zoom, add a smile, or move anything. Only immediate eyelids may change; all other pixels remain unchanged. Keep the exact crop proportions and transparency. Return one image, no text, guides or montage. The girl has golden eyes, silver hair, a black headband and a serious neutral expression. Preserve her mouth and eyebrows exactly; do not turn the blink into a smile or change her stern expression."
+    }
+  ],
+  "motion": "One four-second breath drives torso, chest, head, crown, hair and coat tails: inhalation raises the chest and exhalation lowers it. Whole-body lift stays at 0.25 source pixels. The fitted chest is fabric with local vertical amplitudes of 4.1/3.4, slightly below Elowen. Hair/coat ends have only 0.04-0.22 second follow-through delays. Upper seam, waist, jawline, weapons, hands and legs stay constrained; natural blinking is retained."
+}

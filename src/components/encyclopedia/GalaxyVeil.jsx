@@ -1,5 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { galaxyDensity } from './galaxyDensity.js'
+import './galaxy-canvas.css'
 
 // Transparent, stationary star dust; no continuous light-colored cloud overlay.
 export default function GalaxyVeil() {
@@ -35,5 +36,5 @@ export default function GalaxyVeil() {
     observer.observe(canvas); draw()
     return () => observer.disconnect()
   }, [])
-  return <canvas ref={ref} data-galaxy-veil className="absolute inset-0 w-full h-full pointer-events-none" aria-hidden="true" />
+  return <canvas ref={ref} data-galaxy-veil className="celestian-galaxy-dust" aria-hidden="true" />
 }

@@ -1,6 +1,7 @@
 import { useRef, useEffect, useState, useCallback } from 'react'
 import useMusicBeats from './useMusicBeats.js'
 import { galaxyDensity } from './galaxyDensity.js'
+import './galaxy-canvas.css'
 
 function Starfield({ mouseX, mouseY, audioRef }) {
   const canvasRef = useRef(null)
@@ -157,11 +158,11 @@ function Starfield({ mouseX, mouseY, audioRef }) {
   }, [])
 
   return (
-    <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
-      <canvas ref={canvasRef} className="block absolute inset-0" />
-      <div className="absolute inset-0" style={{ transform: `translate(${-mouseX * 12}px, ${-mouseY * 12}px)` }}>
+    <div className="celestian-starfield">
+      <canvas ref={canvasRef} className="celestian-starfield-canvas" />
+      <div className="celestian-starfield-ripples" style={{ transform: `translate(${-mouseX * 12}px, ${-mouseY * 12}px)` }}>
         {ripples.map(ripple => (
-          <div key={'ripple' + ripple.id} className="absolute" style={{ top: ripple.top, left: ripple.left, opacity: .6 + ripple.strength * .4 }}>
+          <div key={'ripple' + ripple.id} className="celestian-starfield-ripple" style={{ top: ripple.top, left: ripple.left, opacity: .6 + ripple.strength * .4 }}>
             {ripple.delays.map((delay, index) => (
               <div key={'point' + index} className="space-ripple-point" style={{ width: ripple.size, height: ripple.size, animationDelay: delay + 's' }} />
             ))}

@@ -1,0 +1,28 @@
+{
+  "character": "尤菲米娅",
+  "original": "/character-profile/redraws/euphemia-v1.png",
+  "generator": "Built-in image_gen tool",
+  "usage": "Only small feathered eyelid regions are sampled. The full original portrait remains unchanged.",
+  "assets": [
+    {
+      "file": "closed-eyes.png",
+      "sourceCrop": {
+        "x": 430,
+        "y": 190,
+        "width": 210,
+        "height": 190
+      },
+      "reference": "design/euphemia-motion/face-original.png",
+      "prompt": "Use case: precise-object-edit. Asset type: closed-eye keyframe for natural blinking in an existing anime character animation. Input image 1 is the EDIT TARGET, an exact tightly framed crop of Euphemia's original face. Change ONLY the two green eyes into gently fully closed eyelids during a relaxed neutral blink. Draw thin natural curved upper lash lines, with the original eye corners in exactly the same positions; no iris should remain visible. Keep the exact original head tilt, face silhouette, neutral mouth, eyebrows, cheek color, pointed ears, pale blonde bangs and side locks, blue forehead jewel, white and blue headdress, earrings, feather ornaments, collar and original painted anime style. Do not make her smile, beautify or redesign the face. Do not change the hair, pose, framing, scale, placement or canvas proportions. Preserve the existing transparent edge areas. Only the immediate eyelids may change; all other pixels should remain unchanged. This will be sampled only within tiny feathered eye masks over the untouched original illustration. Return one identical crop with both eyes naturally shut, no text, guides, montage or new elements."
+    }
+  ],
+  "motion": {
+    "breathing": "A shared four-second breath drives torso, chest, head, crown and attached hair: two seconds inhaling upward, two seconds exhaling downward. Chest and torso reverse together.",
+    "secondary": "Hair and robe follow the same breath with 0.04-0.22 second tip delays; staff, grip and floor hem pinned. Local chest amplitudes remain 6.4/5.5 source pixels vertically and 1.05/0.70 laterally, with only lateral settling delayed by 0.12 seconds. Neckline, central ornament and underbust supports remain constrained. Whole-body breathing remains 0.3 source pixels.",
+    "independentHairAngleRadians": {
+      "left": 0.0038,
+      "right": 0.0035
+    },
+    "breathingAmplitudePixels": 0.3
+  }
+}

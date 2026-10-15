@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>众生录 · 人物档案</title>
+</head>
+<body>
+<main class="profile" aria-label="众生录角色档案">
+  <a class="profile-back" href="/encyclopedia" aria-label="返回百科">← 返回百科</a>
+  <div class="world profile-galaxy" id="profile-galaxy" aria-hidden="true"></div>
+  <div class="roster-astrolabe" aria-hidden="true"></div>
+  <nav class="roster" aria-label="选择角色"></nav>
+  <section class="identity" aria-label="角色身份">
+    <div class="identity-signature">
+      <svg class="identity-orbit" viewBox="0 0 320 230" fill="none" aria-hidden="true"><circle cx="160" cy="104" r="90" stroke="currentColor" opacity=".2"/><circle cx="160" cy="104" r="79" stroke="currentColor" stroke-dasharray="1 9" opacity=".45"/><path d="M90 35A98 98 0 0 1 230 173M64 122A98 98 0 0 1 126 11" stroke="currentColor" opacity=".5"/><path d="M160 3L163 12L172 15L163 18L160 27L157 18L148 15L157 12Z" fill="currentColor" opacity=".8"/><circle cx="74" cy="149" r="2" fill="currentColor"/><circle cx="247" cy="63" r="2" fill="currentColor"/></svg>
+      <span id="identity-number" hidden>I</span>
+      <div class="name-row"><h1 id="name"></h1></div>
+      <div class="profession"><strong id="profession"></strong></div>
+    </div>
+    <small class="serial" aria-hidden="true">CELESTIAN · PERSONAE</small>
+  </section>
+  <div class="portrait-area"><img class="portrait" id="portrait" alt="" hidden></div>
+  <aside class="dossier-panel" aria-labelledby="dossier-title">
+    <header class="dossier-heading">
+      <div><p class="dossier-eyebrow">CELESTIAN · ARCHIVE</p><h2 id="dossier-title">人物档案</h2><span class="dossier-subtitle">众 生 录</span></div>
+      <div class="dossier-emblem"><span class="emblem-corner" aria-hidden="true"></span><img id="emblem" alt="角色徽章" hidden></div>
+    </header>
+    <dl class="dossier-facts" id="facts"></dl>
+    <div class="story-heading"><h3 id="story-heading">人物故事</h3><span aria-hidden="true">BIOGRAPHY</span><i aria-hidden="true">◇</i></div>
+    <div class="story-scroll" id="story" role="region" aria-labelledby="story-heading" tabindex="0">
+      <p class="dossier-loading" role="status">正在展开档案…</p>
+    </div>
+    <footer class="dossier-footer">
+      <span class="reading-hint" id="reading-hint">滚动阅读 <span aria-hidden="true">↓</span></span>
+      <nav class="archive-switch" aria-label="切换人物档案">
+        <button id="previous-character" aria-label="上一位角色"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M14 5L7 12L14 19" stroke="currentColor" stroke-width="1.2"/></svg></button>
+        <span class="archive-count"><strong id="archive-index">01</strong><span>/</span><span id="archive-total">05</span></span>
+        <button id="next-character" aria-label="下一位角色"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M10 5L17 12L10 19" stroke="currentColor" stroke-width="1.2"/></svg></button>
+      </nav>
+    </footer>
+  </aside>
+</main>
+<script type="module" src="/src/character-profile.js"></script>
+</body>
+</html>

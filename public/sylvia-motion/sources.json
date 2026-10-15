@@ -1,0 +1,36 @@
+{
+  "character": "希尔维娅",
+  "original": "/character-profile/redraws/sylvia-v1.png",
+  "generator": "Built-in image_gen tool",
+  "usage": "Original illustration remains the main texture. Generated images are sampled only in small eyelid and blade repair masks.",
+  "assets": [
+    {
+      "file": "closed-eyes.png",
+      "sourceCrop": {
+        "x": 420,
+        "y": 160,
+        "width": 210,
+        "height": 200
+      },
+      "registration": {
+        "x": 420,
+        "y": 161,
+        "width": 210,
+        "height": 200
+      },
+      "reference": "design/sylvia-motion/face-original.png",
+      "prompt": "Use case: precise-object-edit. Asset type: closed-eye keyframe texture for an existing anime character's natural blink. Input image 1 is the EDIT TARGET, a tightly framed face crop. Change ONLY both open blue-gray eyes to gently fully closed eyelids in a neutral, calm blink. Natural thin curved dark upper lashes must meet the lower lids at the same original eye corners. No irises visible. Keep her serious, composed expression, the mouth and eyebrows exactly unchanged; do not make her smile. Preserve the EXACT original face positioning, head angle, hair silhouette, pale blonde fringe, eye corner locations, nose, skin shading, blue headband, collar, metal armor, painted anime style, lighting, background, framing and canvas proportions. Do NOT redraw, beautify, reposition or zoom the face. Only the immediate eyelids may change; all other pixels should remain unchanged. This will be composited as tiny eye regions over the original image for animation. Deliver one identical crop with both eyes closed, no text, guides or montage."
+    },
+    {
+      "file": "blade-under-hair.png",
+      "sourceCrop": {
+        "x": 820,
+        "y": 500,
+        "width": 150,
+        "height": 120
+      },
+      "reference": "design/sylvia-motion/hair-over-blade.png",
+      "prompt": "Use case: precise-object-edit. Asset type: clean background patch underneath an animated lock of hair. The input is a cropped section of a fantasy illustration, with a straight vertical silver sword blade on the left and blonde hair on the right, transparent gaps. Remove ONLY the foreground pointed blonde hair lock that curls LEFTWARD across the silver blade through the middle of the image (its thin pointed tip starts near x=75,y=190 in the 600x480 reference, sweeps down to x=260,y=300 and joins the hair on the right). Reveal/reconstruct the straight silver blade beneath this lock, continuing its existing vertical gray facets, highlights and perfectly straight edges. Where the removed lock was in front of empty space immediately to the right of the blade, restore transparent background. Preserve the large main blonde hair mass on the right, other hair strands, the upper left gold ornament, and ALL remaining details exactly in their original positions. Do not bend or redesign the sword; do not change colors or perspective, zoom or reframe. Exact same crop and proportions. Transparent background, not a checkerboard. This is a background repair plate; no new hair should cross the middle of the blade."
+    }
+  ]
+}

@@ -169,6 +169,10 @@ function EncyclopediaPage() {
 
   useEffect(() => {
     if (nodeFromUrl) {
+      if (nodeFromUrl.id === 'characters') {
+        window.location.replace(`/character-profile.html${window.location.search}`)
+        return
+      }
       setActiveNode(nodeFromUrl)
     } else {
       setActiveNode(null)
@@ -176,6 +180,10 @@ function EncyclopediaPage() {
   }, [nodeId])
 
   const openDetail = useCallback((node, event) => {
+    if (node.id === 'characters') {
+      window.location.assign('/character-profile.html')
+      return
+    }
     if (isTransitioning) return
     setIsTransitioning(true)
 

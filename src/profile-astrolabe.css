@@ -1,0 +1,25 @@
+.roster-astrolabe .dial-roman{font:8px Georgia,serif;letter-spacing:2px;fill:#bda678;stroke:none;opacity:.75}
+.roster-astrolabe .dial-degree{font:5px Georgia,serif;letter-spacing:1px;fill:#b29b6f;stroke:none;opacity:.45}
+.roster-astrolabe .dial-clockwork,.roster-astrolabe .dial-chapters,.roster-astrolabe .dial-filigree,.roster-astrolabe .dial-sky,.roster-astrolabe .dial-comet{transform-box:view-box;transform-origin:500px 500px}
+.dial-clockwork{animation:dial-turn 260s linear infinite}
+.dial-chapters{animation:dial-turn 340s linear infinite reverse}
+.dial-filigree{animation:dial-turn 220s linear infinite reverse}
+.dial-sky{animation:dial-turn 420s linear infinite}
+.dial-star{animation:dial-twinkle var(--star-period,7s) ease-in-out var(--star-delay,0s) infinite}
+.dial-index-light{animation:dial-twinkle 4.5s ease-in-out infinite}
+.dial-comet{opacity:0;animation:dial-comet-pass 16s linear var(--comet-delay,0s) infinite}
+.dial-comet-inner{--comet-direction:-1}
+.roster-astrolabe[data-paused] .dial-animated{animation-play-state:paused}
+@keyframes dial-turn{to{transform:rotate(360deg)}}
+@keyframes dial-twinkle{0%,100%{opacity:.32}45%{opacity:.88}65%{opacity:.55}}
+@keyframes dial-comet-pass{
+  0%,3%{opacity:0;transform:rotate(calc(-68deg * var(--comet-direction,1)))}
+  6%{opacity:.85}
+  18%{opacity:.65}
+  24%,100%{opacity:0;transform:rotate(calc(68deg * var(--comet-direction,1)))}
+}
+@media(prefers-reduced-motion:reduce){
+  .roster-astrolabe .dial-animated{animation:none!important}
+  .roster-astrolabe .dial-comets{display:none}
+  .roster-astrolabe .dial-star{opacity:.65}
+}

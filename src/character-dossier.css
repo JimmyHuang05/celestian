@@ -1,0 +1,61 @@
+.identity{z-index:3;pointer-events:none}
+.name-row h1{font-size:4cqw;line-height:1.2;font-weight:600;font-style:normal;letter-spacing:-.045em;margin:0;color:#ede4d1;white-space:nowrap;transform:none;text-shadow:0 2px 14px #08101b}
+.profession{height:auto;min-height:2.45cqw;width:max-content;max-width:calc(100% + 2cqw);padding:.45cqw 1.2cqw;margin:.9cqw 0 0 -1.25cqw;gap:.6cqw;white-space:normal;background:linear-gradient(90deg,#76613e,#a18a60)}
+.profession>span{font-size:1.3cqw;line-height:1}
+.profession strong{font-size:1.05cqw;line-height:1.45;letter-spacing:.12em;font-weight:500}
+.profile{--art-saturation:.80;--art-brightness:.90;--art-contrast:.98}
+/* The column positions the artwork; only the page edge should clip its tips. */
+.portrait-area{inset:0 29.5% 0 19%;overflow:visible}
+.portrait{left:52%;top:var(--portrait-top,2%);width:auto;height:var(--portrait-height,96%);max-width:none;transform:translateX(calc(-1 * var(--portrait-anchor,50%)));filter:saturate(var(--art-saturation)) brightness(var(--art-brightness)) contrast(var(--art-contrast)) drop-shadow(0 18px 22px #02071150)}
+.portrait[hidden]{display:none}
+.operator .avatar{background-image:var(--portrait-image);background-size:250% auto;background-position:var(--portrait-position,50% 3%);filter:saturate(.45) brightness(.82)}
+.operator[data-kind] .avatar{filter:saturate(.45) brightness(.82)}
+.operator.active .avatar{filter:saturate(var(--art-saturation)) brightness(var(--art-brightness)) contrast(var(--art-contrast))}
+.operator .tag{font-size:clamp(7px,5.5cqw,17px);padding-inline:2% 9%;letter-spacing:.03em}
+.operator[aria-hidden="true"]{pointer-events:none}
+.dossier-panel{
+  position:absolute;left:70.5%;right:4.6%;top:10%;bottom:6%;z-index:12;
+  display:flex;flex-direction:column;min-height:0;color:#dcd5c6;
+}
+.dossier-heading{display:flex;align-items:center;justify-content:space-between;gap:1cqw;position:relative;padding-bottom:1.6cqw;flex-shrink:0}
+.dossier-heading:after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,#b59d6e99,#a9916326)}
+.dossier-eyebrow{font:clamp(7px,.53cqw,10px) Georgia,serif;color:#a59474;letter-spacing:.24em;margin:0 0 .75cqw}
+.dossier-heading h2{font-size:clamp(22px,1.9cqw,34px);font-weight:500;letter-spacing:.16em;color:#e2d4b6;margin:0;line-height:1.35}
+.dossier-subtitle{display:block;color:#8c8578;font-size:clamp(9px,.68cqw,12px);margin-top:.55cqw;letter-spacing:.2em}
+.dossier-emblem{position:relative;width:5.9cqw;height:5.9cqw;flex-shrink:0;display:grid;place-items:center;color:#b49b6c}
+.dossier-emblem:before{content:'';position:absolute;inset:11%;border:1px solid #a991634a;transform:rotate(45deg)}
+.dossier-emblem:after{content:'';position:absolute;inset:17%;border:1px solid #a9916329;transform:rotate(45deg)}
+.dossier-emblem img{width:85%;height:85%;object-fit:contain;position:relative;z-index:1;filter:brightness(0) saturate(100%) invert(71%) sepia(17%) saturate(762%) hue-rotate(1deg) brightness(89%) contrast(86%)}
+.emblem-corner{position:absolute;inset:3%;border-top:1px solid #a991633d;border-bottom:1px solid #a991633d}
+.dossier-facts{margin:1.5cqw 0 0;flex-shrink:0}
+.dossier-facts>div{display:grid;grid-template-columns:2.7em minmax(0,1fr);gap:.8cqw;padding:.75cqw 0;border-bottom:1px solid #b49b6c20;font-size:clamp(12px,.92cqw,17px);line-height:1.85}
+.dossier-facts dt{color:#9e8b66;letter-spacing:.12em;font-size:.86em;padding-top:.12em}
+.dossier-facts dd{margin:0;color:#d6d5cf;overflow-wrap:anywhere}
+.story-heading{display:flex;align-items:center;gap:.8cqw;flex-shrink:0;margin:2cqw 0 1.1cqw}
+.story-heading h3{font-size:clamp(14px,1.1cqw,20px);font-weight:500;letter-spacing:.13em;margin:0;color:#d1be97}
+.story-heading>span{font:clamp(7px,.5cqw,10px) Georgia,serif;letter-spacing:.2em;color:#867b66}
+.story-heading:after{content:'';height:1px;background:linear-gradient(90deg,#a9916352,transparent);flex:1}
+.story-heading i{font-size:8px;font-style:normal;color:#a9916377;order:1}
+.story-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 .8cqw 1.4cqw 0;scrollbar-width:thin;scrollbar-color:#8e7a514f transparent;font-size:clamp(13px,.95cqw,18px);line-height:2.15;color:#afb6c1;outline-offset:5px}
+.story-scroll::-webkit-scrollbar{width:3px}
+.story-scroll::-webkit-scrollbar-thumb{background:#8e7a5166;border-radius:3px}
+.story-scroll p{margin:0 0 1.2em;letter-spacing:.025em;text-align:justify;overflow-wrap:anywhere}
+.story-scroll p:first-child{color:#d3d2ca}
+.story-scroll strong,.story-scroll .lore-emphasis,.dossier-facts strong{color:#c6ad7c;font-weight:500}
+.story-scroll blockquote{margin:1.7em 0;padding:.2em 0 .2em 1.1em;border-left:1px solid #b49b6c88;color:#c9b997;line-height:2}
+.story-scroll blockquote p{color:inherit;margin:0}
+.story-scroll cite{display:block;text-align:right;font-size:.85em;font-style:normal;color:#a99c83;margin-top:.6em}
+.story-scroll figure{margin:1.5em 0}
+.story-scroll figure img{display:block;max-width:100%;height:auto;margin:auto}
+.story-scroll figcaption{text-align:center;font-size:.8em;color:#9e947e;margin-top:.6em}
+.dossier-footer{flex-shrink:0;display:flex;align-items:center;justify-content:space-between;gap:1cqw;padding-top:.85cqw;border-top:1px solid #a991632b}
+.reading-hint{font-size:clamp(9px,.63cqw,12px);letter-spacing:.12em;color:#8b8c8d}
+.reading-hint>span{margin-left:.4cqw;color:#b49b6c}
+.reading-hint[hidden]{display:block;visibility:hidden}
+.archive-switch{display:flex;align-items:center;gap:.75cqw}
+.archive-switch button{width:2cqw;height:2cqw;min-width:24px;min-height:24px;padding:.2cqw;border:1px solid #a9916338;background:#a9916306;color:#bca67e;transition:background .15s,border-color .15s}
+.archive-switch button:hover{background:#a991631a;border-color:#bca67e}
+.archive-count{display:flex;align-items:center;gap:.65cqw;font:clamp(10px,.7cqw,13px) Georgia,serif;color:#80796c;font-variant-numeric:tabular-nums}
+.archive-count strong{font-size:1.25em;color:#d1bb91;font-weight:400}
+.dossier-loading{color:#ac9e83}
+.dossier-error{border:1px solid #a991634a;padding:1cqw;color:#d6c9ad}

@@ -1,0 +1,22 @@
+{
+  "wings": {
+    "source": "https://freesound.org/people/Godowan/sounds/240476/",
+    "preview": "https://cdn.freesound.org/previews/240/240476_1662097-hq.mp3",
+    "license": "CC0 1.0"
+  },
+  "waves": {
+    "source": "https://freesound.org/people/aninaninanina/sounds/610297/",
+    "preview": "https://cdn.freesound.org/previews/610/610297_13519256-hq.mp3",
+    "license": "CC0 1.0"
+  },
+  "bell": {
+    "source": "https://freesound.org/s/271250/",
+    "preview": "https://cdn.freesound.org/previews/271/271250_5087959-hq.mp3",
+    "license": "CC0 1.0"
+  },
+  "sword": {
+    "source": "https://freesound.org/people/Foxfire-/sounds/844256/",
+    "preview": "https://cdn.freesound.org/previews/844/844256_12873144-hq.mp3",
+    "license": "CC0 1.0"
+  }
+}

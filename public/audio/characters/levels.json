@@ -1,0 +1,32 @@
+[
+  {
+    "name": "elowen",
+    "duration": 1.55,
+    "peak": 0.5012,
+    "rms": 0.0305
+  },
+  {
+    "name": "sylvia",
+    "duration": 1.15,
+    "peak": 0.4667,
+    "rms": 0.0307
+  },
+  {
+    "name": "euphemia",
+    "duration": 6.043,
+    "peak": 0.1928,
+    "rms": 0.0389
+  },
+  {
+    "name": "xianna",
+    "duration": 6.5,
+    "peak": 0.18,
+    "rms": 0.0255
+  },
+  {
+    "name": "day-fourteen",
+    "duration": 5.355,
+    "peak": 0.0495,
+    "rms": 0.0249
+  }
+]

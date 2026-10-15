@@ -1,0 +1,9 @@
+{
+  "asset": "/elowen-motion/closed-eyes.png",
+  "generator": "Built-in image_gen.imagegen",
+  "sourceIllustration": "/character-profile/redraws/elowen-v5.png",
+  "sourceCropPixels": { "x": 440, "y": 90, "width": 210, "height": 170 },
+  "registrationOffsetPixels": { "x": 0, "y": 1 },
+  "usage": "Only the two feathered eye regions are used by elowen-motion-renderer.js. The original full-body illustration is unchanged.",
+  "prompt": "Use case: precise-object-edit. Asset type: closed-eye keyframe texture for this same anime portrait's blink animation. Input image 1 is the EDIT TARGET, a tight face crop. Change ONLY both open blue eyes to gently, naturally fully closed eyelids in a neutral relaxed blink. Thin curved dark eyelashes should form natural downward closed-eye arcs at the same eye corners; no irises visible. Preserve the EXACT original face positioning, head angle, eyebrow positions, nose, smile, skin shading, hair/bangs and hairline, blue earring, clothing, painterly anime style, lighting, background, framing and canvas proportions. Do NOT redraw, beautify, reposition or zoom the face. The closed eyes must fit precisely into the original eye locations, because only those tiny regions will be composited over the untouched original illustration. All pixels outside the immediate eyelids should remain unchanged. Deliver a single identical crop with both eyes gently closed. No text, no guides, no montage, no extra features."
+}

@@ -1,0 +1,517 @@
+[
+  {
+    "id": "2a9bf85c-f975-4054-9597-5f4f11414983",
+    "name": "伊洛薇恩",
+    "title": "吾之所言即为正义",
+    "image": "/character-profile/redraws/elowen-v5.png",
+    "emblem": "/character-profile/emblem-2a9bf85c-f975-4054-9597-5f4f11414983.webp",
+    "blocks": [
+      {
+        "id": "pp1x4vtez",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "姓名",
+        "value": "&nbsp; 伊洛薇恩 · 梅尔维尔 · 斯图亚特",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "4gb6ewqev",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "势力",
+        "value": "「第三意见」律师事务所 / <font color=\"#d4b58e\"><b>奥兰尼亚非常规事务署</b></font>",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "djrv6y7oc",
+        "type": "paragraph",
+        "content": "在翡兰珀的社交圈和司法界，伊洛薇恩·梅尔维尔·斯图亚特是一个让人又敬又畏的名字。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": true
+      },
+      {
+        "id": "5o8mumu7y",
+        "type": "paragraph",
+        "content": "她以近乎偏执的正义感闻名。无论对手是权贵、富商还是政府，只要她认定委托人的案件涉及不公，她就会毫不留情地将对方钉在法庭的审判席上。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "rjcy18fd4",
+        "type": "paragraph",
+        "content": "久而久之，同僚们都称她“审判魔女”，而伊洛薇恩也欣然接受。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "kqe2z3edd",
+        "type": "paragraph",
+        "content": "但在世人不知的另一面，身为奥兰尼亚非常规事务署的核心成员，行走在<font color=\"#d4b58e\"><b>「</b></font><span style=\"--tw-border-spacing-y: 0; --tw-translate-x: 0; --tw-translate-y: 0; --tw-rotate: 0; --tw-skew-x: 0; --tw-skew-y: 0; --tw-scale-x: 1; --tw-scale-y: 1; --tw-pan-x: ; --tw-pan-y: ; --tw-pinch-zoom: ; --tw-scroll-snap-strictness: proximity; --tw-gradient-from-position: ; --tw-gradient-via-position: ; --tw-gradient-to-position: ; --tw-ordinal: ; --tw-slashed-zero: ; --tw-numeric-figure: ; --tw-numeric-spacing: ; --tw-numeric-fraction: ; --tw-ring-inset: ; --tw-ring-offset-width: 0px; --tw-ring-offset-color: #fff; --tw-ring-color: rgb(59 130 246 / 0.5); --tw-ring-offset-shadow: 0 0 #0000; --tw-ring-shadow: 0 0 #0000; --tw-shadow: 0 0 #0000; --tw-shadow-colored: 0 0 #0000; --tw-blur: ; --tw-brightness: ; --tw-contrast: ; --tw-grayscale: ; --tw-hue-rotate: ; --tw-invert: ; --tw-saturate: ; --tw-sepia: ; --tw-drop-shadow: ; --tw-backdrop-blur: ; --tw-backdrop-brightness: ; --tw-backdrop-contrast: ; --tw-backdrop-grayscale: ; --tw-backdrop-hue-rotate: ; --tw-backdrop-invert: ; --tw-backdrop-opacity: ; --tw-backdrop-saturate: ; --tw-backdrop-sepia: ; --tw-contain-size: ; --tw-contain-layout: ; --tw-contain-paint: ; --tw-contain-style: ; font-weight: bolder; color: rgb(212, 181, 142);\">秩序</span><font color=\"#d4b58e\"><b>」</b></font>途径上的“榆树小姐”，早已成为亡命之徒最深的梦魇。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "4bh9o56cj",
+        "type": "paragraph",
+        "content": "所谓秩序，不是写在法典里的条文，也不是高悬于王座之上的天平，而是最古老的自然规则——规则被打破后，必然有人来修补。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "ibjpwna85",
+        "type": "paragraph",
+        "content": "或许，这才是真正的……<b>「审判魔女」</b>。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      }
+    ]
+  },
+  {
+    "id": "bf217625-407b-4cff-ae92-4f1ba3ba8cca",
+    "name": "希尔维娅",
+    "title": "不凋的蓝翎",
+    "image": "/character-profile/redraws/sylvia-v1.png",
+    "emblem": "/character-profile/emblem-bf217625-407b-4cff-ae92-4f1ba3ba8cca.webp",
+    "blocks": [
+      {
+        "id": "7xaxvly6o",
+        "type": "paragraph",
+        "content": "年幼的雌狮诞生于战争之中。",
+        "dropCap": true
+      },
+      {
+        "id": "dq0kjvxek",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "名字",
+        "value": "希尔维娅 · 冯 · 艾森巴赫",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "6xfz42mdi",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "势力",
+        "value": "「逐猎之狮」骑士团",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "grloldpha",
+        "type": "paragraph",
+        "content": "当第一声啼哭被隆隆的战鼓声淹没，希尔维娅的命运便已与锋刃交织。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "b65pjjtlx",
+        "type": "paragraph",
+        "content": "她是<font color=\"#d4b58e\" style=\"\"><b>「征服</b>」</font>的后裔，血统罕见且纯正。这被视为<font color=\"#d4b58e\"><b>康斯坦丁</b></font>的圣谕，也让她成为骑士团的女儿——这支荣耀之师在不熄硝烟中孕育出的最锐利之剑。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "94f5jewth",
+        "type": "paragraph",
+        "content": "对她而言，战争不是灾难，而是神圣的职责。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "vstyuab3z",
+        "type": "paragraph",
+        "content": "“我是骑士团的剑，亦是战神的咆哮。我的血统注定了我将踏平一切混乱，直至最后一抹湛蓝归于平静。”",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "sfjt12zxq",
+        "type": "paragraph",
+        "content": "年轻的蓝翎骑士永远在<font color=\"#d4b58e\"><b>「征服」</b></font>的路上。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      }
+    ]
+  },
+  {
+    "id": "4ea0b64e-1c59-43a5-a082-caf6c6a5a790",
+    "name": "尤菲米娅",
+    "title": "咏唱繁花颂歌",
+    "image": "/character-profile/redraws/euphemia-v1.png",
+    "emblem": "/character-profile/emblem-4ea0b64e-1c59-43a5-a082-caf6c6a5a790.webp",
+    "blocks": [
+      {
+        "id": "ozy456cmh",
+        "type": "paragraph",
+        "content": "在███的教会体系中，「不凋花庭」是一个特殊的存在——它既是修道院，也是圣所，更是那些虔诚纯净信徒的聚居之地。",
+        "dropCap": true
+      },
+      {
+        "id": "z4mhwnsft",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "名字",
+        "value": "&nbsp; 尤菲米娅 · 圣 · 克莱尔",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "2mp7a87ei",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "势力",
+        "value": "「不凋花庭」",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "kajob4j8v",
+        "type": "paragraph",
+        "content": "尤菲米娅很年轻，看起来不过二十出头，温和、安静，说话轻声细语。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "qdv9s1hrw",
+        "type": "paragraph",
+        "content": "她喜欢在花庭中散步，喜欢抚摸那些永不凋谢的花瓣，喜欢对前来朝圣的信徒微笑。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "ut3cgdjrn",
+        "type": "paragraph",
+        "content": "只是没有人记得她是什么时候来的……",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "nd0cmtfgl",
+        "type": "paragraph",
+        "content": "她好像，一直都在。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "rvsavr7d7",
+        "type": "paragraph",
+        "content": "“或许，只是你们记错了。<font color=\"#d4b58e\"><b>毕竟记忆……都会模糊。</b></font>”",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "omgafr4il",
+        "type": "paragraph",
+        "content": "庭中的花静静开着，谁也没有再追问。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "luro4b150",
+        "type": "paragraph",
+        "content": "因为在「不凋花庭」，这个答案已经足够好了。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      }
+    ]
+  },
+  {
+    "id": "5bf8f6ab-da96-4cc6-a715-45050f289dd5",
+    "name": "汐安娜",
+    "title": "溯梦的潮音",
+    "image": "/character-profile/redraws/xianna-v1.png",
+    "emblem": "/character-profile/emblem-5bf8f6ab-da96-4cc6-a715-45050f289dd5.webp",
+    "blocks": [
+      {
+        "id": "l5484s0h0",
+        "type": "paragraph",
+        "content": "潮水退去时，她留在了岸上。",
+        "dropCap": true
+      },
+      {
+        "id": "slgcetnvc",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "全名",
+        "value": "&nbsp;汐安娜",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "9z42dt5o7",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "势力",
+        "value": "&nbsp;无",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "n4vl6yk8t",
+        "type": "paragraph",
+        "content": "她的记忆从一片潮湿的沙滩开始。太阳正在升起，海面泛着碎金般的光，海浪一遍遍舔舐着她的脚踝，然后退去，留下白色的泡沫和细碎的贝壳。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "fsb8nqlur",
+        "type": "paragraph",
+        "content": "她不知道自己是什么。不知道自己为什么会在这里。不知道这片沙滩属于哪个世界。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "r4d05pbhf",
+        "type": "paragraph",
+        "content": "她唯一知道的，是潮水退去的方向——那里，有什么在等她回去。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "hb0w5vaz6",
+        "type": "paragraph",
+        "content": "但她想不起来。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "9p3m75pks",
+        "type": "paragraph",
+        "content": "她要找回来。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      }
+    ]
+  },
+  {
+    "id": "ec561630-2810-41a0-8524-857bfa8365e1",
+    "name": "第十四天",
+    "title": "原世界防卫协议",
+    "image": "/character-profile/redraws/day-fourteen-v1.png",
+    "emblem": "/character-profile/emblem-ec561630-2810-41a0-8524-857bfa8365e1.webp",
+    "blocks": [
+      {
+        "id": "kpe9hkgnc",
+        "type": "paragraph",
+        "content": "██神话中，██有十三位。",
+        "dropCap": true
+      },
+      {
+        "id": "m652nyhsg",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "名字",
+        "value": "&nbsp;第十四天",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "xzr9umgj1",
+        "type": "key-value",
+        "content": "",
+        "url": "",
+        "caption": "",
+        "key": "势力",
+        "value": "&nbsp;巴别塔生物科技有限公司 / 示拿地防卫军",
+        "scale": 100,
+        "author": ""
+      },
+      {
+        "id": "ngnho7oej",
+        "type": "paragraph",
+        "content": "巴别塔生物科技有限公司在经历了数十次失败之后，创造出了第十四位██。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "utyxkakq4",
+        "type": "paragraph",
+        "content": "他们叫她 <font color=\"#d4b58e\"><b>DAY 14</b></font>，最终的██诞生于第十四天。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "pn9vi7rbg",
+        "type": "paragraph",
+        "content": "大远行来临前，巴别塔将她封存于████的最深处。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "ol8mtbxui",
+        "type": "paragraph",
+        "content": "她在黑暗中等待了漫长的岁月，等待那一群人到来。",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      },
+      {
+        "id": "xqfgz0zmc",
+        "type": "paragraph",
+        "content": "“很高兴再次见到你们，我是第十四天，隶属于示拿地防卫军……我，等你们很久了。”",
+        "url": "",
+        "caption": "",
+        "key": "",
+        "value": "",
+        "scale": 100,
+        "author": "",
+        "dropCap": false
+      }
+    ]
+  }
+]

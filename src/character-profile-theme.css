@@ -1,0 +1,99 @@
+/* Celestian palette. Geometry and interaction stay in character-profile.css. */
+:root{
+  --sea-deep:#090f19;
+  --sea:#101827;
+  --sea-panel:#162131;
+  --gold:#aa9163;
+  --gold-light:#c2ad80;
+  --gold-dark:#6e5a39;
+  --gold-line:#a9916352;
+  --text:#e2dccd;
+  --muted:#9299a4;
+}
+html,body{background:var(--sea-deep)}
+.profile{background:var(--sea);color:var(--text)}
+button:focus-visible,a:focus-visible{outline-color:var(--gold-light)}
+.world{
+  background:radial-gradient(ellipse at 43% 63%,#24375455,transparent 55%),
+    linear-gradient(90deg,#0c1422,#0b1220 34%,#111b2b 68%,#131e2e 70%);
+}
+.world:after{
+  content:'';
+  position:absolute;
+  inset:0;
+  background:url('/character-profile/star-dust.svg') center / cover;
+  opacity:.5;
+  pointer-events:none;
+}
+.scanlines{background:repeating-linear-gradient(0deg,transparent 0 3px,#91a8c502 3px 4px),radial-gradient(ellipse at 52% 95%,#34476733,transparent 50%)}
+.smoke{border-color:#8ca1c012;background:linear-gradient(100deg,transparent 39%,#6f89b20a 48%,transparent 54%);box-shadow:25px 12px 65px #819dc10a}
+.architecture{background:repeating-linear-gradient(90deg,transparent 0 17%,#060d1966 18% 20%,transparent 22% 30%)}
+.vertical-code{color:#a594724d}
+.sidebar-slab{background:linear-gradient(180deg,#162130,#111a29)}
+.sidebar-slab:after{background:repeating-linear-gradient(45deg,#c2ad8010 0 1px,transparent 1px 3px)}
+.diagonal{background:linear-gradient(90deg,#6e5a3910,#a68a5140);border-bottom-color:var(--gold)}
+.diagonal:before{background:#b59b6b66}
+.return{color:var(--gold-light);background:#aa916317}
+.return svg path:last-child{stroke:var(--gold)}
+.heading-rule{background:#b4a17a88}
+.heading-rule:after{background:var(--gold-light)}
+.operator .diamond{background:#0d1625;border-color:#716b5d;box-shadow:0 0 0 4px #0b1422}
+.operator .diamond:after{border-color:#c2ad805c}
+.operator.active .diamond{border-color:#b59b6d;box-shadow:0 0 0 4px #9b8156;background:#1b2635}
+.operator:hover .diamond{border-color:#d6c299}
+.operator .tag{background:linear-gradient(90deg,#947b50 0 86%,#695536 86% 91%,#b09868 91%);color:#fff0ce}
+.operator:focus-visible .diamond{outline-color:#e4d2a9}
+.identity{background:linear-gradient(180deg,#26344b75,#1d2b423d 76%,#16243820);border-left-color:#b29b6c20;border-right-color:#b29b6c20}
+.name-row h2{color:#ede4d1;text-shadow:1px 1px #070e19}
+.name-row span{color:#b3a388}
+.identity p{color:#c8c9c8}
+.profession{background:linear-gradient(90deg,#897044,#a18a60);color:#f6ecd6}
+.profession:before{background:var(--gold-dark)}
+.ghost-name{color:#baa47b22}
+.ghost-lines{border-color:#c2ad8018}
+.serial{color:#b6a58266}
+.technical-ring circle,.technical-ring path{stroke:#b39c70}
+.resource{color:#dbd2bf;background:linear-gradient(90deg,#09111eaa,#101b2a66 80%)}
+.resource:before{background:var(--gold-light)}
+.resource>svg{color:var(--gold-light)}
+.resource button{border-color:#b39a6d;background:linear-gradient(135deg,#a48c60,#6e5a39);color:#f1e3c6;box-shadow:inset 0 0 0 2px #deca9f22}
+.rank{border-top-color:#a9916359;border-bottom-color:#a9916338;background:linear-gradient(90deg,#233044,#172234)}
+.rank:before{border-top-color:#c2ad8029;border-bottom-color:#a9916340;background-image:radial-gradient(#c2ad8015 1px,transparent 1px)}
+.rank h3 small{color:#a59a85}
+.stars span{color:#bba16e}
+.stars .unlit{color:#647083}
+.level-track{border-color:#8b7b5c;background:repeating-linear-gradient(90deg,#ad966355 0 1px,transparent 1px 4px);box-shadow:inset 0 0 0 2px #152031}
+.level-track>span{background:linear-gradient(90deg,#75603b,#bfa579)}
+.level-track>span:after{background:#ebd8b1}
+.level-track i{border-left-color:#b6a17b55;border-right-color:#b6a17b55}
+.attributes>div{border-bottom-color:#a9916329}
+.attributes dt>svg{background:#a9916322;color:#c6b48f}
+.attributes dt small,.attributes dd small{color:var(--muted)}
+.attributes dd b{color:#c8af7d}
+.skills h3{border-bottom-color:#a991633d}
+.skills h3:before{background:var(--gold)}
+.skills h3 span{color:#ac9e83}
+.skill-icon{border-color:#a9916373;background:#24324a66;color:#d9cbae}
+.skill-icon:before{border-left-color:var(--gold);border-top-color:var(--gold)}
+.skill-icon small{color:#e0d2b5;text-shadow:1px 1px #09101a}
+.skill:hover .skill-icon,.skill[aria-pressed="true"] .skill-icon{background:#aa91632b;border-color:var(--gold-light)}
+.add-skill .skill-icon:after{background:var(--gold)}
+.skill-info{background:#101b2bf5;border-color:#88754f;border-left-color:var(--gold-light)}
+.skill-info p{color:#b7bec9}
+.dismiss{color:#c2ad80}
+.notice{background:#0c1727f5;border-left-color:var(--gold);color:var(--text)}
+.watermark{color:#b4a27b30}
+.build-mark{color:#b4a27b38}
+
+/* A square SVG viewport keeps every ring circular; JS positions its offscreen centre. */
+.roster-astrolabe{
+  position:absolute;
+  top:49%;
+  aspect-ratio:1;
+  height:auto;
+  transform:translate(-50%,-50%);
+  color:#b49b6c;
+  z-index:3;
+  pointer-events:none;
+}
+.roster-astrolabe svg{width:100%;height:100%;overflow:visible}

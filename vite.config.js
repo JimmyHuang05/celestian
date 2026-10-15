@@ -26,6 +26,7 @@ function getBuildDate() {
 }
 
 export default defineConfig({
+  build: { rollupOptions: { input: { main: 'index.html', characters: 'character-profile.html' } } },
   define: {
     __BUILD_INFO__: JSON.stringify({
       commit: getGitCommit(),

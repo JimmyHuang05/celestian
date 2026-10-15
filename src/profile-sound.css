@@ -1,0 +1,5 @@
+.profile-sound-controls{position:absolute;right:4.6%;top:3%;z-index:30;display:flex;gap:16px;align-items:center}
+.profile-sound-controls button{background:transparent;border:0;border-bottom:1px solid #a58b5540;padding:6px 2px;color:#b9a67d;font-family:inherit;font-size:11px;line-height:1.5;letter-spacing:1px;cursor:pointer;transition:color .2s,border-color .2s}
+.profile-sound-controls button:hover{color:#eee0ba;border-color:#b9a67d}
+.profile-sound-controls button:focus-visible{outline:1px solid #c2a96e;outline-offset:4px}
+.profile-sound-controls button:disabled{opacity:.35;cursor:default}

@@ -1,0 +1,27 @@
+/* Annular portrait windows are concentric with the astrolabe, not separate cards. */
+.sector-operator{width:var(--sector-width);height:var(--sector-height);aspect-ratio:auto;container-type:normal;overflow:visible}
+.sector-operator .sector-art{position:absolute;inset:0;width:100%;height:100%;overflow:visible;pointer-events:none}
+.sector-edge,.sector-inlay,.sector-accent,.sector-joints,.sector-leader{fill:none;vector-effect:non-scaling-stroke}
+.sector-edge{stroke:#9b875d;stroke-width:1;opacity:.65;transition:stroke .2s,opacity .2s}
+.sector-inlay{stroke:#b9a272;stroke-width:.6;opacity:.3}
+.sector-joints{stroke:#b29a69;stroke-width:2;opacity:.5}
+.sector-accent{stroke:#dec695;stroke-width:1.5;opacity:0;transition:opacity .2s}
+.sector-portrait{filter:saturate(.45) brightness(.72);transition:filter .2s}
+.sector-bed{opacity:.96}
+.sector-caption{opacity:.65;transition:opacity .2s;pointer-events:none}
+.sector-leader{stroke:#a68e60;stroke-width:.7;opacity:.35}
+.sector-pin{fill:#ba9e66;opacity:.6}
+.sector-name{fill:#bdb6a7;font-size:clamp(10px,.86vw,16px);letter-spacing:.1em;paint-order:stroke;stroke:#0c1524;stroke-width:4px;stroke-linejoin:round}
+.sector-number{fill:#928062;font:9px Georgia,serif;letter-spacing:.22em;paint-order:stroke;stroke:#0c1524;stroke-width:2px}
+.sector-operator.active .sector-portrait{filter:saturate(var(--art-saturation)) brightness(var(--art-brightness)) contrast(var(--art-contrast))}
+.sector-operator.active .sector-edge{stroke:#d4bd8d;stroke-width:1.4;opacity:1}
+.sector-operator.active .sector-inlay{opacity:.65}
+.sector-operator.active .sector-joints,.sector-operator.active .sector-accent,.sector-operator.active .sector-caption{opacity:1}
+.sector-operator.active .sector-name{fill:#e0cdab}
+.sector-operator.active .sector-number{fill:#bca071}
+.sector-operator:hover .sector-edge{stroke:#e1ceaa;opacity:1}
+.sector-operator:hover .sector-caption{opacity:1}
+.sector-operator:focus-visible .sector-edge{stroke:#fff0c9;stroke-width:2;opacity:1}
+.sector-operator:focus-visible .sector-accent{opacity:1;stroke-dasharray:3 3}
+.roster.is-rotating .sector-operator{will-change:top,left,width,height,opacity}
+@media(prefers-reduced-motion:reduce){.sector-operator *{transition:none!important}}
