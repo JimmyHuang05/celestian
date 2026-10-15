@@ -181,8 +181,16 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   }
   function resize(){
     const {width,height}=canvas.getBoundingClientRect()
-    const ratio=Math.min(window.devicePixelRatio||1,1.75)
-    canvas.width=Math.max(1,Math.round(width*ratio));canvas.height=Math.max(1,Math.round(height*ratio))
+    if(!width||!height)return
+    // Keep the source detail through the WebGL pass before CSS downsamples it.
+    // At 1x DPR a screen-sized buffer softened fine lines twice (texture sampling
+    // then canvas compositing). The portrait occupies 94% of this padded canvas.
+    const sourceRatio=image.naturalWidth/(width*.94)
+    const ratio=Math.min(2,Math.max(window.devicePixelRatio||1,sourceRatio))
+    const bufferWidth=Math.max(1,Math.round(width*ratio)),bufferHeight=Math.max(1,Math.round(height*ratio))
+    if(canvas.width!==bufferWidth||canvas.height!==bufferHeight){
+      canvas.width=bufferWidth;canvas.height=bufferHeight
+    }
     gl.viewport(0,0,canvas.width,canvas.height);render()
   }
   function destroy(){if(destroyed)return;destroyed=true;resources.reverse().forEach(dispose=>dispose())}
