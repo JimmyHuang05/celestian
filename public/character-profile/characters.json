@@ -2,6 +2,7 @@
   {
     "id": "2a9bf85c-f975-4054-9597-5f4f11414983",
     "name": "伊洛薇恩",
+    "dossierSubtitle": "「秩序」与「公义」的织者",
     "title": "吾之所言即为正义",
     "image": "/character-profile/redraws/elowen-v5.webp",
     "emblem": "/character-profile/emblem-2a9bf85c-f975-4054-9597-5f4f11414983.webp",
@@ -108,7 +109,8 @@
     "name": "希尔维娅",
     "title": "不凋的蓝翎",
     "image": "/character-profile/redraws/sylvia-v1.webp",
-    "emblem": "/character-profile/emblem-bf217625-407b-4cff-ae92-4f1ba3ba8cca.webp",
+    "emblem": "/character-profile/sylvia-war-conquest.svg",
+    "dossierSubtitle": "「战争」与「征服」的织者",
     "blocks": [
       {
         "id": "7xaxvly6o",
@@ -204,6 +206,7 @@
   {
     "id": "4ea0b64e-1c59-43a5-a082-caf6c6a5a790",
     "name": "尤菲米娅",
+    "dossierSubtitle": "「记忆」的织者",
     "title": "咏唱繁花颂歌",
     "image": "/character-profile/redraws/euphemia-v1.webp",
     "emblem": "/character-profile/emblem-4ea0b64e-1c59-43a5-a082-caf6c6a5a790.webp",
@@ -326,6 +329,7 @@
   {
     "id": "5bf8f6ab-da96-4cc6-a715-45050f289dd5",
     "name": "汐安娜",
+    "dossierSubtitle": "「潮汐」的织者",
     "title": "溯梦的潮音",
     "image": "/character-profile/redraws/xianna-v1.webp",
     "emblem": "/character-profile/emblem-5bf8f6ab-da96-4cc6-a715-45050f289dd5.webp",
@@ -424,6 +428,7 @@
   {
     "id": "ec561630-2810-41a0-8524-857bfa8365e1",
     "name": "第十四天",
+    "dossierSubtitle": "「██」权柄的织者",
     "title": "原世界防卫协议",
     "image": "/character-profile/redraws/day-fourteen-v1.webp",
     "emblem": "/character-profile/emblem-ec561630-2810-41a0-8524-857bfa8365e1.webp",
@@ -459,7 +464,7 @@
       {
         "id": "ngnho7oej",
         "type": "paragraph",
-        "content": "巴别塔生物科技有限公司在经历了数十次失败之后，创造出了第十四位██。",
+        "content": "巴别塔生物科技在经历了数十次失败之后，创造出了第十四位██。",
         "url": "",
         "caption": "",
         "key": "",
@@ -507,7 +512,7 @@
       {
         "id": "xqfgz0zmc",
         "type": "paragraph",
-        "content": "“很高兴再次见到你们，我是第十四天，隶属于示拿地防卫军……我，等你们很久了。”",
+        "content": "“你们的到来，已被记录。”",
         "url": "",
         "caption": "",
         "key": "",

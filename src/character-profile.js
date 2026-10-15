@@ -18,7 +18,7 @@ const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy')
 if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
 
 async function init(){
-  const response=await fetch('/character-profile/characters.json?v=2')
+  const response=await fetch('/character-profile/characters.json?v=3')
   if(!response.ok)throw new Error('Unable to load character archive')
   const operators=await response.json()
   if(!Array.isArray(operators)||!operators.length)throw new Error('Empty character archive')
@@ -174,6 +174,7 @@ async function init(){
       if(backdropRequest===backdropVersion)backdrop.hidden=false
     }).catch(()=>{/* Decorative backdrop stays hidden if the portrait fails. */})
     const emblem=document.querySelector('#emblem')
+    document.querySelector('.dossier-subtitle').textContent=entry.dossierSubtitle||'权柄的织者'
     emblem.src=entry.emblem
     emblem.alt=`${entry.name}的档案徽章`
     emblem.hidden=!entry.emblem
