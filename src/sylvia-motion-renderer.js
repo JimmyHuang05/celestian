@@ -145,5 +145,5 @@ float curlMask(vec2 p,vec4 source){
 })
 
 export function createSylviaMotion(canvas,imageUrl){
-  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/sylvia-motion/closed-eyes.png',blinkOffset:.4,detailBaseUrl:'/sylvia-motion/blade-under-hair.png'})
+  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/sylvia-motion/closed-eyes-v2.webp',blinkOffset:.4,detailBaseUrl:'/sylvia-motion/blade-under-hair-v2.webp'})
 }

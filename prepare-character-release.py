@@ -44,9 +44,9 @@ shutil.copy2(repo / 'character-profile.html', out / 'character-profile.html')
 assets = {'character-profile/characters.json', 'character-profile/star-dust.svg', 'character-profile/medic.png'}
 entries = json.loads((repo / 'public/character-profile/characters.json').read_text(encoding='utf-8'))
 for entry in entries:
-    assets.update([entry['image'].lstrip('/'), entry['emblem'].lstrip('/')])
+    assets.update([entry['image'].lstrip('/'), entry['emblem'].lstrip('/'), entry['avatar'].lstrip('/')])
 for folder in ['audio/characters', 'elowen-motion', 'sylvia-motion', 'euphemia-motion', 'xianna-motion', 'day-fourteen-motion']:
-    assets.update(str(p.relative_to(repo / 'public')).replace('\\', '/') for p in (repo / 'public' / folder).rglob('*') if p.is_file())
+    assets.update(str(p.relative_to(repo / 'public')).replace('\\', '/') for p in (repo / 'public' / folder).rglob('*') if p.is_file() and p.suffix != '.png')
 for name in assets:
     target = out / 'public' / name
     target.parent.mkdir(parents=True, exist_ok=True)

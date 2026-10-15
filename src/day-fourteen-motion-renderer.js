@@ -81,5 +81,5 @@ const fragmentSource=createBlinkFragment({
   ],
 })
 export function createDayFourteenMotion(canvas,imageUrl){
-  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/day-fourteen-motion/closed-eyes.png',blinkOffset:.25})
+  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/day-fourteen-motion/closed-eyes-v2.webp',blinkOffset:.25})
 }

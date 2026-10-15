@@ -180,5 +180,5 @@ float waterDisk(vec2 p,vec2 c,vec2 r){return 1.0-smoothstep(.72,1.0,length((p-c)
 `,
 })
 export function createXiannaMotion(canvas,imageUrl){
-  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/xianna-motion/closed-eyes.png',blinkOffset:.55})
+  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/xianna-motion/closed-eyes-v2.webp',blinkOffset:.55})
 }

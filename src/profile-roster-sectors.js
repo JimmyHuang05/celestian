@@ -22,7 +22,7 @@ export function mountSectorPortrait(button,entry,index,frame){
   const svg=button.querySelector('svg')
   const nodes=Object.fromEntries(['bed','shade','portrait','edge','inlay','accent','joints','leader','pin','name','number'].map(key=>[key,svg.querySelector(`.sector-${key}`)]))
   const clipPath=svg.querySelector('clipPath path')
-  nodes.portrait.setAttribute('href',entry.image)
+  nodes.portrait.setAttribute('href',entry.avatar??entry.image)
   nodes.name.textContent=entry.name
   const point=(radius,angle)=>[radius*Math.cos(angle),radius*Math.sin(angle)]
   const xy=point=>point.map(value=>value.toFixed(2)).join(' ')

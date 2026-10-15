@@ -3,7 +3,7 @@
     "id": "2a9bf85c-f975-4054-9597-5f4f11414983",
     "name": "伊洛薇恩",
     "title": "吾之所言即为正义",
-    "image": "/character-profile/redraws/elowen-v5.png",
+    "image": "/character-profile/redraws/elowen-v5.webp",
     "emblem": "/character-profile/emblem-2a9bf85c-f975-4054-9597-5f4f11414983.webp",
     "blocks": [
       {
@@ -100,13 +100,14 @@
         "author": "",
         "dropCap": false
       }
-    ]
+    ],
+    "avatar": "/character-profile/redraws/elowen-v5-avatar.webp"
   },
   {
     "id": "bf217625-407b-4cff-ae92-4f1ba3ba8cca",
     "name": "希尔维娅",
     "title": "不凋的蓝翎",
-    "image": "/character-profile/redraws/sylvia-v1.png",
+    "image": "/character-profile/redraws/sylvia-v1.webp",
     "emblem": "/character-profile/emblem-bf217625-407b-4cff-ae92-4f1ba3ba8cca.webp",
     "blocks": [
       {
@@ -197,13 +198,14 @@
         "author": "",
         "dropCap": false
       }
-    ]
+    ],
+    "avatar": "/character-profile/redraws/sylvia-v1-avatar.webp"
   },
   {
     "id": "4ea0b64e-1c59-43a5-a082-caf6c6a5a790",
     "name": "尤菲米娅",
     "title": "咏唱繁花颂歌",
-    "image": "/character-profile/redraws/euphemia-v1.png",
+    "image": "/character-profile/redraws/euphemia-v1.webp",
     "emblem": "/character-profile/emblem-4ea0b64e-1c59-43a5-a082-caf6c6a5a790.webp",
     "blocks": [
       {
@@ -318,13 +320,14 @@
         "author": "",
         "dropCap": false
       }
-    ]
+    ],
+    "avatar": "/character-profile/redraws/euphemia-v1-avatar.webp"
   },
   {
     "id": "5bf8f6ab-da96-4cc6-a715-45050f289dd5",
     "name": "汐安娜",
     "title": "溯梦的潮音",
-    "image": "/character-profile/redraws/xianna-v1.png",
+    "image": "/character-profile/redraws/xianna-v1.webp",
     "emblem": "/character-profile/emblem-5bf8f6ab-da96-4cc6-a715-45050f289dd5.webp",
     "blocks": [
       {
@@ -415,13 +418,14 @@
         "author": "",
         "dropCap": false
       }
-    ]
+    ],
+    "avatar": "/character-profile/redraws/xianna-v1-avatar.webp"
   },
   {
     "id": "ec561630-2810-41a0-8524-857bfa8365e1",
     "name": "第十四天",
     "title": "原世界防卫协议",
-    "image": "/character-profile/redraws/day-fourteen-v1.png",
+    "image": "/character-profile/redraws/day-fourteen-v1.webp",
     "emblem": "/character-profile/emblem-ec561630-2810-41a0-8524-857bfa8365e1.webp",
     "blocks": [
       {
@@ -512,6 +516,7 @@
         "author": "",
         "dropCap": false
       }
-    ]
+    ],
+    "avatar": "/character-profile/redraws/day-fourteen-v1-avatar.webp"
   }
 ]

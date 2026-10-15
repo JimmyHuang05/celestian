@@ -95,5 +95,5 @@ const fragmentSource=createBlinkFragment({
 })
 
 export function createEuphemiaMotion(canvas,imageUrl){
-  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/euphemia-motion/closed-eyes.png',blinkOffset:.85})
+  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/euphemia-motion/closed-eyes-v2.webp',blinkOffset:.85})
 }

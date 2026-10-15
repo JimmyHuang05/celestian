@@ -124,5 +124,5 @@ const fragmentSource=createBlinkFragment({
   ],
 })
 export function createElowenMotion(canvas,imageUrl){
-  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/elowen-motion/closed-eyes.png'})
+  return createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl:'/elowen-motion/closed-eyes-v2.webp'})
 }

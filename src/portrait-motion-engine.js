@@ -111,6 +111,7 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indexBuffer);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indices,gl.STATIC_DRAW)
 
   const image=new Image()
+  image.fetchPriority='high'
   image.src=imageUrl
   try{await image.decode()}
   catch(error){resources.reverse().forEach(dispose=>dispose());throw error}
@@ -124,37 +125,33 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE)
   gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)
   gl.uniform1i(gl.getUniformLocation(program,'u_image'),0)
-  const closedEyes=new Image()
-  closedEyes.src=closedEyesUrl
-  // A missing optional keyframe must not disable breathing and wing motion.
+  let destroyed=false,lastTime=0,lastAmount=1
+  // Start body motion as soon as the main portrait is ready. Optional textures
+  // upgrade the running renderer independently; they never hold it hostage.
   let blinkReady=false
-  try{await closedEyes.decode();blinkReady=true}
-  catch(error){console.warn('Blink keyframe unavailable; keeping eyes open.',error)}
-  const closedTexture=gl.createTexture()
-  resources.push(()=>gl.deleteTexture(closedTexture))
-  gl.activeTexture(gl.TEXTURE1);gl.bindTexture(gl.TEXTURE_2D,closedTexture)
-  gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,blinkReady?closedEyes:image)
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR)
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE)
-  gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)
-  gl.uniform1i(gl.getUniformLocation(program,'u_closedEyes'),1)
   let detailReady=false
-  if(detailBaseUrl){
-    const detailImage=new Image()
-    detailImage.src=detailBaseUrl
-    try{await detailImage.decode();detailReady=true}
-    catch(error){console.warn('Hair background unavailable; keeping the original strand.',error)}
-    const detailTexture=gl.createTexture()
-    resources.push(()=>gl.deleteTexture(detailTexture))
-    gl.activeTexture(gl.TEXTURE2);gl.bindTexture(gl.TEXTURE_2D,detailTexture)
-    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,detailReady?detailImage:image)
+  function optionalTexture(url,unit,uniform,onReady){
+    const texture=gl.createTexture()
+    resources.push(()=>gl.deleteTexture(texture))
+    gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,texture)
+    gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,image)
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MIN_FILTER,gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_MAG_FILTER,gl.LINEAR)
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_S,gl.CLAMP_TO_EDGE)
     gl.texParameteri(gl.TEXTURE_2D,gl.TEXTURE_WRAP_T,gl.CLAMP_TO_EDGE)
-    gl.uniform1i(gl.getUniformLocation(program,'u_detailBase'),2)
+    gl.uniform1i(gl.getUniformLocation(program,uniform),unit)
+    const keyframe=new Image()
+    keyframe.fetchPriority='low'
+    keyframe.src=url
+    keyframe.decode().then(()=>{
+      if(destroyed||gl.isContextLost())return
+      gl.activeTexture(gl.TEXTURE0+unit);gl.bindTexture(gl.TEXTURE_2D,texture)
+      gl.texImage2D(gl.TEXTURE_2D,0,gl.RGBA,gl.RGBA,gl.UNSIGNED_BYTE,keyframe)
+      onReady();render()
+    }).catch(error=>{if(!destroyed)console.warn('Optional portrait detail unavailable; body motion continues.',error)})
   }
+  optionalTexture(closedEyesUrl,1,'u_closedEyes',()=>{blinkReady=true})
+  if(detailBaseUrl)optionalTexture(detailBaseUrl,2,'u_detailBase',()=>{detailReady=true})
   const layer=gl.getUniformLocation(program,'u_layer'),detailEnabled=gl.getUniformLocation(program,'u_detailReady')
   const blink=gl.getUniformLocation(program,'u_blink')
   const phase=gl.getUniformLocation(program,'u_phase'),strength=gl.getUniformLocation(program,'u_strength')
@@ -163,7 +160,6 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   gl.enable(gl.BLEND);gl.blendFunc(gl.ONE,gl.ONE_MINUS_SRC_ALPHA)
   gl.disable(gl.DITHER)
   gl.clearColor(0,0,0,0)
-  let destroyed=false,lastTime=0,lastAmount=1
   function render(seconds=lastTime,amount=lastAmount){
     if(destroyed||gl.isContextLost())return
     lastTime=seconds;lastAmount=amount

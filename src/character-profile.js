@@ -15,7 +15,7 @@ const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy')
 if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
 
 async function init(){
-  const response=await fetch('/character-profile/characters.json')
+  const response=await fetch('/character-profile/characters.json?v=2')
   if(!response.ok)throw new Error('Unable to load character archive')
   const operators=await response.json()
   if(!Array.isArray(operators)||!operators.length)throw new Error('Empty character archive')
@@ -52,8 +52,6 @@ async function init(){
     sectorLayouts.push(mountSectorPortrait(button,entry,i,portraitFrames[entry.id]))
     button.onclick=()=>select(i)
     roster.appendChild(button)
-    const preload=new Image()
-    preload.src=entry.image
     return button
   })
 
@@ -152,6 +150,7 @@ async function init(){
     document.querySelector('#profession').textContent=entry.title
     document.querySelector('#identity-number').textContent=['I','II','III','IV','V'][index]??String(index+1)
     const portrait=document.querySelector('#portrait')
+    portrait.fetchPriority='high'
     const frame=portraitFrames[entry.id]
     const height=(frame?(.95-.25)/(frame.sole-frame.eye):.90)*1.1
     portrait.style.setProperty('--portrait-height',`${height*100}%`)
