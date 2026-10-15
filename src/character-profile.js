@@ -156,9 +156,6 @@ async function init(){
     portrait.style.setProperty('--portrait-height',`${height*100}%`)
     portrait.style.setProperty('--portrait-top',`${(frame ? .95-frame.sole*height : .95-height)*100}%`)
     portrait.style.setProperty('--portrait-anchor',`${frame?.anchor??50}%`)
-    portrait.src=entry.image
-    portrait.alt=`${entry.name}的角色立绘`
-    portrait.hidden=false
     void portraitMotion.select(entry)
     const emblem=document.querySelector('#emblem')
     emblem.src=entry.emblem

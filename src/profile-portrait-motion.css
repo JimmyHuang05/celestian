@@ -1,3 +1,13 @@
 .portrait-motion{position:absolute;display:block;max-width:none;pointer-events:none;transform:none;transition:none}
 .portrait-motion[hidden]{display:none}
 .portrait.has-motion{opacity:0;transition:none}
+.portrait-area[data-portrait-state="loading"] .portrait,.portrait-area[data-portrait-state="error"] .portrait{visibility:hidden;transition:none}
+.portrait-status{position:absolute;left:50%;top:47%;transform:translate(-50%,-50%);display:flex;flex-direction:column;align-items:center;gap:18px;color:#c4b18b;text-align:center;font:12px/1.7 sans-serif;letter-spacing:.1em}
+.portrait-status[hidden],.portrait-retry[hidden]{display:none}
+.portrait-loading-orbit{position:relative;display:block;width:46px;height:46px;border:1px solid #c4b18b30;border-radius:50%}
+.portrait-loading-orbit:before{content:'';position:absolute;inset:-1px;border:1px solid transparent;border-top-color:#c4b18b;border-right-color:#c4b18b70;border-radius:50%;animation:portrait-loading-spin 1.6s linear infinite}
+.portrait-loading-orbit i{position:absolute;left:50%;top:50%;width:10px;height:10px;border:1px solid currentColor;transform:translate(-50%,-50%) rotate(45deg)}
+.portrait-retry{pointer-events:auto;border:1px solid #c4b18b55;background:#101827a6;padding:5px 16px;color:inherit;font:inherit;letter-spacing:inherit}
+.portrait-area[data-portrait-state="error"] .portrait-loading-orbit:before{animation:none;border-color:#c4b18b30}
+@keyframes portrait-loading-spin{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.portrait-loading-orbit:before{animation:none}}

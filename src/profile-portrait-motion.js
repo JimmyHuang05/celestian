@@ -12,6 +12,19 @@ export function mountPortraitMotion(portrait){
   const host=portrait.parentElement,reduced=matchMedia('(prefers-reduced-motion: reduce)')
   const cache=new Map()
   let active,entry,version=0,disposed=false,raf=0,last=0,time=0,frames=0,inspectionPaused=false
+  const status=document.createElement('div')
+  status.className='portrait-status';status.hidden=true
+  status.innerHTML='<span class="portrait-loading-orbit" aria-hidden="true"><i></i></span><span class="portrait-status-text" role="status" aria-live="polite"></span><button type="button" class="portrait-retry" hidden>重试</button>'
+  host.append(status)
+  const statusText=status.querySelector('.portrait-status-text'),retry=status.querySelector('.portrait-retry')
+  retry.onclick=()=>{if(entry)void select(entry)}
+  function setState(state,character){
+    host.dataset.portraitState=state
+    host.setAttribute('aria-busy',String(state==='loading'))
+    status.hidden=state==='ready'
+    retry.hidden=state!=='error'
+    statusText.textContent=state==='loading'?`正在加载${character.name}…`:state==='error'?'立绘暂时无法加载':''
+  }
 
   function stop(){cancelAnimationFrame(raf);raf=0;last=0}
   function layout(){
@@ -38,6 +51,10 @@ export function mountPortraitMotion(portrait){
   }
   function start(){stop();if(active&&!document.hidden&&!reduced.matches&&!inspectionPaused)raf=requestAnimationFrame(tick)}
   function load(character){
+    const previous=cache.get(character.id)
+    if(previous?.failed){
+      previous.renderer?.destroy();previous.canvas.remove();cache.delete(character.id)
+    }
     if(cache.has(character.id))return cache.get(character.id)
     const canvas=document.createElement('canvas')
     canvas.className='portrait-motion';canvas.hidden=true;canvas.setAttribute('aria-hidden','true')
@@ -56,13 +73,26 @@ export function mountPortraitMotion(portrait){
     return item
   }
   async function select(character){
+    if(disposed)return
     entry=character;const request=++version
     stop();active=null;time=0;inspectionPaused=false
+    // Hide the decoded previous image before changing src. Browsers may retain
+    // its pixels while the replacement downloads, even when the URL is new.
+    setState('loading',character)
     portrait.classList.remove('has-motion')
     cache.forEach(item=>{item.canvas.hidden=true})
-    if(disposed||reduced.matches||!factories[character.id])return
-    const item=load(character)
-    const [ready]=await Promise.all([item.promise,portrait.decode().catch(()=>null)])
+    portrait.src=character.image
+    portrait.alt=`${character.name}的角色立绘`
+    portrait.hidden=false
+    const motion=!reduced.matches&&factories[character.id]?load(character).promise:null
+    let imageReady=false
+    try{await portrait.decode();imageReady=portrait.naturalWidth>0}catch{/* Keep the loading failure separate from animation fallback. */}
+    if(disposed||request!==version)return
+    if(!imageReady){setState('error',character);return}
+    // The correct static portrait can appear before its motion module is ready.
+    setState('ready',character)
+    if(!motion)return
+    const ready=await motion
     if(disposed||request!==version||!ready||ready.failed)return
     active=ready;ready.canvas.hidden=false;layout();ready.renderer.render(0)
     portrait.classList.add('has-motion');start()
@@ -79,6 +109,7 @@ export function mountPortraitMotion(portrait){
     reduced.removeEventListener('change',onPreference)
     document.removeEventListener('visibilitychange',onVisibility)
     portrait.classList.remove('has-motion')
+    status.remove();delete host.dataset.portraitState;host.removeAttribute('aria-busy')
     cache.forEach(item=>{item.renderer?.destroy();item.canvas.getContext('webgl')?.getExtension('WEBGL_lose_context')?.loseContext();item.canvas.remove()})
     cache.clear()
     window.removeEventListener('pagehide',onPageHide)
