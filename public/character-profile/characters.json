@@ -5,7 +5,7 @@
     "dossierSubtitle": "「秩序」与「公义」的织者",
     "title": "吾之所言即为正义",
     "image": "/character-profile/redraws/elowen-v5.webp",
-    "emblem": "/character-profile/emblem-2a9bf85c-f975-4054-9597-5f4f11414983.webp",
+    "emblem": "/character-profile/elowen-order-justice.svg",
     "blocks": [
       {
         "id": "pp1x4vtez",
@@ -209,7 +209,7 @@
     "dossierSubtitle": "「记忆」的织者",
     "title": "咏唱繁花颂歌",
     "image": "/character-profile/redraws/euphemia-v1.webp",
-    "emblem": "/character-profile/emblem-4ea0b64e-1c59-43a5-a082-caf6c6a5a790.webp",
+    "emblem": "/character-profile/euphemia-memory.svg",
     "blocks": [
       {
         "id": "ozy456cmh",
@@ -332,7 +332,7 @@
     "dossierSubtitle": "「潮汐」的织者",
     "title": "溯梦的潮音",
     "image": "/character-profile/redraws/xianna-v1.webp",
-    "emblem": "/character-profile/emblem-5bf8f6ab-da96-4cc6-a715-45050f289dd5.webp",
+    "emblem": "/character-profile/xianna-tides.svg",
     "blocks": [
       {
         "id": "l5484s0h0",
@@ -431,7 +431,7 @@
     "dossierSubtitle": "「██」权柄的织者",
     "title": "原世界防卫协议",
     "image": "/character-profile/redraws/day-fourteen-v1.webp",
-    "emblem": "/character-profile/emblem-ec561630-2810-41a0-8524-857bfa8365e1.webp",
+    "emblem": "/character-profile/day-fourteen-tower.svg",
     "blocks": [
       {
         "id": "kpe9hkgnc",
@@ -523,5 +523,26 @@
       }
     ],
     "avatar": "/character-profile/redraws/day-fourteen-v1-avatar.webp"
+  },
+  {
+    "id": "f967a2c8-252b-4a1e-8e55-9ac5fe1597e2",
+    "name": "伊莎贝拉",
+    "title": "",
+    "dossierSubtitle": "",
+    "image": "/character-profile/redraws/isabella-a-v6.webp",
+    "avatar": "/character-profile/redraws/isabella-a-v6-avatar.webp",
+    "emblem": "/character-profile/isabella-emblem.svg",
+    "blocks": [
+      {
+        "type": "key-value",
+        "key": "姓名",
+        "value": "伊莎贝拉·洛丽华·爱芮丝"
+      },
+      {
+        "type": "key-value",
+        "key": "势力",
+        "value": "鸢尾花王庭芭蕾舞团 / <b>奥兰尼亚非常规事务署</b>"
+      }
+    ]
   }
 ]

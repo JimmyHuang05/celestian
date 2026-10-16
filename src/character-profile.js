@@ -18,7 +18,7 @@ const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy')
 if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
 
 async function init(){
-  const response=await fetch('/character-profile/characters.json?v=3')
+  const response=await fetch('/character-profile/characters.json?v=20261016-emblems')
   if(!response.ok)throw new Error('Unable to load character archive')
   const operators=await response.json()
   if(!Array.isArray(operators)||!operators.length)throw new Error('Empty character archive')
@@ -42,6 +42,7 @@ async function init(){
   const slotOf=index=>wrap(index-active+half)-half
   // Align the actual face and foot/robe landmarks, rather than tall props or transparent padding.
   const portraitFrames={
+    'f967a2c8-252b-4a1e-8e55-9ac5fe1597e2':{eye:.201,sole:.985,anchor:53,faceX:.545},
     '2a9bf85c-f975-4054-9597-5f4f11414983':{eye:.12,sole:.985,anchor:50,faceX:.52},
     'bf217625-407b-4cff-ae92-4f1ba3ba8cca':{eye:.17,sole:.985,anchor:49,faceX:.5},
     '4ea0b64e-1c59-43a5-a082-caf6c6a5a790':{eye:.20,sole:.985,anchor:53,faceX:.53},
@@ -154,7 +155,9 @@ async function init(){
     document.title=`${entry.name} · 众生录`
     document.querySelector('#name').textContent=entry.name
     document.querySelector('#profession').textContent=entry.title
-    document.querySelector('#identity-number').textContent=['I','II','III','IV','V'][index]??String(index+1)
+    document.querySelector('.profession').hidden=!entry.title
+    document.querySelector('.profession').style.display=entry.title?'':'none'
+    document.querySelector('#identity-number').textContent=['I','II','III','IV','V','VI'][index]??String(index+1)
     const portrait=document.querySelector('#portrait')
     portrait.fetchPriority='high'
     const frame=portraitFrames[entry.id]
@@ -174,10 +177,12 @@ async function init(){
       if(backdropRequest===backdropVersion)backdrop.hidden=false
     }).catch(()=>{/* Decorative backdrop stays hidden if the portrait fails. */})
     const emblem=document.querySelector('#emblem')
-    document.querySelector('.dossier-subtitle').textContent=entry.dossierSubtitle||'权柄的织者'
-    emblem.src=entry.emblem
+    document.querySelector('.dossier-subtitle').textContent=entry.dossierSubtitle??'权柄的织者'
+    if(entry.emblem)emblem.src=entry.emblem
+    else emblem.removeAttribute('src')
     emblem.alt=`${entry.name}的档案徽章`
     emblem.hidden=!entry.emblem
+    emblem.parentElement.style.visibility=entry.emblem?'':'hidden'
     document.querySelector('#archive-index').textContent=String(index+1).padStart(2,'0')
     document.querySelector('#archive-total').textContent=String(operators.length).padStart(2,'0')
     cards.forEach((card,i)=>card.setAttribute('aria-pressed',i===active))

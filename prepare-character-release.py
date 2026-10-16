@@ -45,7 +45,8 @@ shutil.copy2(repo / 'character-profile.html', out / 'character-profile.html')
 assets = {'character-profile/characters.json', 'character-profile/star-dust.svg', 'character-profile/medic.png'}
 entries = json.loads((repo / 'public/character-profile/characters.json').read_text(encoding='utf-8'))
 for entry in entries:
-    assets.update([entry['image'].lstrip('/'), entry['emblem'].lstrip('/'), entry['avatar'].lstrip('/')])
+    assets.update(entry[key].lstrip('/') for key in ['image', 'emblem', 'avatar'] if entry.get(key))
+assets.add('character-profile/redraws/isabella-a-closed-eyes-v2.webp')
 for folder in ['audio/characters', 'elowen-motion', 'sylvia-motion', 'euphemia-motion', 'xianna-motion', 'day-fourteen-motion']:
     assets.update(str(p.relative_to(repo / 'public')).replace('\\', '/') for p in (repo / 'public' / folder).rglob('*') if p.is_file() and p.suffix != '.png')
 for name in assets:

@@ -73,7 +73,7 @@ void main(){
 `
 }
 
-export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl,blinkOffset=0,detailBaseUrl}) {
+export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmentSource,closedEyesUrl,blinkOffset=0,detailBaseUrl,mesh}) {
   const gl=canvas.getContext('webgl',{alpha:true,antialias:true,premultipliedAlpha:true,preserveDrawingBuffer:false})
   if(!gl)throw new Error('WebGL unavailable')
   const resources=[]
@@ -93,7 +93,8 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   if(!gl.getProgramParameter(program,gl.LINK_STATUS))throw new Error(gl.getProgramInfoLog(program))
   gl.useProgram(program)
 
-  const cols=144,rows=192
+  const cols=mesh?.columns??144,rows=mesh?.rows??192
+  if((cols+1)*(rows+1)>65536)throw new Error('Portrait mesh exceeds 16-bit index capacity')
   const vertices=new Float32Array((cols+1)*(rows+1)*2)
   let at=0
   for(let y=0;y<=rows;y++)for(let x=0;x<=cols;x++){vertices[at++]=x/cols;vertices[at++]=y/rows}
@@ -109,6 +110,19 @@ export async function createPortraitMotion(canvas,imageUrl,{vertexSource,fragmen
   const uv=gl.getAttribLocation(program,'a_uv')
   gl.enableVertexAttribArray(uv);gl.vertexAttribPointer(uv,2,gl.FLOAT,false,0,0)
   gl.bindBuffer(gl.ELEMENT_ARRAY_BUFFER,indexBuffer);gl.bufferData(gl.ELEMENT_ARRAY_BUFFER,indices,gl.STATIC_DRAW)
+  if(mesh?.vertexData){
+    const stride=mesh.attributes.reduce((sum,attribute)=>sum+attribute.size,0)
+    const data=new Float32Array((cols+1)*(rows+1)*stride)
+    for(let y=0;y<=rows;y++)for(let x=0;x<=cols;x++)data.set(mesh.vertexData(x/cols,y/rows),(y*(cols+1)+x)*stride)
+    const buffer=gl.createBuffer();resources.push(()=>gl.deleteBuffer(buffer))
+    gl.bindBuffer(gl.ARRAY_BUFFER,buffer);gl.bufferData(gl.ARRAY_BUFFER,data,gl.STATIC_DRAW)
+    let offset=0
+    for(const attribute of mesh.attributes){
+      const location=gl.getAttribLocation(program,attribute.name)
+      if(location>=0){gl.enableVertexAttribArray(location);gl.vertexAttribPointer(location,attribute.size,gl.FLOAT,false,stride*4,offset*4)}
+      offset+=attribute.size
+    }
+  }
 
   const image=new Image()
   image.fetchPriority='high'
