@@ -1,6 +1,7 @@
 import './profile-portrait-motion.css'
 
 const factories={
+  'f967a2c8-252b-4a1e-8e55-9ac5fe1597e2':()=>import('./isabella-motion-renderer.js').then(module=>module.createIsabellaMotion),
   '2a9bf85c-f975-4054-9597-5f4f11414983':()=>import('./elowen-motion-renderer.js').then(module=>module.createElowenMotion),
   'bf217625-407b-4cff-ae92-4f1ba3ba8cca':()=>import('./sylvia-motion-renderer.js').then(module=>module.createSylviaMotion),
   '4ea0b64e-1c59-43a5-a082-caf6c6a5a790':()=>import('./euphemia-motion-renderer.js').then(module=>module.createEuphemiaMotion),

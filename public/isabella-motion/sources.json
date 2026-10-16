@@ -1,0 +1,42 @@
+{
+  "character": "伊莎贝拉",
+  "approvedPortrait": "第一轮重绘 exec-434a9151-e45c-4cf4-b5b7-674e3deb3792.png",
+  "reference": "C:/Users/admin/Downloads/ufAmkQdbMahvuQEC58Q2b.png",
+  "portraitSource": "C:/Users/admin/.codex/generated_images/01a1312d-71d8-7840-9a74-8a03c52fab14/exec-434a9151-e45c-4cf4-b5b7-674e3deb3792.png",
+  "portrait": "/character-profile/redraws/isabella-reference-v1.webp",
+  "size": [
+    1106,
+    1422
+  ],
+  "generator": "Built-in image_gen",
+  "motion": {
+    "hairRegions": 16,
+    "mesh": [
+      220,
+      286
+    ],
+    "breathSeconds": 4,
+    "tipDelayMaxSeconds": 0.215,
+    "method": "Continuous WebGL mesh with protected face, hands and legs; not separate PNG layers."
+  },
+  "assets": [
+    {
+      "file": "closed-eyes-reference-v1.webp",
+      "sourceCrop": [
+        470,
+        170,
+        240,
+        180
+      ],
+      "registration": [
+        470,
+        170,
+        240,
+        180
+      ],
+      "generatedSource": "C:/Users/admin/.codex/generated_images/01a1312d-71d8-7840-9a74-8a03c52fab14/exec-b0a14f4b-5abd-4b64-8956-7adcd22ea78c.png",
+      "usage": "Resized to reference crop and sampled only inside feathered eyelid masks.",
+      "prompt": "Use case: precise-object-edit. Image 1 is the exact face crop of the approved Isabella portrait, the edit target. Create ONLY a fully closed-eye blink keyframe. Change only both eyelids: gently close the eyes with thin curved upper lashes meeting the lower eyelids, no iris visible. Keep the exact head angle, face position, eye corners, asymmetrical eye height, hair strands, eyebrows, nose, mouth, skin color, expression, forehead jewel and neck ornament identical to this input. Do not smile more, change the face shape or beautify. Do not move, scale or crop any part. Keep the exact 4:3 crop proportions and original transparency. Only immediate eyelid/iris pixels may change. Return this one crop with eyes closed, no text, no background, no extra features."
+    }
+  ]
+}
