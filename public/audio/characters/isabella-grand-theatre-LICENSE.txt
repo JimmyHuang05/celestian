@@ -1,0 +1,6 @@
+Original chord arrangements and sound design: Isabella orchestra sketches, 2026-10-16.
+Instrument samples: FluidR3_GM, distributed by gleitz/midi-js-soundfonts.
+Source: https://github.com/gleitz/midi-js-soundfonts
+Sample license as documented by distributor: Creative Commons Attribution 3.0, https://creativecommons.org/licenses/by/3.0/
+Changes: chord layering, note envelopes, panning, theatre reverb and level normalization.
+These are sampled instrument mockups, not a live orchestra recording.
