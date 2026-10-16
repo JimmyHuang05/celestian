@@ -18,7 +18,7 @@ const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy')
 if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
 
 async function init(){
-  const response=await fetch('/character-profile/characters.json?v=20261016-theatre-scale')
+  const response=await fetch('/character-profile/characters.json?v=20261016-elowen-neckline')
   if(!response.ok)throw new Error('Unable to load character archive')
   const operators=await response.json()
   if(!Array.isArray(operators)||!operators.length)throw new Error('Empty character archive')
