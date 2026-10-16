@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { execSync } from 'child_process'
+import oldPreview from './scripts/old-preview.js'
 
 function getGitCommit() {
   try {
@@ -55,6 +56,7 @@ export default defineConfig({
     }),
   },
   plugins: [
+    oldPreview(),
     react(),
     babel({ presets: [reactCompilerPreset()] })
   ],
