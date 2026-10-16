@@ -4,6 +4,8 @@ import './character-dossier.css'
 import './profile-roster-sectors.css'
 import './profile-desktop-scale.css'
 import './profile-identity.css'
+import './profile-mobile.css'
+import {mountMobileProfile,COMPACT_PROFILE_QUERY} from './profile-mobile.js'
 import {mountRosterAstrolabe} from './profile-astrolabe.js'
 import {mountSectorPortrait} from './profile-roster-sectors.js'
 import {renderDossier} from './profile-content.js'
@@ -14,14 +16,25 @@ import {connectProfileNavigation} from './profile-navigation.js'
 
 connectProfileNavigation()
 
-const unmountGalaxy=mountProfileGalaxy(document.querySelector('#profile-galaxy'))
-if(import.meta.hot)import.meta.hot.dispose(unmountGalaxy)
+const narrowViewport=matchMedia(COMPACT_PROFILE_QUERY)
+let unmountGalaxy
+function syncGalaxy(){
+  unmountGalaxy?.()
+  unmountGalaxy=narrowViewport.matches?undefined:mountProfileGalaxy(document.querySelector('#profile-galaxy'))
+}
+syncGalaxy()
+narrowViewport.addEventListener('change',syncGalaxy)
+if(import.meta.hot)import.meta.hot.dispose(()=>{
+  unmountGalaxy?.()
+  narrowViewport.removeEventListener('change',syncGalaxy)
+})
 
 async function init(){
-  const response=await fetch('/character-profile/characters.json?v=20261016-elowen-neckline')
+  const response=await fetch('/character-profile/characters.json?v=20261016-gallery-fusion')
   if(!response.ok)throw new Error('Unable to load character archive')
   const operators=await response.json()
   if(!Array.isArray(operators)||!operators.length)throw new Error('Empty character archive')
+  const mobile=matchMedia(COMPACT_PROFILE_QUERY)
   const roster=document.querySelector('.roster')
   const astrolabe=document.querySelector('.roster-astrolabe')
   const {rotate:turnAstrolabe,setOrbitRadius,destroy:destroyAstrolabe}=mountRosterAstrolabe(astrolabe)
@@ -49,6 +62,8 @@ async function init(){
     '5bf8f6ab-da96-4cc6-a715-45050f289dd5':{eye:.147,sole:.99,anchor:53,faceX:.53,displayScale:1.05},
     'ec561630-2810-41a0-8524-857bfa8365e1':{eye:.15,sole:.987,anchor:60,faceX:.60}
   }
+  const mobileUI=mountMobileProfile(operators,portraitFrames,select)
+  if(import.meta.hot)import.meta.hot.dispose(mobileUI.destroy)
   const sectorLayouts=[]
   const cards=operators.map((entry,i)=>{
     const button=document.createElement('button')
@@ -62,6 +77,19 @@ async function init(){
   })
 
   function resizeWheel(){
+    if(mobile.matches){
+      const stage=document.querySelector('.portrait-area')
+      if(astrolabe.parentElement!==stage){
+        stage.prepend(astrolabe)
+        astrolabe.style.removeProperty('left')
+        astrolabe.style.removeProperty('width')
+        setOrbitRadius(316,5,38)
+      }
+      turnAstrolabe(-active*30)
+      return
+    }
+    if(astrolabe.parentElement!==roster.parentElement)roster.before(astrolabe)
+    turnAstrolabe(dialAngle)
     const width=roster.clientWidth,height=roster.clientHeight
     const oldAngle=54*Math.PI/180
     const dx=.71*width*(1-Math.cos(oldAngle))
@@ -95,6 +123,7 @@ async function init(){
   }
 
   function settleWheel(){
+    if(mobile.matches||!wheelGeometry)return
     cards.forEach((card,i)=>placeCard(card,slotOf(i)))
   }
 
@@ -103,6 +132,10 @@ async function init(){
     if(wrap(index)!==requested)sound.cancel()
     requested=wrap(index)
     if(rotating||requested===active)return
+    if(mobile.matches){
+      commitSelection(requested,true)
+      return
+    }
     if(reducedMotion.matches){
       let distance=wrap(requested-active)
       if(distance>half)distance-=operators.length
@@ -147,6 +180,8 @@ async function init(){
 
   function commitSelection(index,playSound=false){
     active=index
+    mobileUI.update(index)
+    if(mobile.matches)turnAstrolabe(-index*30)
     const entry=operators[index]
     const url=new URL(location.href)
     url.searchParams.set('id',entry.id)
@@ -188,6 +223,7 @@ async function init(){
     document.querySelector('#archive-total').textContent=String(operators.length).padStart(2,'0')
     cards.forEach((card,i)=>card.setAttribute('aria-pressed',i===active))
     renderDossier(entry)
+    if(playSound&&mobile.matches)window.scrollTo({top:0,behavior:'instant'})
     if(playSound&&index===requested)sound.schedule(entry.id)
     requestAnimationFrame(updateReadingHint)
   }
@@ -203,7 +239,7 @@ async function init(){
   document.querySelector('#next-character').onclick=()=>select(requested+1)
   document.addEventListener('keydown',event=>{
     // Reading the story with arrow keys should never switch the selected person.
-    if(event.target.closest('.story-scroll'))return
+    if(event.target.closest('.story-scroll,select,input,textarea'))return
     if(event.key==='ArrowUp'||event.key==='ArrowDown'){
       event.preventDefault()
       select(requested+(event.key==='ArrowDown'?1:-1))
@@ -212,6 +248,8 @@ async function init(){
   story.addEventListener('scroll',updateReadingHint,{passive:true})
   new ResizeObserver(updateReadingHint).observe(story)
   new ResizeObserver(resizeWheel).observe(roster)
+  mobile.addEventListener('change',resizeWheel)
+  if(import.meta.hot)import.meta.hot.dispose(()=>mobile.removeEventListener('change',resizeWheel))
   resizeWheel()
   commitSelection(active)
   settleWheel()

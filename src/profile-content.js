@@ -21,6 +21,36 @@ export function plainText(value){
   return richText(value).textContent.replace(/\u00a0/g,' ').trim()
 }
 
+
+function highlightStoryTerms(root){
+  const ranges=[...root.textContent.matchAll(/「[^「」]*」/g)]
+    .map(match=>[match.index,match.index+match[0].length])
+  if(!ranges.length)return
+  const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT)
+  const nodes=[]
+  while(walker.nextNode())nodes.push(walker.currentNode)
+  let offset=0
+  for(const node of nodes){
+    const text=node.textContent,start=offset
+    offset+=text.length
+    const fragment=document.createDocumentFragment()
+    let cursor=0
+    for(const [from,to] of ranges){
+      const a=Math.max(0,from-start),b=Math.min(text.length,to-start)
+      if(a>=b)continue
+      fragment.append(document.createTextNode(text.slice(cursor,a)))
+      const term=document.createElement('span')
+      term.className='lore-emphasis'
+      term.textContent=text.slice(a,b)
+      fragment.append(term)
+      cursor=b
+    }
+    if(!cursor)continue
+    fragment.append(document.createTextNode(text.slice(cursor)))
+    node.replaceWith(fragment)
+  }
+}
+
 export function renderDossier(entry){
   const facts=document.querySelector('#facts')
   const story=document.querySelector('#story')
@@ -40,6 +70,7 @@ export function renderDossier(entry){
       const isQuote=block.type==='quote'||/^“[\s\S]*”$/.test(text)
       const paragraph=document.createElement('p')
       paragraph.append(richText(block.content))
+      highlightStoryTerms(paragraph)
       if(isQuote){
         const quote=document.createElement('blockquote')
         quote.append(paragraph)

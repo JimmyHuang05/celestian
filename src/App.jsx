@@ -520,7 +520,7 @@ function App() {
         <Route path="/functions/badge" element={<BadgePage />} />
         <Route path="/" element={
           <>
-            <audio ref={bgMusicRef} id="bg-music" loop>
+            <audio ref={bgMusicRef} id="bg-music" loop preload="none">
               <source src={ASSETS_BASE + "/audio/bgm/home.mp3"} type="audio/mpeg" />
             </audio>
 
@@ -569,7 +569,7 @@ function App() {
                             <img
                               ref={heroBgImgRef}
                               id="hero-bg-img"
-                              src={ASSETS_BASE + "/images/cards/hero-front.webp"}
+                              src="/images/cards/hero-front-original.webp"
                               alt="英雄史诗"
                               className="absolute inset-0 w-full h-full object-cover transition-all duration-500"
                               fetchPriority="high"
@@ -581,7 +581,7 @@ function App() {
                               className="absolute inset-0 transition-all duration-500 opacity-0 pointer-events-none bg-black/40"
                             >
                               <img
-                                src={ASSETS_BASE + "/images/cards/hero-hover.webp"}
+                                src="/images/cards/hero-hover-original.webp"
                                 loading="lazy"
                                 decoding="async"
                                 className="absolute inset-0 w-full h-full object-cover opacity-60 mix-blend-luminosity"
@@ -613,7 +613,7 @@ function App() {
                           <div className="absolute inset-0 rounded-xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.8)] border border-[#d4b58e]/60 bg-stoneCard [transform:rotateY(180deg)] [backface-visibility:hidden] vignette-overlay">
                             <div id="back-layer-poem" className="absolute inset-0 flex flex-col items-center justify-center p-[clamp(1rem,6cqw,2rem)] text-center transition-opacity duration-700 opacity-100">
                               <img
-                                src={ASSETS_BASE + "/images/cards/hero-back.webp"}
+                                src="/images/cards/hero-back-original.webp"
                                 loading="lazy"
                                 decoding="async"
                                 className="absolute inset-0 w-full h-full object-cover opacity-30 mix-blend-luminosity pointer-events-none"
@@ -657,8 +657,8 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/images/cards/encyclopedia-card.webp"}
-                          loading="lazy"
+                          src="/images/cards/encyclopedia-card-original.webp"
+                          loading="eager"
                           decoding="async"
                           draggable="false"
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[10s] ease-out group-hover:scale-105 group-[.is-active]:scale-105"
@@ -688,8 +688,8 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/images/cards/map-card.webp"}
-                          loading="lazy"
+                          src="/images/cards/map-card-original.webp"
+                          loading="eager"
                           decoding="async"
                           draggable="false"
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[10s] ease-out group-hover:scale-105 group-[.is-active]:scale-105"
@@ -719,8 +719,8 @@ function App() {
                         className="w-full lg:w-auto h-auto lg:h-[45vh] xl:h-[55vh] 2xl:h-[65vh] aspect-[9/16] shrink-0 tarot-card group border border-stoneBorder hover:border-[#d4b58e]/60 [.is-active]:border-[#d4b58e]/60 [container-type:inline-size]"
                       >
                         <img
-                          src={ASSETS_BASE + "/images/cards/functions-card.webp"}
-                          loading="lazy"
+                          src="/images/cards/functions-card-original.webp"
+                          loading="eager"
                           decoding="async"
                           draggable="false"
                           className="absolute inset-0 w-full h-full object-cover transition-transform duration-[10s] ease-out group-hover:scale-105 group-[.is-active]:scale-105"

@@ -1,0 +1,38 @@
+{
+  "hero-front": {
+    "width": 1773,
+    "height": 2364,
+    "originalBytes": 210746,
+    "variants": {}
+  },
+  "hero-back": {
+    "width": 1773,
+    "height": 2364,
+    "originalBytes": 123868,
+    "variants": {}
+  },
+  "hero-hover": {
+    "width": 300,
+    "height": 400,
+    "originalBytes": 302,
+    "variants": {}
+  },
+  "encyclopedia-card": {
+    "width": 1536,
+    "height": 2730,
+    "originalBytes": 257270,
+    "variants": {}
+  },
+  "map-card": {
+    "width": 1536,
+    "height": 2730,
+    "originalBytes": 211350,
+    "variants": {}
+  },
+  "functions-card": {
+    "width": 1536,
+    "height": 2727,
+    "originalBytes": 195010,
+    "variants": {}
+  }
+}
