@@ -25,7 +25,26 @@ function getBuildDate() {
   return `${d.getFullYear()}.${pad(d.getMonth() + 1)}.${pad(d.getDate())}`
 }
 
+// The public gallery is served by the same API used in production.
+// Restrict the development proxy to this read-only endpoint.
+const galleryProxy = {
+  '/api/entries/node/gallery': {
+    target: 'https://celestian.jimmyhuang.cn',
+    changeOrigin: true,
+    secure: true,
+    bypass(req, res) {
+      if (!['GET', 'HEAD'].includes(req.method)) {
+        res.statusCode = 405
+        res.end('Method not allowed')
+        return false
+      }
+    },
+  },
+}
+
 export default defineConfig({
+  server: { proxy: galleryProxy },
+  preview: { proxy: galleryProxy },
   build: { rollupOptions: { input: { main: 'index.html', characters: 'character-profile.html' } } },
   define: {
     __BUILD_INFO__: JSON.stringify({

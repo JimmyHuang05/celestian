@@ -85,6 +85,7 @@ function EncyclopediaPage() {
   }, [entryId, nodeId, navigate])
 
   useEffect(() => {
+    if (activeNode?.id === 'gallery') return
     const updateParallax = () => {
       if (Number.isFinite(targetX.current)) {
         currentMouseX.current += (targetX.current - currentMouseX.current) * 0.05
@@ -100,7 +101,7 @@ function EncyclopediaPage() {
     return () => {
       if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
     }
-  }, [])
+  }, [activeNode?.id])
 
   const onMouseMove = useCallback((e) => {
     const w = window.innerWidth || 1
@@ -201,7 +202,7 @@ function EncyclopediaPage() {
     }
 
     let targetW = 1024, targetH = window.innerHeight * 0.75, targetRadius = '1rem'
-    if (isMobile) { targetW = window.innerWidth; targetH = window.innerHeight; targetRadius = '0' }
+    if (isMobile || node.id === 'gallery') { targetW = window.innerWidth; targetH = window.innerHeight; targetRadius = '0' }
     else if (window.innerWidth >= 768 && window.innerWidth * 0.8333 < 1024) targetW = window.innerWidth * 0.8333
 
     setPanelStyle({
@@ -275,18 +276,18 @@ function EncyclopediaPage() {
     const compType = activeNode.id === 'gallery' ? 'GalleryDetail' : activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
     const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
-    if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} />
+    if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} isPlayingBgm={isPlayingBgm} onToggleBgm={toggleBgm} />
     if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />
     return null
   }
 
   return (
     <div id="encyclopedia-app">
-      <div className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900"
+      <div inert={Boolean(nodeId)} aria-hidden={Boolean(nodeId)} className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
         <div className="absolute inset-0 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ maskImage: galaxyTextureMask, maskSize: '100% 100%', maskRepeat: 'no-repeat' }} aria-hidden="true" />
-        <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} />
+        {activeNode?.id !== 'gallery' && <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} />}
 
         <div className="absolute top-6 left-6 z-[150]">
           <BackButton to="/"
@@ -301,7 +302,7 @@ function EncyclopediaPage() {
 
         <div className="absolute inset-0 z-10">
           <div className="absolute inset-0 pointer-events-none z-[1]">
-            <GalaxyVeil />
+            {activeNode?.id !== 'gallery' && <GalaxyVeil />}
           </div>
 
           <div className="absolute inset-0" style={{ zIndex: 20 }}>

@@ -1,291 +1,213 @@
-import { useState, useEffect, useCallback } from 'react'
+import { memo, useCallback, useEffect, useRef, useState } from 'react'
+import { fetchGallery, galleryMarkup, galleryText, scenePresentation } from './gallery-content.js'
+import './gallery-detail.css'
 
-function GalleryDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
-  const [characters, setCharacters] = useState([])
-  const [ids, setIds] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
-  const [currentIndex, setCurrentIndex] = useState(0)
-  const [scrollProgress, setScrollProgress] = useState(0)
-  const [isTocOpen, setIsTocOpen] = useState(false)
+const number = value => String(value).padStart(2, '0')
 
-  const character = characters[currentIndex] || null
-
-  useEffect(() => {
-    const fetchEntries = async () => {
-      if (!supabaseClient || !node) return
-      setIsLoading(true)
-      try {
-        const { data, error } = await supabaseClient
-          .from('entries').select('*').eq('node_id', node.id).order('created_at', { ascending: false })
-        if (error) throw error
-        if (data && data.length > 0) {
-          const parsedData = data.map(row => {
-            let galleryImages = []
-            if (row.gallery_images) {
-              try { galleryImages = JSON.parse(row.gallery_images) } catch (e) {}
-            }
-
-            const blocksArr = []
-            const kv = []
-            if (row.blocks) {
-              try {
-                JSON.parse(row.blocks).forEach(b => {
-                  if (b.type === 'paragraph' && b.content) blocksArr.push({ type: 'paragraph', content: b.content })
-                  if (b.type === 'key-value' && b.key) kv.push({ key: b.key, value: b.value })
-                  if (b.type === 'quote' && b.content) blocksArr.push({ type: 'quote', content: b.content, author: b.author })
-                })
-              } catch (e) {}
-            } else if (row.content) {
-              blocksArr.push({ type: 'paragraph', content: row.content })
-            }
-
-            return {
-              id: row.id,
-              name: row.title || '未知卷宗',
-              title: row.subtitle || '',
-              image_url: row.image_url || '',
-              bg_image_url: row.bg_image_url || '',
-              bg_image_scale: row.bg_image_scale || 120,
-              main_image_scale: row.main_image_scale || 100,
-              title_icon_url: row.title_icon_url || '',
-              title_icon_scale: row.title_icon_scale || 100,
-              alien_text: row.alien_text || '',
-              sort_order: row.sort_order || 0,
-              blocks: blocksArr,
-              kv,
-              gallery_images: galleryImages,
-            }
-          })
-          parsedData.sort((a, b) => a.sort_order - b.sort_order)
-          const extractedIds = parsedData.map(c => c.id)
-          setIds(extractedIds)
-          setCharacters(parsedData)
-        } else {
-          setCharacters([])
-          setIds([])
-        }
-      } catch (e) {
-        setCharacters([])
-        setIds([])
-      } finally {
-        setIsLoading(false)
-      }
-    }
-    fetchEntries()
-  }, [node, supabaseClient])
-
-  useEffect(() => {
-    if (ids.length === 0) return
-    if (entryId) {
-      const foundIndex = ids.indexOf(entryId)
-      if (foundIndex !== -1) setCurrentIndex(foundIndex)
-    } else if (onEntryChange && ids[0]) {
-      onEntryChange(ids[0])
-    }
-  }, [ids])
-
-  const currentImages = character ? (() => {
-    const bgUrl = character.bg_image_url
-    if (bgUrl) {
-      try { const p = JSON.parse(bgUrl); if (Array.isArray(p) && p.length > 0) return p } catch (e) {}
-      if (typeof bgUrl === 'string' && bgUrl.startsWith('http')) return [bgUrl]
-    }
-    if (character.gallery_images && character.gallery_images.length > 0) return character.gallery_images
-    if (character.image_url) return [character.image_url]
-    return []
-  })() : []
-  const hasMultipleImages = currentImages.length > 1
-  const [galleryIndex, setGalleryIndex] = useState(0)
-  const [isHoveringCarousel, setIsHoveringCarousel] = useState(false)
-  const [noTransition, setNoTransition] = useState(false)
-
-  useEffect(() => {
-    setNoTransition(true)
-    setGalleryIndex(0)
-    requestAnimationFrame(() => setNoTransition(false))
-  }, [currentIndex])
-
-  useEffect(() => {
-    if (!hasMultipleImages || isHoveringCarousel) return
-    const timer = setInterval(() => {
-      setGalleryIndex(prev => (prev + 1) % currentImages.length)
-    }, 4000)
-    return () => clearInterval(timer)
-  }, [hasMultipleImages, isHoveringCarousel, currentImages.length])
-
-
-  const prev = () => { if (currentIndex > 0) { const ni = currentIndex - 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
-  const next = () => { if (currentIndex < characters.length - 1) { const ni = currentIndex + 1; setCurrentIndex(ni); setScrollProgress(0); if (onEntryChange && ids[ni]) onEntryChange(ids[ni]) } }
-  const toggleToc = () => setIsTocOpen(prev => !prev)
-  const selectFromToc = (idx) => { setCurrentIndex(idx); setIsTocOpen(false); setScrollProgress(0); if (onEntryChange && ids[idx]) onEntryChange(ids[idx]) }
-
-  const handleScroll = useCallback((e) => {
-    const target = e.target
-    const maxScroll = target.scrollHeight - target.clientHeight
-    setScrollProgress(maxScroll <= 0 ? 100 : (target.scrollTop / maxScroll) * 100)
-  }, [])
-
-  return (
-    <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
-      <div className="relative w-full h-full flex items-center justify-center">
-        <div className={`relative flex flex-col z-10 overflow-hidden bg-[#050505] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/10'}`}>
-        
-        <button onClick={onClose} className={`absolute z-[400] w-9 h-9 rounded-full bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/50 hover:text-white hover:bg-white/20 transition-all cursor-pointer hover:scale-110 ${isMobile ? 'top-4 right-4' : 'top-5 right-5'}`}>
-          <svg viewBox="0 0 24 24" className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-        </button>
-
-        {isLoading ? (
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <svg className="animate-spin w-8 h-8 text-gray-500 mb-4" viewBox="0 0 24 24" fill="none"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" /><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" /></svg>
-            <span className="text-xs font-mono tracking-widest text-gray-500 uppercase">Loading Gallery Assets...</span>
-          </div>
-        ) : characters.length === 0 ? (
-          <div className="flex-1 flex flex-col items-center justify-center">
-            <svg className="w-12 h-12 text-gray-600 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth="1.5" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path></svg>
-            <span className="text-xs font-mono tracking-widest text-gray-600 uppercase">Gallery Archive Not Found</span>
-          </div>
-        ) : (
-          <>
-            <div className="absolute top-0 bottom-0 left-0 w-min z-[200] flex items-center justify-start pointer-events-auto">
-              <button disabled={currentIndex === 0} onClick={prev} className={`ml-2 md:ml-6 w-9 h-9 md:w-12 md:h-12 rounded-full bg-black/50 md:bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50 ${currentIndex === 0 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" /></svg>
-              </button>
-            </div>
-            <div className="absolute top-0 bottom-0 right-0 w-min z-[200] flex items-center justify-end pointer-events-auto">
-              <button disabled={currentIndex === characters.length - 1} onClick={next} className={`mr-2 md:mr-6 w-9 h-9 md:w-12 md:h-12 rounded-full bg-black/50 md:bg-black/40 backdrop-blur-md border border-white/10 flex items-center justify-center text-white/80 transition-all duration-300 hover:scale-110 hover:bg-black/80 hover:text-[#d4b58e] hover:border-[#d4b58e]/50 ${currentIndex === characters.length - 1 ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
-                <svg className="w-5 h-5 md:w-6 md:h-6" fill="none" stroke="currentColor" strokeWidth="1.5" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-              </button>
-            </div>
-
-            <div className="flex-1 w-full h-full flex flex-col relative z-0 min-h-0 bg-[#050505]">
-              <div className="w-full shrink-0 relative z-10 bg-[#000000] overflow-hidden"
-                style={{ aspectRatio: '21/9' }}
-                onMouseEnter={() => setIsHoveringCarousel(true)}
-                onMouseLeave={() => setIsHoveringCarousel(false)}>
-                <div className={`flex h-full ${noTransition ? '' : 'transition-transform duration-500 ease-out'}`}
-                  style={{ transform: `translateX(-${galleryIndex * 100}%)` }}>
-                  {currentImages.length > 0 ? currentImages.map((imgSrc, imgIdx) => (
-                    <div key={'gal-img-' + imgIdx} className="relative flex-[0_0_100%] min-w-0 h-full">
-                      <img src={imgSrc} className="absolute inset-0 w-full h-full object-cover select-none pointer-events-none" draggable="false" />
-                    </div>
-                  )) : (
-                    <div className="flex-[0_0_100%] min-w-0 h-full flex items-center justify-center">
-                      <span className="text-white/20 font-mono text-xs tracking-widest">NO IMAGE</span>
-                    </div>
-                  )}
-                </div>
-                {hasMultipleImages && (
-                  <div className="absolute bottom-3 left-1/2 -translate-x-1/2 z-20 flex items-center gap-1.5">
-                    {currentImages.map((_, dotIdx) => (
-                      <button key={'dot-' + dotIdx} onClick={() => setGalleryIndex(dotIdx)}
-                        className={`w-2 h-2 rounded-full transition-colors duration-300 cursor-pointer
-                          ${dotIdx === galleryIndex ? 'bg-white' : 'bg-white/30'}`}
-                      />
-                    ))}
-                  </div>
-                )}
-              </div>
-
-              <div className="flex-1 w-full relative z-10 bg-[#050505] pointer-events-auto border-t border-white/5">
-                <div className="absolute inset-0 px-6 py-5 md:px-12 md:py-8 overflow-y-auto md:overflow-hidden extreme-dark-scrollbar flex flex-col md:flex-row gap-6 md:gap-10">
-
-                  <div className="shrink-0 w-full md:w-[35%] flex flex-col justify-start border-l-[2px] border-[#d4b58e]/30 pl-4 md:pl-6 min-h-0">
-                    <div className="flex-none md:flex-1 overflow-visible md:overflow-y-auto extreme-dark-scrollbar pr-2 flex flex-col w-full">
-                      <div key={'gallery-title-' + currentIndex} className="flex flex-col w-full">
-                        <div className="flex flex-col w-full gap-1 pt-1">
-                          {character.alien_text && (
-                            <span className="text-[10px] md:text-xs font-medium tracking-[0.2em] text-[#d4b58e]/80 uppercase font-cinzel break-words whitespace-normal mb-1" dangerouslySetInnerHTML={{ __html: character.alien_text }} />
-                          )}
-                          <h1 className="flex flex-col">
-                            {character.name && character.name.split('\\n').map((line, idx) => (
-                              <span key={'gal-title-' + idx} className="text-2xl md:text-3xl font-bold tracking-[0.1em] text-white uppercase font-serif-sc break-words leading-tight" dangerouslySetInnerHTML={{ __html: line }} />
-                            ))}
-                          </h1>
-                          {character.title && (
-                            <h2 className="text-[#d4b58e] text-sm tracking-[0.15em] font-medium uppercase mt-2 break-words whitespace-normal font-serif-sc" dangerouslySetInnerHTML={{ __html: character.title }} />
-                          )}
-                        </div>
-                        {character.kv && character.kv.length > 0 && (
-                          <div className="mt-4 md:mt-5 flex flex-col items-start gap-3 pb-2 font-serif">
-                            {character.kv.map((item, idx) => (
-                              <div key={'gal-kv-' + idx} className="flex items-center gap-2.5 px-3 py-2 bg-white/[0.03] border border-white/5 rounded-md">
-                                <span className="text-[#d4b58e]/40 text-[11px] md:text-xs uppercase tracking-widest">{item.key}</span>
-                                <span className="w-px h-3 bg-white/10" />
-                                <span className="text-white/80 text-[11px] md:text-xs uppercase tracking-wider" dangerouslySetInnerHTML={{ __html: item.value }} />
-                              </div>
-                            ))}
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    <div className="mt-4 pt-3 md:border-t border-white/5 shrink-0">
-                      <button onClick={(e) => { e.stopPropagation(); toggleToc() }} className="inline-flex items-center gap-2.5 px-3 py-1.5 rounded-[4px] border border-white/10 hover:border-[#d4b58e]/50 hover:bg-white/5 transition-all group z-50 cursor-pointer shadow-md bg-white/[0.02] backdrop-blur-md">
-                        <svg className="w-3.5 h-3.5 text-white/40 group-hover:text-[#d4b58e] transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><rect x="3" y="3" width="7" height="7" /><rect x="14" y="3" width="7" height="7" /><rect x="14" y="14" width="7" height="7" /><rect x="3" y="14" width="7" height="7" /></svg>
-                        <span className="text-white/40 font-mono text-[10px] tracking-[0.2em] group-hover:text-[#d4b58e] transition-colors mt-[1px]">
-                          {String(currentIndex + 1).padStart(2, '0')} / {String(characters.length).padStart(2, '0')}
-                        </span>
-                      </button>
-                    </div>
-                  </div>
-
-                  <div className="flex-1 w-full flex flex-col min-h-0 md:border-l border-white/5 md:pl-8">
-                    <div className="flex-none md:flex-1 overflow-visible md:overflow-y-auto extreme-dark-scrollbar pr-2 md:pr-4" onScroll={handleScroll}>
-                      <div key={'gallery-desc-' + currentIndex} className="text-gray-300 text-[12px] md:text-[13px] leading-[2] md:leading-[2.2] tracking-wider text-justify font-sans pb-8 md:pb-0">
-                        {character.blocks && character.blocks.length > 0 ? (
-                          character.blocks.map((block, index) => {
-                            if (block.type === 'paragraph') {
-                              return <p key={'block-' + index} className="mb-3 opacity-90 indent-6" dangerouslySetInnerHTML={{ __html: block.content }} />
-                            } else if (block.type === 'quote') {
-                              return (
-                                <div key={'block-' + index} className="my-4 border-l-[1.5px] border-[#d4b58e]/40 pl-4 italic text-gray-400 bg-white/[0.02] py-2.5 pr-3 rounded-r-md">
-                                  <span dangerouslySetInnerHTML={{ __html: block.content }} />
-                                  {block.author && <div className="mt-2 text-[10px] tracking-widest uppercase font-cinzel">—— <span dangerouslySetInnerHTML={{ __html: block.author }} /></div>}
-                                </div>
-                              )
-                            }
-                            return null
-                          })
-                        ) : (
-                          <span className="italic text-gray-600 font-mono tracking-widest text-xs">NO ARCHIVE DATA FOUND.</span>
-                        )}
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {isTocOpen && (
-              <div className="absolute inset-0 z-[600] bg-black/95 backdrop-blur-xl flex flex-col p-6 md:p-12 pointer-events-auto">
-                <div className="flex justify-between items-center mb-8 shrink-0">
-                  <div className="text-[#d4b58e] tracking-[0.4em] text-sm font-bold uppercase" style={{ fontFamily: "'Cinzel', serif" }}>Archive Index</div>
-                  <button onClick={toggleToc} className="w-10 h-10 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center text-white/50 hover:text-white transition-all">
-                    <svg viewBox="0 0 24 24" className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" /></svg>
-                  </button>
-                </div>
-                <div className="flex-1 overflow-y-auto extreme-dark-scrollbar flex flex-col gap-3 items-center pt-4 pb-12 px-2">
-                  {characters.map((char, idx) => (
-                    <div key={'toc-' + idx} onClick={() => selectFromToc(idx)}
-                      className="group cursor-pointer flex items-center gap-6 w-full max-w-2xl px-6 py-4 bg-white/5 border border-white/5 hover:border-[#d4b58e]/50 hover:bg-white/10 rounded-xl transition-all">
-                      <span className={`font-mono text-xl group-hover:text-[#d4b58e] transition-colors w-8 text-right ${currentIndex === idx ? 'text-[#d4b58e]' : 'text-white/20'}`} style={{ fontFamily: "'Cinzel', serif" }}>{String(idx + 1).padStart(2, '0')}</span>
-                      <div className="flex flex-col flex-1 border-l border-white/10 group-hover:border-[#d4b58e]/30 pl-5 transition-colors">
-                        <span className={`text-lg md:text-xl group-hover:text-white transition-colors ${currentIndex === idx ? 'text-white' : 'text-white/60'}`} style={{ fontFamily: "'Cinzel', serif" }} dangerouslySetInnerHTML={{ __html: char.name ? char.name.replace(/\\n/g, ' ') : '' }} />
-                        <span className={`text-[10px] md:text-xs tracking-widest mt-1 uppercase ${currentIndex === idx ? 'text-[#d4b58e]/80' : 'text-white/40'}`} style={{ fontFamily: "'Noto Serif SC', serif" }} dangerouslySetInnerHTML={{ __html: char.title }} />
-                      </div>
-                      <div className="opacity-0 group-hover:opacity-100 transition-opacity">
-                        <svg className="w-5 h-5 text-[#d4b58e]" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="2"><path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" /></svg>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </>
-        )}
-      </div>
-    </div>
-  </div>
-  )
+function Icon({ name }) {
+  const paths = {
+    back: <path d="m14 6-6 6 6 6M8 12h13" />,
+    next: <path d="m9 5 7 7-7 7" />,
+    previous: <path d="m15 5-7 7 7 7" />,
+    close: <path d="m6 6 12 12M6 18 18 6" />,
+    frame: <><path d="M8 4H4v4m12-4h4v4M4 16v4h4m12-4v4h-4" /><path d="M8 8h8v8H8z" /></>,
+    eye: <><path d="M2 12s3.5-6 10-6 10 6 10 6-3.5 6-10 6S2 12 2 12Z" /><circle cx="12" cy="12" r="2.5" /></>,
+    music: <><path d="M9 18V6l11-2v12M9 9l11-2" /><ellipse cx="6" cy="18" rx="3" ry="2" /><ellipse cx="17" cy="16" rx="3" ry="2" /></>,
+    muted: <path d="M10 7 6 10H3v4h3l4 3V7Zm5 2 6 6m0-6-6 6" />,
+    grid: <path d="M4 4h6v6H4zM14 4h6v6h-6zM4 14h6v6H4zM14 14h6v6h-6z" />,
+    read: <path d="M4 5h12v14H4zM8 9h4m-4 4h4m8-5v13H7" />,
+  }
+  return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">{paths[name]}</svg>
 }
 
-export default GalleryDetail
+// Decode first: keep the last complete scene while the next one arrives.
+function SceneImage({ src, name, position, onSwipe }) {
+  const [frames, setFrames] = useState({ current: null, previous: null })
+  const [failure, setFailure] = useState(null)
+  const [attempt, setAttempt] = useState(0)
+  const pointer = useRef(null)
+  const { desktop, mobile } = position
+  useEffect(() => {
+    if (!src) return
+    let cancelled = false
+    const image = new Image()
+    image.onload = async () => {
+      try { await image.decode() } catch { /* onload confirms a usable image. */ }
+      if (!cancelled) {
+        setFailure(null)
+        setFrames(previous => previous.current?.src === src ? previous : {
+          previous: previous.current, current: { src, name, desktop, mobile },
+        })
+      }
+    }
+    image.onerror = () => { if (!cancelled) setFailure(src) }
+    image.src = src
+    return () => { cancelled = true }
+  }, [src, name, desktop, mobile, attempt])
+  const failed = src && failure === src
+  const loading = src && frames.current?.src !== src && !failed
+  return <div className="gallery-scene" aria-busy={Boolean(loading)}
+    onPointerDown={event => {
+      if (event.isPrimary && event.pointerType !== 'mouse') pointer.current = { x: event.clientX, y: event.clientY }
+    }}
+    onPointerCancel={() => { pointer.current = null }}
+    onPointerUp={event => {
+      if (!pointer.current) return
+      const dx = event.clientX - pointer.current.x, dy = event.clientY - pointer.current.y
+      pointer.current = null
+      if (Math.abs(dx) > 55 && Math.abs(dx) > Math.abs(dy) * 1.5) onSwipe(dx < 0 ? 1 : -1)
+    }}>
+    {src && [frames.previous, frames.current].filter(Boolean).map((frame, index, list) => <img
+      key={frame.src} src={frame.src} alt={index === list.length - 1 ? frame.name : ''}
+      draggable="false" className={'gallery-scene-image ' + (index === list.length - 1 ? 'is-current' : 'is-previous')}
+      style={{ '--scene-position': frame.desktop, '--scene-mobile-position': frame.mobile }} />)}
+    {(loading || failed || !src) && <div className={'gallery-image-status ' + (failed || !src ? 'is-error' : '')} role="status">
+      {loading ? <><span className="gallery-loading-line" />正在展开画面</> : <>
+        <span>{src ? '这幅留影暂时无法载入' : '这份档案尚未收录画面'}</span>
+        {src && <button onClick={() => { setFailure(null); setAttempt(value => value + 1) }}>重新加载</button>}
+      </>}
+    </div>}
+  </div>
+}
+
+function GalleryPanel({ entries, index, onSelect, onClose }) {
+  const dialog = useRef(null)
+  useEffect(() => {
+    const element = dialog.current, opener = document.activeElement
+    element.showModal()
+    return () => { element.close(); if (opener?.isConnected) opener.focus() }
+  }, [])
+  return <dialog ref={dialog} className="gallery-dialog" aria-labelledby="gallery-panel-title"
+    onCancel={event => { event.preventDefault(); onClose() }}
+    onClick={event => { if (event.target === event.currentTarget) onClose() }}>
+    <section className="gallery-panel">
+      <header className="gallery-panel-header">
+        <h2 id="gallery-panel-title">留影目录<small>ARCHIVE INDEX · {number(entries.length)}</small></h2>
+        <button className="gallery-icon-button" onClick={onClose} aria-label="关闭面板"><Icon name="close" /></button>
+      </header>
+      <div className="gallery-panel-scroll" tabIndex={0} role="region" aria-label="留影目录">
+        <div className="gallery-index-grid">
+          {entries.map((item, i) => <button key={item.id} aria-current={i === index ? 'true' : undefined} onClick={() => onSelect(i)}>
+            <span className="gallery-index-image">{item.images[0] && <img src={scenePresentation(item).thumbnail} alt="" loading="lazy" />}</span>
+            <span className="gallery-index-label"><small>{number(i + 1)}</small><span>{item.name}<em>{item.subtitle}</em></span></span>
+          </button>)}
+        </div>
+      </div>
+    </section>
+  </dialog>
+}
+
+function GalleryDetail({ node, onClose, entryId, onEntryChange, isPlayingBgm, onToggleBgm }) {
+  const [data, setData] = useState({ status: 'loading', entries: [] })
+  const [attempt, setAttempt] = useState(0)
+  const [selection, setSelection] = useState(null)
+  const [photo, setPhoto] = useState({ id: null, index: 0 })
+  const [panel, setPanel] = useState(null)
+  const [immersed, setImmersed] = useState(false)
+  const [fit, setFit] = useState(false)
+  const showInterface = useRef(null)
+  const hideInterface = useRef(null)
+  const { entries, status } = data
+  const index = Math.max(0, entries.findIndex(item => item.id === (entryId || selection)))
+  const entry = entries[index]
+  const photoIndex = entry && photo.id === entry.id ? Math.max(0, Math.min(photo.index, entry.images.length - 1)) : 0
+  const src = entry?.images[photoIndex] || ''
+  const presentation = scenePresentation(entry)
+
+  useEffect(() => {
+    const controller = new AbortController()
+    fetchGallery(node.id, controller.signal).then(result => setData({ status: 'ready', entries: result })).catch(error => {
+      if (error.name !== 'AbortError') setData({ status: 'error', entries: [] })
+    })
+    return () => controller.abort()
+  }, [node.id, attempt])
+
+  useEffect(() => {
+    if (entries.length && !entries.some(item => item.id === entryId)) onEntryChange?.(entries[0].id)
+  }, [entries, entryId, onEntryChange])
+
+  const choose = useCallback(nextIndex => {
+    const next = entries[nextIndex]
+    if (!next) return
+    setSelection(next.id)
+    setPanel(null)
+    onEntryChange?.(next.id)
+  }, [entries, onEntryChange])
+  const step = useCallback(direction => choose(index + direction), [choose, index])
+
+  useEffect(() => {
+    function keydown(event) {
+      if (panel || event.altKey || event.ctrlKey || event.metaKey || /INPUT|TEXTAREA|SELECT/.test(event.target.tagName) || event.target.isContentEditable) return
+      if (event.key === 'Escape') {
+        if (immersed) { setImmersed(false); requestAnimationFrame(() => hideInterface.current?.focus()) }
+        else if (fit) setFit(false)
+        else onClose()
+      } else if (event.key === 'ArrowRight' || event.key === 'ArrowLeft') {
+        event.preventDefault(); step(event.key === 'ArrowRight' ? 1 : -1)
+      }
+    }
+    window.addEventListener('keydown', keydown)
+    return () => window.removeEventListener('keydown', keydown)
+  }, [panel, immersed, fit, onClose, step])
+
+  function toggleImmersion() {
+    setImmersed(value => !value)
+    requestAnimationFrame(() => (immersed ? hideInterface : showInterface).current?.focus())
+  }
+
+  return <main className={'cinematic-gallery ' + (immersed ? 'is-immersed ' : '') + (fit ? 'is-fitted' : '')} aria-label="留影">
+    {entry && <SceneImage src={src} name={entry.name + ' · 视角 ' + (photoIndex + 1)} position={presentation} onSwipe={step} />}
+    <div className="gallery-interface" inert={immersed} aria-hidden={immersed}>
+      <button className="gallery-close gallery-icon-button" aria-label="返回百科" title="返回百科" onClick={onClose}><Icon name="close" /></button>
+      {status === 'loading' ? <div className="gallery-empty" role="status"><span className="gallery-loading-line" /><p>正在展开留影</p></div> : !entry ? <div className="gallery-empty" role="status">
+        <span className="gallery-eyebrow">CELESTIAN · GALLERY</span>
+        <h1>{status === 'error' ? '留影暂时未能抵达' : '此处风景，尚待收录'}</h1>
+        {status === 'error' && <button onClick={() => { setData({ status: 'loading', entries: [] }); setAttempt(value => value + 1) }}>重新载入</button>}
+      </div> : <>
+        <nav className="gallery-pagination" aria-label="切换地点">
+          <button className="gallery-icon-button gallery-previous" disabled={index === 0} aria-label="上一处留影" onClick={() => step(-1)}><Icon name="previous" /></button>
+          <button className="gallery-icon-button gallery-next" disabled={index === entries.length - 1} aria-label="下一处留影" onClick={() => step(1)}><Icon name="next" /></button>
+        </nav>
+        {entry.images.length > 1 && <div className="gallery-views" role="group" aria-label="场景视角">
+          {entry.images.map((url, i) => <button key={url} aria-label={'视角 ' + (i + 1)} aria-pressed={photoIndex === i} onClick={() => setPhoto({ id: entry.id, index: i })}><span /></button>)}
+        </div>}
+        <section className="gallery-details" key={entry.id} aria-label={entry.name + '场景档案'}>
+          <div className="gallery-details-content">
+            <header className="gallery-identity">
+              {entry.englishName && <p className="gallery-english-name" lang="en">{entry.englishName}</p>}
+              <h1>{entry.name}</h1>
+              {entry.subtitle && <p className="gallery-subtitle">{entry.subtitle}</p>}
+              {!!entry.facts.length && <dl className="gallery-facts">{entry.facts.map((fact, i) => <div key={i}>
+                <dt>{fact.key}</dt><dd dangerouslySetInnerHTML={{ __html: galleryMarkup(fact.value) }} />
+              </div>)}</dl>}
+            </header>
+            <div className="gallery-narrative">
+              <div className="gallery-story-heading"><h2>场景纪事</h2><span aria-hidden="true" /><small lang="en">CHRONICLE</small></div>
+              <article className="gallery-story" tabIndex={0} role="region" aria-label="场景正文">
+                {entry.blocks.map((block, i) => block.type === 'quote' ? <blockquote key={i}>
+                  <p dangerouslySetInnerHTML={{ __html: galleryMarkup(block.content) }} />
+                  {block.author && <cite>—— {galleryText(block.author)}</cite>}
+                </blockquote> : <p key={i} dangerouslySetInnerHTML={{ __html: galleryMarkup(block.content) }} />)}
+                {!entry.blocks.length && <p>这片风景的故事，尚待记录。</p>}
+              </article>
+            </div>
+          </div>
+          <footer className="gallery-archive-footer">
+            <button className="gallery-index-trigger" onClick={() => setPanel('index')} aria-label="打开全部留影">
+              <Icon name="grid" /><span>留影目录</span><span className="gallery-record-count"><b>{number(index + 1)}</b><i>/</i>{number(entries.length)}</span>
+            </button>
+            <div className="gallery-tools">
+              {onToggleBgm && <button className="gallery-tool-button" aria-label={isPlayingBgm ? '静音背景音乐' : '开启背景音乐'} aria-pressed={!isPlayingBgm} title={isPlayingBgm ? '静音背景音乐' : '开启背景音乐'} onClick={onToggleBgm}><Icon name={isPlayingBgm ? 'music' : 'muted'} /><span>音乐 · {isPlayingBgm ? '开' : '关'}</span></button>}
+              <button className="gallery-tool-button" disabled={!src} aria-label={fit ? '铺满画面' : '查看完整构图'} aria-pressed={fit} title={fit ? '铺满画面' : '查看完整构图'} onClick={() => setFit(value => !value)}><Icon name="frame" /><span>{fit ? '铺满画面' : '完整构图'}</span></button>
+              <button ref={hideInterface} className="gallery-tool-button" aria-label="隐藏界面，沉浸观赏" title="隐藏界面" onClick={toggleImmersion}><Icon name="eye" /><span>沉浸观赏</span></button>
+            </div>
+          </footer>
+        </section>
+      </>}
+    </div>
+    {immersed && <button ref={showInterface} className="gallery-restore" onClick={toggleImmersion}><Icon name="eye" /><span>显示界面</span></button>}
+    {panel && entry && <GalleryPanel entries={entries} index={index} onSelect={choose} onClose={() => setPanel(null)} />}
+  </main>
+}
+
+export default memo(GalleryDetail)
