@@ -1,11 +1,30 @@
 {
   "recordedAt": "2026-10-16",
-  "status": "伊莎贝拉已接入本地角色页；其余三位仅记录，尚未实装。",
+  "status": "伊莎贝拉已按要求从正式角色名单下架；四位均仅保留素材与实验记录。",
   "characters": [
-    {"referenceLabel": "Isabella", "name": "伊莎贝拉", "fullName": "伊莎贝拉·洛丽华·爱芮丝", "status": "A 图局部修复与 16 组发束动态，本地预览，未发布", "sourceImage": "D:/characters/Isabella_0_A.png", "visualNotes": "银白长发、紫眼、尖晶冠饰，白紫层叠裙装。"},
-    {"referenceLabel": "N", "sourceImage": "D:/characters/N_0.png", "visualNotes": "粉色长发、黑色发饰，黑白紫色短裙，彩色四角星。"},
-    {"referenceLabel": "P", "sourceImage": "D:/characters/P_1.png", "visualNotes": "银灰长发，蓝白黑服装与长手套，浅蓝色悬浮头饰。"},
-    {"referenceLabel": "Red", "sourceImage": "D:/characters/Red_0.png", "visualNotes": "黑红长发、红眼，黑红服装，红色刀刃与刀鞘。"}
+    {
+      "referenceLabel": "Isabella",
+      "name": "伊莎贝拉",
+      "fullName": "伊莎贝拉·洛丽华·爱芮丝",
+      "status": "已下架；原始素材、修复版本及动态实验保留归档",
+      "sourceImage": "D:/characters/Isabella_0_A.png",
+      "visualNotes": "银白长发、紫眼、尖晶冠饰，白紫层叠裙装。"
+    },
+    {
+      "referenceLabel": "N",
+      "sourceImage": "D:/characters/N_0.png",
+      "visualNotes": "粉色长发、黑色发饰，黑白紫色短裙，彩色四角星。"
+    },
+    {
+      "referenceLabel": "P",
+      "sourceImage": "D:/characters/P_1.png",
+      "visualNotes": "银灰长发，蓝白黑服装与长手套，浅蓝色悬浮头饰。"
+    },
+    {
+      "referenceLabel": "Red",
+      "sourceImage": "D:/characters/Red_0.png",
+      "visualNotes": "黑红长发、红眼，黑红服装，红色刀刃与刀鞘。"
+    }
   ],
   "notes": "代称来自文件名，不视作正式姓名。背景故事、权柄和势力待确认。原图保持原路径，未修改或发布。"
 }

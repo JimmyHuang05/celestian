@@ -523,26 +523,5 @@
       }
     ],
     "avatar": "/character-profile/redraws/day-fourteen-v1-avatar.webp"
-  },
-  {
-    "id": "f967a2c8-252b-4a1e-8e55-9ac5fe1597e2",
-    "name": "伊莎贝拉",
-    "title": "",
-    "dossierSubtitle": "",
-    "image": "/character-profile/redraws/isabella-a-v6.webp",
-    "avatar": "/character-profile/redraws/isabella-a-v6-avatar.webp",
-    "emblem": "/character-profile/isabella-emblem.svg",
-    "blocks": [
-      {
-        "type": "key-value",
-        "key": "姓名",
-        "value": "伊莎贝拉·洛丽华·爱芮丝"
-      },
-      {
-        "type": "key-value",
-        "key": "势力",
-        "value": "鸢尾花王庭芭蕾舞团 / <b>奥兰尼亚非常规事务署</b>"
-      }
-    ]
   }
 ]
