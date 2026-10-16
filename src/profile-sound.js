@@ -12,7 +12,8 @@ const cues={
 export function mountProfileSound(currentCharacter){
   let context,voice,timer,sequence=0,muted=false,disposed=false
   const buffers=new Map()
-  try{muted=localStorage.getItem('profile-sound-muted')==='true'}catch{}
+  const downloads=new AbortController()
+  try{muted=localStorage.getItem('profile-sound-muted')==='true'}catch{/* Storage may be disabled. */}
   const controls=document.createElement('div')
   controls.className='profile-sound-controls'
   controls.innerHTML='<button type="button" class="sound-replay">↻ 重播音效</button><button type="button" class="sound-toggle"></button>'
@@ -29,6 +30,7 @@ export function mountProfileSound(currentCharacter){
     try{
       context??=new (window.AudioContext||window.webkitAudioContext)()
       if(context.state==='suspended')context.resume().catch(()=>{})
+      preload()
     }catch{controls.title='当前浏览器无法播放音效'}
   }
   function cancel(){
@@ -43,7 +45,7 @@ export function mountProfileSound(currentCharacter){
   }
   async function buffer(name){
     if(!buffers.has(name)){
-      const pending=fetch(`/audio/characters/${name}.wav?v=${name==='day-fourteen'?12:11}`)
+      const pending=fetch(`/audio/characters/${name}.mp3?v=1`,{signal:downloads.signal,priority:'low'})
         .then(response=>{if(!response.ok)throw new Error('Sound unavailable');return response.arrayBuffer()})
         .then(bytes=>context.decodeAudioData(bytes))
         .catch(error=>{buffers.delete(name);throw error})
@@ -51,15 +53,32 @@ export function mountProfileSound(currentCharacter){
     }
     return buffers.get(name)
   }
-  function schedule(id,delay=140){
+  function prepare(id){
+    if(disposed||muted||!cues[id])return
+    try{
+      // Decoding is allowed while suspended; only user interaction resumes playback.
+      context??=new (window.AudioContext||window.webkitAudioContext)()
+      void buffer(cues[id]).catch(()=>{/* A later interaction can retry. */})
+    }catch{/* Keep portraits usable without Web Audio. */}
+  }
+  function preload(){
+    prepare(currentCharacter())
+    for(const id of Object.keys(cues))prepare(id)
+  }
+  function schedule(id,delay=140,waitForLoad=false){
     cancel()
     if(muted||disposed||document.hidden||!context)return
     const token=sequence,name=cues[id]
     if(!name)return
+    const deadline=performance.now()+delay+500
+    const pending=buffer(name)
+    // Attach immediately so a fast failure before the timer is also handled.
+    pending.catch(()=>{})
     timer=setTimeout(async()=>{
       try{
-        const audio=await buffer(name)
+        const audio=await pending
         if(token!==sequence||muted||disposed||document.hidden||context.state!=='running')return
+        if(!waitForLoad&&performance.now()>deadline)return
         const source=context.createBufferSource(),gain=context.createGain()
         source.buffer=audio;gain.gain.value=.3
         source.connect(gain);gain.connect(context.destination)
@@ -67,21 +86,22 @@ export function mountProfileSound(currentCharacter){
         source.onended=()=>{source.disconnect();gain.disconnect();if(voice===playing)voice=null}
         source.start()
         controls.title=''
-      }catch{controls.title='音效暂时无法播放，请点击重播重试'}
+      }catch{if(!disposed&&token===sequence)controls.title='音效暂时无法播放，请点击重播重试'}
     },delay)
   }
-  replay.onclick=()=>{unlock();schedule(currentCharacter(),60)}
+  replay.onclick=()=>{unlock();schedule(currentCharacter(),60,true)}
   toggle.onclick=()=>{
     muted=!muted
     if(muted)cancel();else unlock()
-    try{localStorage.setItem('profile-sound-muted',String(muted))}catch{}
+    try{localStorage.setItem('profile-sound-muted',String(muted))}catch{/* Storage may be disabled. */}
     update()
   }
   const onVisibility=()=>{if(document.hidden)cancel()}
   document.addEventListener('visibilitychange',onVisibility)
   update()
-  return {unlock,cancel,schedule,destroy(){
-    disposed=true;cancel();controls.remove()
+  preload()
+  return {unlock,cancel,schedule,prepare,destroy(){
+    disposed=true;cancel();downloads.abort();controls.remove()
     document.removeEventListener('visibilitychange',onVisibility)
     context?.close().catch(()=>{})
   }}

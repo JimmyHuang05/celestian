@@ -129,6 +129,7 @@ async function init(){
 
   function select(index){
     sound.unlock()
+    sound.prepare(operators[wrap(index)].id)
     if(wrap(index)!==requested)sound.cancel()
     requested=wrap(index)
     if(rotating||requested===active)return
