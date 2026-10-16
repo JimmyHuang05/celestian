@@ -60,7 +60,7 @@ function segment(p,a,b){
   const t=clamp(((p[0]-a[0])*dx+(p[1]-a[1])*dy)/(length*length||1))
   return {distance:Math.hypot(p[0]-a[0]-t*dx,p[1]-a[1]-t*dy),t,length}
 }
-function coverage(p,polygon,feather=10){
+function coverage(p,polygon,feather=14){
   let inside=false,distance=Infinity
   for(let i=0,j=polygon.length-1;i<polygon.length;j=i++){
     const a=polygon[i],b=polygon[j]
@@ -101,7 +101,7 @@ export function isabellaHairVertex(u,v){
     // First joint is anchored. Freedom and follow-through grow down the lock.
     const freedom=smooth(progress),lag=(.025+strand.delay*freedom)*Math.PI/2
     for(let axis=0;axis<2;axis++){
-      const amplitude=strand.sway[axis]*(strand.id.startsWith('face-')?1:1.25)*freedom*weight
+      const amplitude=strand.sway[axis]*(strand.id.startsWith('face-')?1.12:1.85)*freedom*weight
       cos[axis]+=amplitude*Math.cos(lag)
       sin[axis]-=amplitude*Math.sin(lag)
     }

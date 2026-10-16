@@ -5,7 +5,7 @@
     "dossierSubtitle": "「秩序」与「公义」的织者",
     "title": "吾之所言即为正义",
     "image": "/character-profile/redraws/elowen-v5.webp",
-    "emblem": "/character-profile/elowen-order-justice.svg",
+    "emblem": "/character-profile/elowen-order-justice-v2.svg",
     "blocks": [
       {
         "id": "pp1x4vtez",
@@ -110,7 +110,7 @@
     "title": "不凋的蓝翎",
     "image": "/character-profile/redraws/sylvia-v1.webp",
     "emblem": "/character-profile/sylvia-war-conquest.svg",
-    "dossierSubtitle": "「战争」与「征服」的织者",
+    "dossierSubtitle": "「征服」的织者",
     "blocks": [
       {
         "id": "7xaxvly6o",
@@ -428,7 +428,7 @@
   {
     "id": "ec561630-2810-41a0-8524-857bfa8365e1",
     "name": "第十四天",
-    "dossierSubtitle": "「██」权柄的织者",
+    "dossierSubtitle": "「██」的织者",
     "title": "原世界防卫协议",
     "image": "/character-profile/redraws/day-fourteen-v1.webp",
     "emblem": "/character-profile/day-fourteen-tower.svg",
@@ -528,7 +528,7 @@
     "id": "f967a2c8-252b-4a1e-8e55-9ac5fe1597e2",
     "name": "伊莎贝拉",
     "title": "",
-    "dossierSubtitle": "",
+    "dossierSubtitle": "「无瑕」的织者",
     "image": "/character-profile/redraws/isabella-reference-v1.webp",
     "avatar": "/character-profile/redraws/isabella-reference-v1-avatar.webp",
     "emblem": "/character-profile/isabella-emblem.svg",
@@ -542,6 +542,46 @@
         "type": "key-value",
         "key": "势力",
         "value": "鸢尾花王庭芭蕾舞团 / <b>奥兰尼亚非常规事务署</b>"
+      },
+      {
+        "type": "paragraph",
+        "content": "从前，奥兰尼亚有一位公主，想找到世上最美的东西。",
+        "dropCap": true
+      },
+      {
+        "type": "paragraph",
+        "content": "花匠献上玫瑰，珠宝匠捧来宝石。可玫瑰会凋谢，宝石藏着裂纹，连窗外的月亮，也总有残缺的时候。",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "于是，公主穿上舞鞋，走进了鸢尾花王庭芭蕾舞团。她想亲手创造一样无瑕的事物。",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "后来，伊莎贝拉成为帝国最受欢迎的舞者。每当她踮起足尖，人们便忘记了花期、裂纹，以及月亮阴晴不定的脸。",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "他们说，公主已经找到了。",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "可最后一个音符落下时，她仍会望向台边的玫瑰。",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "“请再奏一次。”",
+        "dropCap": false
+      },
+      {
+        "type": "paragraph",
+        "content": "她想知道，是否有一支舞，能让凋谢来不及发生。",
+        "dropCap": false
       }
     ]
   }

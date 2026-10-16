@@ -14,15 +14,19 @@ SOURCE = Path('C:/Users/admin/.codex/generated_images/01a141bb-3063-71d2-a63d-5f
 ITEMS = [
     ('ec561630-2810-41a0-8524-857bfa8365e1', 'day-fourteen-tower', 'exec-2b59aec4-db45-434f-ab9d-c4be4392fd84.png'),
     ('f967a2c8-252b-4a1e-8e55-9ac5fe1597e2', 'isabella-emblem', 'exec-e7db520d-38bf-48af-9421-65a229b40f1e.png'),
-    ('2a9bf85c-f975-4054-9597-5f4f11414983', 'elowen-order-justice', 'exec-8ed7a5ff-3ba9-4259-9e58-221e9b1b73cb.png'),
+    ('2a9bf85c-f975-4054-9597-5f4f11414983', 'elowen-order-justice-v2', 'exec-6a22aa1d-06ce-4a13-a817-fb24c86aa9cc.png'),
     ('5bf8f6ab-da96-4cc6-a715-45050f289dd5', 'xianna-tides', 'exec-be387d78-ec76-49a3-8f14-0aaed8d20cc6.png'),
 ]
+# Optional arguments limit regeneration to named emblems.
+selected = set(sys.argv[1:])
 ns = '{http://www.w3.org/2000/svg}'
 entries_path = ROOT / 'public/character-profile/characters.json'
 entries = json.loads(entries_path.read_text(encoding='utf-8'))
 with tempfile.TemporaryDirectory(prefix='celestian-emblem-') as temp:
     temp = Path(temp)
     for entry_id, name, source in ITEMS:
+        if selected and name not in selected:
+            continue
         im = Image.open(SOURCE / source).convert('L')
         width, height = im.size
         groups = []
