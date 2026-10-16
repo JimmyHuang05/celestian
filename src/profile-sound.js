@@ -1,6 +1,7 @@
 import './profile-sound.css'
 
 const cues={
+  'f967a2c8-252b-4a1e-8e55-9ac5fe1597e2':'isabella-crystal-v3',
   '2a9bf85c-f975-4054-9597-5f4f11414983':'elowen',
   'bf217625-407b-4cff-ae92-4f1ba3ba8cca':'sylvia',
   '4ea0b64e-1c59-43a5-a082-caf6c6a5a790':'euphemia',

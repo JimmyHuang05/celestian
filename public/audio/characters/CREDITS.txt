@@ -17,3 +17,5 @@ The unused bell source remains in sources.json as version 1 provenance.
 
 All cues edited, enveloped, spatialized and level-limited locally.
 Reproducible source: design/character-sfx/build_sfx.py in the workspace.
+
+Isabella crystal v3: original procedural modal synthesis, approved 2026-10-16. No third-party samples. Source: design/isabella-audio/create_crystal_v3.py (workspace).
