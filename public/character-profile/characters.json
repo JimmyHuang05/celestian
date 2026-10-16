@@ -527,7 +527,7 @@
   {
     "id": "f967a2c8-252b-4a1e-8e55-9ac5fe1597e2",
     "name": "伊莎贝拉",
-    "title": "",
+    "title": "纯美的鸢尾花公主",
     "dossierSubtitle": "「无瑕」的织者",
     "image": "/character-profile/redraws/isabella-reference-v1.webp",
     "avatar": "/character-profile/redraws/isabella-reference-v1-avatar.webp",
@@ -541,7 +541,7 @@
       {
         "type": "key-value",
         "key": "势力",
-        "value": "鸢尾花王庭芭蕾舞团 / <b>奥兰尼亚非常规事务署</b>"
+        "value": "「不休旋舞」剧场 / <b>奥兰尼亚非常规事务署</b>"
       },
       {
         "type": "paragraph",
@@ -555,7 +555,7 @@
       },
       {
         "type": "paragraph",
-        "content": "于是，公主穿上舞鞋，走进了鸢尾花王庭芭蕾舞团。她想亲手创造一样无瑕的事物。",
+        "content": "于是，公主穿上舞鞋，走进了「不休旋舞」剧场。她想亲手创造一样无瑕的事物。",
         "dropCap": false
       },
       {
