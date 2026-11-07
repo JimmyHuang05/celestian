@@ -130,6 +130,10 @@
 .map-region-preview svg {display:block;width:100%;height:170px}
 .map-city-scene {margin:22px 0 0;padding-top:20px;border-top:1px solid var(--map-border)}
 .map-city-scene img {display:block;width:100%;height:auto;border-radius:6px}
+.map-scene-image {position:relative;min-width:0}
+.map-scene-image:not(.is-loaded) {aspect-ratio:7/3}
+.map-scene-image:not(.is-loaded) > img {position:absolute;inset:0;opacity:0;width:100%;height:100%}
+.map-scene-placeholder {width:100%;aspect-ratio:7/3;border-radius:6px;background:#ffffff08;box-shadow:inset 0 0 0 1px #ffffff06}
 .map-city-scene h3 {margin:13px 0 7px;font:400 15px/1.6 var(--font-body);color:#d1bb8d}
 .map-city-scene p {margin:0;font:400 12px/1.9 var(--font-body);color:#b7b0a1;white-space:pre-line}
 .map-city-scene .map-city-scene__foreign {margin:-2px 0 10px;font:400 11px/1.6 var(--font-display);letter-spacing:.08em;color:#a99b80;overflow-wrap:anywhere}

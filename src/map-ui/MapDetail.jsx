@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import MapIcon from './MapIcon.jsx'
 import { regionMeta, POLLUTION_STYLES } from './region-presentation.js'
 import { cityScenes } from './city-scenes.js'
@@ -6,6 +6,16 @@ import { regionScenes } from './region-scenes.js'
 
 const sizes = ['summary', 'half', 'full']
 const names = ['摘要', '半屏', '展开']
+
+function SceneImage({ scene }) {
+  const [loaded, setLoaded] = useState(false)
+  const [failed, setFailed] = useState(false)
+  if (!scene.image) return null
+  return <div className={`map-scene-image${loaded ? ' is-loaded' : ''}`}>
+    {!loaded && <div className="map-scene-placeholder" role="img" aria-label={`${scene.title}：${failed ? '图片暂时无法加载' : '图片加载中'}`} />}
+    <img src={scene.image} alt={scene.alt || scene.title} loading="lazy" decoding="async" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+  </div>
+}
 
 export default function MapDetail({ row, closing, size, onSize, onClose, onTerritoryView, onShare }) {
   const panel = useRef(null)
@@ -76,8 +86,8 @@ export default function MapDetail({ row, closing, size, onSize, onClose, onTerri
             {row.previewStatuses?.length > 0 && <div className="map-region-preview__legend" aria-label="略图状态图例">{row.previewStatuses.map(status => <span key={status} data-status={status}><i aria-hidden="true" style={Object.values(POLLUTION_STYLES).find(item => item.label === status) ? { background: Object.values(POLLUTION_STYLES).find(item => item.label === status).ink + '70', borderColor: Object.values(POLLUTION_STYLES).find(item => item.label === status).ink } : undefined} />{status}</span>)}</div>}
           </figure>}
           {row.isRegion && scenes?.length > 0 && <div className="map-region-scenes-heading">地域留影</div>}
-          {scenes?.map((scene, index) => <figure className={`map-city-scene${row.isRegion && index === 0 ? ' map-city-scene--region-first' : ''}`} key={scene.image}>
-            <img src={scene.image} alt={scene.alt} loading="lazy" decoding="async" />
+          {scenes?.map((scene, index) => <figure className={`map-city-scene${row.isRegion && index === 0 ? ' map-city-scene--region-first' : ''}`} key={`${identity}-${scene.title}-${index}`}>
+            <SceneImage key={scene.image || 'placeholder'} scene={scene} />
             <figcaption><h3>{scene.title}</h3>{scene.foreign_title && <p className="map-city-scene__foreign">{scene.foreign_title}</p>}<p>{scene.description}</p></figcaption>
           </figure>)}
           {row.isRegion && <div className="map-territory-actions">

@@ -176,7 +176,7 @@ export const cityScenes = {
   '4b26ee75-5c25-41b1-901f-6fb1aa45f774': [{
     title: '老港渔铺与餐厅',
     foreign_title: 'The Old Harbour Fish Shop & Dining Room',
-    image: '/gallery/scenes/falwick-old-harbour-v1.webp',
+    image: '/gallery/scenes/falwick-old-harbour-v2.webp',
     alt: '法威老港渔铺与餐厅，木构老楼临街陈列新鲜渔获，食客在门前品尝海鲜',
     description: '经营近两百年的家族老店，前铺售卖当日渔获，后厅供应招牌鱼汤与烤鳕鱼。皇帝巡访法威时曾在此用餐，作家、航海家与政界名流亦留下题记。如今仍沿用祖传食谱，是法威最负盛名的老字号。',
   }],
