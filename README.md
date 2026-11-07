@@ -1,97 +1,134 @@
-# Celestian — 无光的伊甸园
+<div align="center">
 
-一个基于 **React + Vite** 构建的世界构建与百科管理平台，包含百科全书、交互地图、AI 对话等功能。
-预览：https://celestian.jimmyhuang.cn/
+# CELESTIAN
 
+### 无光的伊甸园
 
-## 当前页面入口（2026-11-05）
+世界设定 · 百科全书 · 海陆图志 · 人物与势力档案
 
-- `/` 直接转到百科全书 `/encyclopedia/`，原卡片首页暂时归档。
-- 百科的「留影」节点改为海陆图志入口；旧 `/encyclopedia/gallery` 地址转到 `/map/`。
-- 有求必应及制证子页暂时归档，旧 `/functions/*` 地址转到百科全书。
-- 角色与势力档案继续保留。原留影素材与数据保留，不做删除。
-- 归档说明与改动前页面快照见 `archive/2026-11-05-navigation/`。下方原功能介绍供历史参考。
+以古典装饰、星空与铜色线条，呈现一个持续生长的幻想世界。
 
-## 技术栈
+[**进入世界 ↗**](https://celestian.jimmyhuang.cn/) · [海陆图志](https://celestian.jimmyhuang.cn/map/) · [本地开发](#本地开发) · [资源与部署](#资源与部署)
 
-| 类别 | 技术 |
-|------|------|
-| 框架 | React 19, React Router 7 |
-| 构建 | Vite 8, Babel, PostCSS, Tailwind CSS 3 |
-| 数据库 | Supabase (PostgreSQL) |
-| 后端逻辑 | Supabase Edge Functions (Deno) |
-| AI 模型 | DeepSeek Chat |
-| CDN/部署 | Nginx |
+![React](https://img.shields.io/badge/React-19-202b32?style=flat-square&logo=react&logoColor=c0ab78)
+![Vite](https://img.shields.io/badge/Vite-8-202b32?style=flat-square&logo=vite&logoColor=c0ab78)
+![Three.js](https://img.shields.io/badge/Three.js-0.186-202b32?style=flat-square&logo=threedotjs&logoColor=c0ab78)
+![Supabase](https://img.shields.io/badge/Supabase-PostgreSQL-202b32?style=flat-square&logo=supabase&logoColor=c0ab78)
 
-## 项目结构
+</div>
 
-```
-celestian/
-├── src/                          # React 前端源码
-│   ├── pages/
-│   │   ├── EncyclopediaPage.jsx  # 百科全书（百科条目浏览）
-│   │   ├── MapPage.jsx           # 海陆图志（交互式地图）
-│   │   ├── FunctionsPage.jsx     # 有求必应（AI 对话 + 系统面板）
-│   │   └── BadgePage.jsx         # 统一制证服务
-│   ├── components/encyclopedia/
-│   │   ├── StandardDetail.jsx    # 标准条目详情
-│   │   ├── AeonDetail.jsx        # 星神条目详情
-│   │   ├── GalleryDetail.jsx     # 画廊条目详情
-│   │   ├── DataNode.jsx          # 分类节点组件
-│   │   ├── ProgressIcon.jsx      # 进度图标
-│   │   └── Starfield.jsx         # 星空背景动画
-│   ├── App.jsx                   # 路由入口
-│   └── main.jsx                  # 应用入口
-├── public/
-│   ├── editor/                   # 开发者管理工具（纯静态 HTML）
-│   │   ├── index.html            # 登录面板
-│   │   ├── entries_editor.html   # 百科条目编辑器
-│   │   ├── log_editor.html       # 系统日志编辑器
-│   │   ├── map_editor.html       # 地图数据编辑器
-│   │   └── svg_editor.html       # SVG 编辑器
-│   └── data/                     # 静态资源（图片、音频、地图）
-├── supabase/functions/
-│   └── Deepseek_API/index.ts     # Edge Function: AI 对话代理
-├── scripts/                      # 数据库迁移脚本
-├── celestian_nginx.conf          # Nginx 部署配置（HTTP + HTTPS）
-├── project_context.md            # 项目上下文文档
-└── README.md
-```
+---
 
-## 数据库（Supabase）
+## 探索世界
 
-| 表名 | 用途 |
-|------|------|
-| `entries` | 百科条目（星神、角色、画廊、圣物等） |
-| `system_logs` | 系统更新日志 |
-| `map_markers` | 地图兴趣点标记 |
-| `map_regions` | 地图区域边界 |
-| `rate_limits` | API 速率限制记录 |
-| `rate_whitelist` | IP 白名单 |
-| `system_prompts` | AI 系统提示词 |
-| `admin` | 管理员账号 |
+Celestian 是一个以世界设定为核心的互动站点，将百科条目、地图探索、角色档案与势力资料连接起来。当前首页直接进入百科全书。
+
+| 模块 | 内容 | 入口 |
+| :--- | :--- | :--- |
+| **百科全书** | 世界设定、分类节点与条目详情 | [打开百科](https://celestian.jimmyhuang.cn/encyclopedia/) |
+| **海陆图志** | 地图瓦片、地点搜索、区域与标记 | [探索地图](https://celestian.jimmyhuang.cn/map/) |
+| **人物档案** | 角色资料、肖像与动态表现 | [人物档案](https://celestian.jimmyhuang.cn/character-profile.html) |
+| **势力档案** | 势力介绍、徽记与主题视觉 | [势力档案](https://celestian.jimmyhuang.cn/faction-profile.html) |
+| **地图工作台** | 地图涂色与数据维护 | `/map-painter/` · [使用说明](docs-map-painter.md) |
+
+> **当前导航**：旧留影地址 `/encyclopedia/gallery` 转到地图；有求必应与制证入口 `/functions/*` 转到百科。历史源码保留供参考，不作为当前开放功能展示。
+
+## 视觉与交互
+
+- **古典地图装饰**：四角角花、连续几何纹带与中央凸起底牌，搭配柔和铜色、细边高光和贴边阴影。
+- **人物与势力表现**：独立档案页面、主题徽记，以及部分角色的动态肖像。
+- **声音体验**：背景音乐切换、渐变过渡与静音偏好。
+- **本地字体**：分片加载中西文字体，构建前检查字体文件与字符覆盖。
 
 ## 本地开发
 
+准备可运行 Vite 8 的 Node.js 环境及 npm，克隆仓库后执行：
+
 ```bash
-npm install
-npm run dev        # 启动开发服务器
-npm run build      # 构建生产版本
-npm run preview    # 预览生产构建
+git clone https://github.com/JimmyHuang05/celestian.git
+cd celestian
+npm ci
+npm run dev
 ```
 
-## 部署
+打开终端显示的本地地址。前端可本地构建；百科数据、线上 API 及部分 `/data/` 资源仍依赖现有服务，仓库不包含完整的离线数据库与服务器资源副本。
 
-### 版本库与资源范围
+| 命令 | 用途 |
+| :--- | :--- |
+| `npm run dev` | 启动开发服务器 |
+| `npm run build` | 检查字体并生成 `dist/` 生产构建 |
+| `npm run preview` | 本地预览生产构建 |
+| `npm run fonts:check` | 校验字体分片与字符覆盖 |
+| `npm run lint` | 运行 ESLint |
+| `node --test scripts/music-controller.test.mjs` | 运行音乐控制测试 |
 
-GitHub 保存当前源码、配置、维护脚本，以及正式页面引用的地图瓦片、字体、压缩图片和音频。`npm ci` 后可运行 `npm run build` 验证生产构建；线上 API 和外部资源服务仍由现有服务器提供。
+## 代码导览
 
-构建副本、部署包、备份、凭据、旧地图瓦片及未采用的原始素材不提交，由 `.gitignore` 排除。源文件仍保留在本地，没有因整理仓库而删除。部分历史设计预览源码保留供参考，其可选试稿素材不随仓库分发；如将试稿用于正式页面，应同时更新忽略规则并补齐所需资源。
+```text
+celestian/
+├── src/
+│   ├── pages/                    # 百科、地图与地图工作台
+│   ├── components/encyclopedia/   # 百科节点与详情组件
+│   ├── assets/map/                # 地图 SVG 边框与资源许可
+│   ├── App.jsx                    # 主站路由
+│   └── …                         # 档案、动画、音乐与样式模块
+├── public/
+│   ├── map/world-240705-base-v2/   # 当前地图瓦片、区域与标记数据
+│   ├── fonts/                     # 本地字体分片与许可
+│   ├── character-profile/         # 人物档案资源
+│   ├── faction-profile/           # 势力档案数据与资源
+│   └── …                         # 正式页面使用的图片与音频
+├── scripts/                       # 字体检查、资源处理与维护工具
+├── supabase/functions/            # Edge Functions 源码
+├── index.html                     # React 主站入口
+├── character-profile.html         # 人物档案入口
+├── faction-profile.html           # 势力档案入口
+├── vite.config.js                 # 多页面构建与开发代理
+└── celestian_nginx.conf            # Nginx 配置参考
+```
 
-GitHub 同步与服务器部署是两个独立操作。更新服务器前应构建并验证发布包、备份原文件；凭据仅在仓库外的本地服务器连接目录保存。
+生产构建包含主站、人物档案、势力档案，以及 `unconventional-affairs.html`、`imperial-knights.html` 两个势力入口。根目录的其他设计预览文件不默认纳入生产构建。
 
-- Web 服务: Nginx（SPA fallback + 静态资源缓存）
-- 数据库: Supabase PostgreSQL
-- AI 接口: Supabase Edge Function（Deepseek_API）
+## 资源与部署
 
-Nginx 配置文件见 `celestian_nginx.conf`，支持 HTTP 自动跳转 HTTPS。
+### 仓库保存什么
+
+| 随源码同步 | 仅在本地或服务器保留 |
+| :--- | :--- |
+| 前端源码、构建配置与维护脚本 | `dist/`、构建副本与部署压缩包 |
+| 当前地图瓦片、区域与标记数据 | 旧地图版本与备份 |
+| 正式页面引用的压缩图片、字体与音频 | 大体积原稿、未采用的试稿素材 |
+| 对应资源许可证与使用说明 | 私钥、环境凭据与服务端秘密 |
+
+排除规则见 [`.gitignore`](.gitignore)。整理仓库不会删除本地原始素材。部分设计预览源码保留供参考，但其可选试稿素材不随仓库分发；采用这些设计时，需要补齐资源并调整忽略规则。
+
+### 发布流程
+
+```text
+修改源码 → 构建与验证 → 提交到 GitHub
+                    ↘ 备份服务器 → 发布构建 → 检查线上页面
+```
+
+**同步 GitHub 与部署服务器是独立操作。** 推送代码本身不代表线上页面已更新。
+
+生产站点由 Nginx 提供静态页面，数据服务使用 Supabase；部署时需保留 API 路由、SPA 回退及现有外部资源。配置参考 [`celestian_nginx.conf`](celestian_nginx.conf)，连接凭据应保存在仓库之外。
+
+## 维护文档
+
+| 文档 | 内容 |
+| :--- | :--- |
+| [地图瓦片说明](docs-map-tiles.md) | 地图资源与瓦片工作流 |
+| [地图工作台说明](docs-map-painter.md) | 地图编辑与数据维护 |
+| [人物美术工作流](docs-character-art-workflow.md) | 人物素材制作与处理 |
+
+字体与第三方资源的许可说明随相应资源目录保存。
+
+---
+
+<div align="center">
+
+**CELESTIAN · 无光的伊甸园**
+
+[百科全书](https://celestian.jimmyhuang.cn/encyclopedia/) · [海陆图志](https://celestian.jimmyhuang.cn/map/)
+
+</div>
