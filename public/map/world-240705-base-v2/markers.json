@@ -339,7 +339,7 @@
       "lat": 4629,
       "lng": 5329.89288674598,
       "title": "利莫加德",
-      "foreign_title": "Limogard",
+      "foreign_title": "Лимоград",
       "type": "要塞",
       "icon": "geo",
       "color": "#d4b58e",
@@ -461,10 +461,10 @@
       "lng": 2011.74637215873,
       "title": "克莱曼尼",
       "foreign_title": "Clemeny",
-      "type": "要塞",
+      "type": "主要城市",
       "icon": "geo",
       "color": "#d4b58e",
-      "description": "奥兰尼亚在新大陆的重要军事重镇，依托要塞与边境铁路统筹驻军、军需和内陆运输，是殖民地防务的核心据点。"
+      "description": "克莱曼尼殖民地的首府，殖民政府与驻军司令部所在地。行政机关、商馆和铁路站场构成城市的核心，统筹各地政务、贸易与军需运输，是奥兰尼亚在新大陆的重要统治中心。"
     },
     {
       "id": "c2590360-9a66-41f9-acc6-ff212a91854a",
@@ -493,11 +493,11 @@
       "lat": 3242,
       "lng": 5014.39274081511,
       "title": "蓝铜矿城",
-      "foreign_title": "Azurcopper City",
+      "foreign_title": "Azurgrad",
       "type": "城市",
       "icon": "map-pin",
       "color": "#d4b58e",
-      "description": "因附近蕴藏大量蓝铜矿而闻名的矿业城市。矿脉绵延数十里，矿井如蛛网般密布于河谷两侧。"
+      "description": "因蓝铜矿藏而兴起的山地矿业城市，浅色石砌街巷与红瓦屋顶沿河谷铺展。矿井、冶炼工坊与集市相连，驮队穿越山口，将铜料运往沿海商港。"
     },
     {
       "id": "b49b675c-e541-4cd2-ad78-e78837a6d881",
@@ -515,7 +515,7 @@
       "lat": 2677.75,
       "lng": 5040.93673897055,
       "title": "香佩安市",
-      "foreign_title": "Champeian City",
+      "foreign_title": "Ciampiana",
       "type": "主要城市",
       "icon": "geo",
       "color": "#d4b58e",
@@ -1132,7 +1132,7 @@
       "lng": 2258.127,
       "title": "沃德福德",
       "foreign_title": "Wardford",
-      "type": "主要城市",
+      "type": "要塞",
       "icon": "geo",
       "color": "#d4b58e",
       "description": "克莱曼尼殖民地连接南北腹地的重要河谷城市，桥梁与陆路将北部要塞、沿海港口和南方聚落联系起来。货栈、车马行与加工工坊围绕渡桥聚集，承担木材、矿石及农产的集散转运。"
@@ -1257,6 +1257,17 @@
       "icon": "map-pin",
       "color": "#d4b58e",
       "description": "群山间的河谷小城，牧场沿水铺展，林木覆着两侧山坡。山中的原木在此锯解，谷地的羊毛织成厚呢。河岸传来锯木声，街巷深处，是织机绵长的回响。"
+    },
+    {
+      "id": "north-cape-fortress",
+      "lat": 4880,
+      "lng": 5848,
+      "title": "北岬要塞",
+      "foreign_title": "Крепость Северного Мыса",
+      "type": "要塞",
+      "icon": "geo",
+      "color": "#d4b58e",
+      "description": "维瑟蒂亚帝国设于北部岬角的海防要塞，扼守北洋航线的近岸水道。驻军负责航道警戒与海岸防御，附属军港承担巡弋舰队的补给和检修任务。"
     }
   ]
 }
