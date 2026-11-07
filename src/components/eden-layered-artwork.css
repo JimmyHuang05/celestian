@@ -1,6 +1,0 @@
-.eden-layered-artwork { position: absolute; inset: 0; isolation: isolate; pointer-events: none; }
-.eden-art-layer { position: absolute; inset: 0; transform: translate(var(--layer-x), var(--layer-y)) scale(var(--layer-scale)) scaleY(var(--layer-stretch-y, 1)); transform-origin: 50% 50%; }
-.eden-art-layer > img { display: block; width: 100%; height: 100%; object-fit: fill; transform: translate(calc(var(--look-x, 0%) * var(--layer-depth)), calc(var(--look-y, 0%) * var(--layer-depth))); }
-.eden-layered-title { position: absolute; top: 38%; left: 20%; width: 60%; display: grid; justify-items: center; color: #f5eedb; filter: drop-shadow(0 2px 3px #0009); }
-.eden-layered-title img { display: block; width: 100%; height: auto; margin: -5% 0; }
-.eden-layered-title span { font: clamp(12px, 2.2cqw, 38px)/1.5 "峄山碑篆体", serif; letter-spacing: .4em; padding-left: .4em; }
