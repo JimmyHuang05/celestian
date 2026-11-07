@@ -1,5 +1,81 @@
 // Local excerpts from the archived gallery, keyed by stable map marker ID.
 export const cityScenes = {
+  '620e2693-629f-4f03-8c39-3f485111de9d': [{
+    title: '塞雷诺大白崖',
+    foreign_title: 'El Gran Acantilado Blanco de Sereno',
+    image: '/gallery/scenes/cabo-sereno-white-cliffs-v1.webp',
+    alt: '塞雷诺岬附近的巨大白色海崖，层叠绝壁从海面拔起，崖顶隐入低云，数艘帆船从崖脚外侧驶过',
+    description: '巨大的白色绝壁从海面拔起，崖顶常隐于低云，晴日里远航船只便能望见它明亮的轮廓。海浪沿裂隙凿出岩龛与孤礁，成群海鸟在崖间筑巢；当地水手将这道白崖视作归航的标志。',
+  }],
+  '5c3e9b15-bdb4-4098-b0fa-2c3e9e1ac18d': [{
+    title: '韦斯特米尔行宫',
+    foreign_title: 'Westmere Palace and Royal Gardens',
+    image: '/gallery/scenes/north-ingleton-westmere-palace-v1.webp',
+    alt: '北英普顿郊外的韦斯特米尔行宫，浅色宫殿前铺展着对称花坛、喷泉水池与雕像，修剪整齐的高树篱环绕皇家园林',
+    description: '为皇室巡访新大陆而建的郊外行宫，平日由王室管事照料。喷泉、雕像与花坛沿中轴层层铺展，高树篱之外便是田野与林地；夏季园会时，殖民地官员与来访使节在此受邀赴宴。',
+  }],
+  '7ac9b8ed-d23c-4c13-9b29-1e88e47a7a27': [{
+    title: '莱万特旧城',
+    foreign_title: 'Casco Antiguo de Levante',
+    image: '/gallery/scenes/levante-old-town-v1.webp',
+    alt: '莱万特旧城的拱廊与红瓦屋顶环绕繁忙码头，集市人群沿石阶汇流，远处蒙特罗霍火山耸立于旷野之上',
+    description: '旧城沿古老港池层层展开，拱廊下聚集着鱼贩、行商与远洋归来的水手。红瓦屋顶之外，蒙特罗霍火山始终占据天际；历次落灰留下的痕迹，仍藏在修补过的石墙与街坊的旧故事里。',
+  }, {
+    title: '蒙特罗霍火山',
+    foreign_title: 'Volcán de Monte Rojo',
+    image: '/gallery/scenes/levante-monte-rojo-volcano-v1.webp',
+    alt: '蒙特罗霍火山的破裂山口升起浓烟，灰褐色山坡下分布着旧熔岩台地、干裂地表与稀疏灌丛',
+    description: '莱万特港内陆的活火山，因山坡裸露的赭红岩层得名。烟柱常年盘踞山口，旧熔岩流与积灰荒原记录着历次喷发；港口守望员每日观测烟势，将落灰与震动记入城中的火山簿。',
+  }],
+  '7e7e47dd-e6aa-49c5-9db0-7041e4c92f5b': [{
+    title: '赫斯珀里亚号',
+    foreign_title: 'SS Hesperia',
+    image: '/gallery/scenes/regalport-hesperia-liner-v1.webp',
+    alt: '赫斯珀里亚号洲际客轮停靠国王城，三座金黄色烟囱高耸于白色上层建筑之上，旅客与行李车汇集在码头',
+    description: '由奥兰尼亚哈考特轮船公司（Harcourt Steamship Company）运营的豪华洲际客轮，定期挂靠国王城。三座烟囱之下，宴会厅、海景长廊与分层客舱承载着商旅和移民，往返于帝国本土与海外诸港。',
+  }],
+  '6c22d09f-0f89-4ee2-9cc5-b38105e6d620': [{
+    title: '伊斯特黑文联合船坞',
+    foreign_title: 'Easthaven United Dockyards',
+    image: '/gallery/scenes/easthaven-united-dockyards-v1.webp',
+    alt: '夕照下的伊斯特黑文联合船坞，军舰穿行于宽阔港湾，起重机、修船泊位与仓栈沿工业城区铺展',
+    description: '由沿湾多家船厂合并而成的联合船坞，兼营商船修造与海军舰艇检修。起重机、舾装码头和机修车间连成庞大的港区，试航舰只穿过落日下的水道，汽笛与铆锤声终日回荡。',
+  }],
+  '3a1da717-9ff4-44f8-953a-0093d122ba15': [{
+    title: '克雷格莫尔国家公园',
+    foreign_title: 'Craigmore National Park',
+    image: '/gallery/scenes/glennar-craigmore-national-park-v1.webp',
+    alt: '格伦娜拉附近的克雷格莫尔国家公园，剑脊般的岩峰映着金色天光，冰川沿山隙下延，针叶林与高山草甸环绕山脚',
+    description: '围绕克雷格莫尔峰设立的国家公园，锋利岩脊与冰川构成醒目的山地轮廓。林谷和高山草甸庇护着珍稀岩羚、山猫与猛禽，并保有多种特有高山植物；巡护站沿旧山径守望这片栖息地。',
+  }],
+  'b0283341-c733-40ae-bb49-177604ccd97d': [{
+    title: '罗塞塔岩峰',
+    foreign_title: 'Skała Rosetty',
+    image: '/gallery/scenes/rosetta-rock-caverns-v1.webp',
+    alt: '罗塞塔岩峰，平顶巨岩耸立于云海群山之间，天然洞窟沿陡峭岩壁分层展开',
+    description: '平顶岩峰的天然洞窟中，保存着描绘狩猎、播种与祭仪的古老壁画，以及尚未释读的刻痕。不同年代的图像层层叠覆，为追溯早期聚落与信仰提供线索，也使罗塞塔被视作文明最早的摇篮之一。',
+  }],
+  '748481bf-6ae1-479d-8691-492b5c4325a0': [{
+    title: '旧渠集市',
+    foreign_title: 'Mercato del Vecchio Canale',
+    image: '/gallery/scenes/castelverde-old-canal-market-v1.webp',
+    alt: '卡斯泰尔韦尔德旧渠集市，废弃水渠的破损拱顶下摊棚沿岸排列，农民、市民和手工商贩在石桥与灯火间交易闲谈',
+    description: '废弃水渠渐成农民、小市民与手工商贩的聚会之所。赶集、换工、闲谈与共餐交织成旧渠独有的生活传统；每逢集日，人们带来的不只是货物，还有乡间消息、街坊故事与代代相传的手艺。',
+  }],
+  'efac2214-0768-44e0-8ed0-be09290a2924': [{
+    title: '维莱港商事法院',
+    foreign_title: 'Tribunale di Commercio di Porto delle Vele',
+    image: '/gallery/scenes/castelverde-commercial-court-v1.webp',
+    alt: '维莱港商事法院，夕照下的白石柱廊与雕刻山墙面向广场，宽阔台阶通往青铜大门',
+    description: '由港城商会与航运行会共同出资兴建的商事法院，审理货款、租船契约与海运保险纠纷。青铜大门后设有公证厅和契约档案库，来自各岛的船东与货商在此确认权责、调解争端。',
+  }],
+  'a16382a1-e854-44bf-aaf8-b78e8994fdd1': [{
+    title: '贝里尼雕刻工坊',
+    foreign_title: 'Bottega di Scultura Bellini',
+    image: '/gallery/scenes/meridiano-bellini-sculpture-workshop-v1.webp',
+    alt: '梅里迪亚诺港贝里尼雕刻工坊，工匠在拱顶厅内雕琢大理石人像，半身像、素描与石料陈列于工作台和墙架间',
+    description: '梅里迪亚诺港颇负盛名的家族雕刻工坊，以大理石肖像与庭院雕塑见长。临街展间兼售小型石雕，拱顶下的工匠仍以锤凿细修衣褶，将内陆运来的白石化作远销各港的作品。',
+  }],
   '6b250fa6-860a-4502-a470-99af8c8a5b20': [{
     title: '赤崖铜矿',
     foreign_title: 'Rudnik bakra Crvena stijena',
@@ -137,6 +213,12 @@ export const cityScenes = {
     image: '/gallery/scenes/marina-bianca-white-waterfront-v1.webp',
     alt: '马里纳比安卡的白色石砌城区沿山坡层叠而上，拱廊与阶梯连接港湾，岬角灯塔俯瞰往来的帆船与汽船',
     description: '白石城区沿港湾层叠而上，拱廊与石阶连接码头、街市和山顶城堡。岬角灯塔俯瞰往来帆船与汽船，晴日里满城白墙映亮海面，是琥珀王国最繁华港口的标志性景观。',
+  }, {
+    title: '白港商会宫',
+    foreign_title: 'Palazzo della Camera di Commercio di Marina Bianca',
+    image: '/gallery/scenes/marina-bianca-maritime-bank-v1.webp',
+    alt: '白港商会宫，宏伟的白石穹顶与巨柱立面面向城区广场，马车和商旅往来于宽阔台阶前',
+    description: '马里纳比安卡商会的总部，由船东、行会与贸易商共同出资兴建。白石穹顶下，各方议定港务章程、协调航运与商贸事务；楼上的会客厅则接待远道而来的商团与使节。',
   }],
   '43387dea-7860-4427-9d6f-678097a70f0a': [{
     title: '翠庭宫',
@@ -148,9 +230,9 @@ export const cityScenes = {
   'cf03745e-1a04-4f52-b3f9-8a48675a4dfc': [{
     title: '索斯代尔皇家天文台',
     foreign_title: 'Royal Southdale Observatory',
-    image: '/gallery/scenes/southdale-royal-observatory-v1.webp',
-    alt: '皇家索斯代尔温泉市山上的天文台，红砖与白石建筑沿岩坡而立，铜色观测穹顶俯瞰云海',
-    description: '建于温泉城上方山脊的皇家天文台，红砖观测楼与铜色穹顶俯瞰云海。天文学者在此观测星体、编制历书并校准全城钟表，入夜后穹顶开启，长镜转向星空。',
+    image: '/gallery/scenes/southdale-royal-observatory-v2.webp',
+    alt: '皇家索斯代尔温泉市山上的天文台，白石塔楼与金属观测穹顶矗立于云雾环绕的岩峰，层叠阶梯连接拱廊与平台',
+    description: '建于温泉城上方山脊的皇家天文台，白石观测楼与金属穹顶俯瞰云海。天文学者在此观测星体、编制历书并校准全城钟表，入夜后穹顶开启，长镜转向星空。',
   }],
   '0748b95a-6108-4a01-bb66-541c5c7e8f0b': [{
     title: '冷溪堡',
@@ -207,6 +289,12 @@ export const cityScenes = {
     image: '/gallery/scenes/riva-chiara-crystal-pool-v1.webp',
     alt: '连绵雪山与白云倒映于平静的水晶池，湛蓝湖面水天一色',
     description: '雪山环抱的澄澈湖泊，无风时水天一色，群峰与流云完整倒映于湖面，令人难辨天地。因其宛如铺展于群山之间的明镜，被誉为“天空之镜”。',
+  }, {
+    title: '里瓦基亚拉水务宫',
+    foreign_title: 'Palazzo delle Acque di Riva Chiara',
+    image: '/gallery/scenes/riva-chiara-water-palace-v1.webp',
+    alt: '里瓦基亚拉城区的白石水务宫，中央穹顶与钟塔高出红瓦街区，宽阔阶梯连接柱廊和前庭',
+    description: '统筹水晶池沿岸堤防、航运与引水工程的水务机关。白石穹顶下保存着历代水位记录和湖区测绘图，工程师与船主常在此议事，钟塔则为往来船班报时。',
   }],
   'b97014ed-a6ed-4e3b-a251-305b862ddb1a': [{
     title: '浅海珊瑚礁',
@@ -280,10 +368,16 @@ export const cityScenes = {
   }],
   '4a2a2ff9-7933-4975-9ed3-5276a101aa12': [{
     title: '灰岛港内城',
-    foreign_title: 'Port Ash-Island · Inner City',
+    foreign_title: 'Casco Antiguo de Puerto Ceniza',
     image: '/gallery/scenes/ash-island-inner-city-v1.webp',
     alt: '巨型火山脚下的灰岛港内城，层叠石楼、钟塔与繁忙港湾',
     description: '建于世界最大火山脚下的走私天堂，是环火山封锁区以太解质流向大陆的中转站。山体持续外泄的以太，使这里成为目前普通人能够抵达、以太浓度最高的地方。',
+  }, {
+    title: '地下市集',
+    foreign_title: 'Mercado Subterráneo',
+    image: '/gallery/scenes/ash-island-undermarket-v1.webp',
+    alt: '灰岛港地下市集，巨大的石砌拱顶下摊棚密布，煤气灯映照湿润石路，远处石桥跨过地下水道',
+    description: '层叠拱廊下，鱼摊、杂货铺与来历不明的货箱挤满湿滑石道。灯火映着往来人潮，叫卖声沿地下水道回荡；更隐秘的交易，则藏在石桥背后的暗巷里。',
   }],
   'b864f351-c5ed-41a9-8aeb-614887362d83': [{
     title: '白崖',

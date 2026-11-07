@@ -22,14 +22,14 @@ export const regionScenes = {
   }],
   region_89_1_1: [{
     title: '门多萨火山湖',
-    foreign_title: 'Lake Mendoza',
+    foreign_title: 'Lago Volcánico de Mendoza',
     image: '/gallery/scenes/mendoza-volcanic-lake-v1.webp',
     alt: '火山群环抱的碧绿湖泊，黑色岩岸与远处熔岩映衬辽阔湖面',
     description: '灰岛最大的淡水湖泊，碧绿湖水汇聚于火山盆地之中。多数采晶人沿湖扎营，将这里作为深入封锁区前的补给与集散地；夜幕降临，岸边营火与远山的赤光遥遥相望。',
   }],
   region_89_core: [{
     title: '灰岛火山口',
-    foreign_title: 'Ash Island Caldera',
+    foreign_title: 'Caldera de Isla Ceniza',
     image: '/gallery/scenes/ash-island-caldera-v1.webp',
     alt: '俯瞰灰岛巨大的沉睡火山口，层叠岩壁环抱深陷的盆地，云雾漂浮于辽阔的环形山脊之间',
     description: '已知世界最大的单体火山，虽已沉睡漫长岁月，地下以太仍不断逸出。火山口横跨数十公里，对岸岩壁隐没于云霭，足以容纳一座庞大都市；层层断崖直落深处，被采晶人称为“大地尚未闭合的眼睛”。',

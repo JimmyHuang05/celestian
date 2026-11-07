@@ -614,7 +614,7 @@
       "lat": 3178,
       "lng": 4494,
       "title": "灰岛港",
-      "foreign_title": "Port Ash-Island",
+      "foreign_title": "Puerto Ceniza",
       "type": "主要城市",
       "icon": "geo",
       "color": "#d4b58e",
@@ -1066,10 +1066,10 @@
       "lng": 4330.728,
       "title": "维莱港",
       "foreign_title": "Porto delle Vele",
-      "type": "城市",
-      "icon": "map-pin",
+      "type": "主要城市",
+      "icon": "geo",
       "color": "#d4b58e",
-      "description": "琥珀王国西南离岛上的港镇，以渔业、帆具制作和沿岸航运为生。岛间商船在此添水、修船，狭窄街巷中的小客栈常年接待水手与领航人。"
+      "description": "琥珀王国西南离岛上的主要港口城市，汇集岛间商路与沿岸航线。船坞、帆具工坊和仓栈沿港湾铺展，商会与商事法院吸引各地船东、货商在此订立契约，是西南海域重要的贸易与航运中心。"
     },
     {
       "id": "a16382a1-e854-44bf-aaf8-b78e8994fdd1",
