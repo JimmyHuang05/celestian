@@ -22,7 +22,7 @@
           .catch(() => null)
         const geometry = /* map-boot-geometry */ null
         const primeTile = map => {
-          if (!map || new URLSearchParams(location.search).has('map')) return
+          if (!map || window.__celestianLayeredPreview || new URLSearchParams(location.search).has('map')) return
           try {
             if (localStorage.getItem('celestian-map-view-v2')) return
           } catch { /* Storage can be unavailable on an embedded map. */ }
@@ -36,7 +36,8 @@
           preload.rel = 'preload'
           preload.as = 'image'
           preload.fetchPriority = 'high'
-          preload.href = root + '/' + zoom + '/' + Math.floor(map.width / (2 * tileSpan)) + '/' + Math.floor(map.height / (2 * tileSpan)) + '.webp'
+          const tileRoot = window.__celestianCompositePreview ? '/__local-map/composite' : '/map/world-240705-composite-v2'
+          preload.href = tileRoot + '/' + zoom + '/' + Math.floor(map.width / (2 * tileSpan)) + '/' + Math.floor(map.height / (2 * tileSpan)) + '.webp'
           document.head.append(preload)
         }
         if (geometry) primeTile(geometry)

@@ -1,5 +1,67 @@
 // Local excerpts from the archived gallery, keyed by stable map marker ID.
 export const cityScenes = {
+  'redmesa': [{
+    title: '赤堡风蚀群',
+    foreign_title: 'The Red Bastions',
+    image: '/gallery/scenes/redmesa-red-bastions-v1.webp',
+    alt: '雷德梅萨城外的赤堡风蚀群，赭金色岩台与塔状残丘连绵排列，沙砾沟谷穿行其间，落日照亮堡垒般的岩壁',
+    description: '雷德梅萨城外干旱台地上的风蚀岩群，层叠岩台与孤立残丘宛如废弃堡垒。风沙与偶发洪流长期雕刻岩层，留下曲折沟谷；夕阳低照时，赭红岩壁泛起金光，故被当地人称作“赤堡”。',
+  }, {
+    title: '镜原盐湖',
+    foreign_title: 'Mirrorplain Salt Lake',
+    image: '/gallery/scenes/redmesa-mirror-salt-lake-v1.webp',
+    alt: '雷德梅萨内陆的镜原盐湖，薄水覆盖白色盐壳，远处裸露的灰褐岩丘与天空云层倒映在平静湖面上',
+    description: '雷德梅萨内陆荒山之间的封闭盐湖，灰褐岩丘环绕宽阔盆地。雨后薄水覆上盐壳，天光与云影映成无边镜面；旱季湖水退去，留下细密盐脊与苍白的湖床。',
+  }],
+  '6d17cec7-cafe-4681-a8db-82aa51897014': [{
+    title: '黑柱海岸',
+    foreign_title: 'Aod ar Peulioù Du',
+    image: '/gallery/scenes/dunwick-black-column-coast-v1.webp',
+    alt: '卡斯泰尔莫尔附近的黑柱海岸，密集玄武岩石柱阶梯般伸向海面，海浪拍击柱脚，斜阳照亮灰黑岩壁',
+    description: '卡斯泰尔莫尔城外的玄武岩海岸，古老熔岩冷却后裂成密集石柱，经海浪侵蚀显露出层叠轮廓。潮水涌入柱间沟隙，白沫沿黑岩翻卷；退潮时，岸边小径通向可远眺石柱群的岩台。',
+  }],
+  'acabe2a2-1a3f-4f1b-9a98-8aee4799181f': [{
+    title: '冰缘湿地',
+    foreign_title: 'Ice-margin Wetlands',
+    image: '/gallery/scenes/cuan-fionn-ice-margin-wetlands-v1.webp',
+    alt: '库恩芬城外内陆的冰缘湿地，苔藓覆盖的低地间散布浅湖与水道，远处冰原沿群山铺展，薄雾掠过水面',
+    description: '位于库恩芬城外内陆、山地冰原前缘的低地。夏季融水汇成浅湖与曲折水道，苔藓和矮灌木覆盖其间的小洲；远处冰舌沿山谷下延，湿地溪流则循低谷流向沿海。',
+  }],
+  '1865cbcf-f568-4af3-934f-4737805748a4': [{
+    title: '霜拱洞窟',
+    foreign_title: 'Frostarch Cavern',
+    image: '/gallery/scenes/ath-dara-frostarch-cavern-v1.webp',
+    alt: '阿达拉山中的霜拱洞窟，天然岩拱下悬垂冰凌，覆冰石柱环绕蓝色水潭，天光从洞顶裂口洒入薄雾',
+    description: '隐于阿达拉群山中的天然洞窟，岩拱横跨幽蓝水潭，寒季渗水凝成层叠冰柱与垂挂冰凌。天光从洞顶裂口落下，照亮雾中的苍白柱列；滴水声沿石壁回荡，深处仍有未被探明的支洞。',
+  }],
+  '59beda17-6397-4e39-9201-dc5545fcad96': [{
+    title: '松峡瀑布',
+    foreign_title: 'Pine Gorge Falls',
+    image: '/gallery/scenes/catmere-pine-gorge-falls-v1.webp',
+    alt: '猫湖附近的松峡瀑布，宽阔瀑流从针叶林环绕的高崖倾泻而下，水雾弥漫峡谷，清流穿过覆满青苔的岩石',
+    description: '猫湖附近的山溪汇成宽阔瀑流，从松林环绕的断崖直落谷底。融雪时节水声震荡峡谷，飞沫浸润两岸青苔；沿旧林道行至岩台，可望见日光穿过瀑顶，将深绿山谷照得透亮。',
+  }],
+  '9f2e3fee-fe97-453a-bd65-d4e398753329': [{
+    title: '杜曼天坑',
+    foreign_title: 'Duman Obruğu',
+    image: '/gallery/scenes/highcombe-great-sinkhole-v1.webp',
+    alt: '耶希尔港内陆雨林中的杜曼天坑，瀑布沿覆满绿植的环形绝壁倾泻，坑底水雾翻涌，飞鸟与崖边游人衬出深渊的规模',
+    description: '隐于耶希尔港内陆雨林中的巨大天坑，群瀑沿石灰岩绝壁倾泻，汇入坑底地下河。水雾终年翻涌，轰鸣远达林外；湿润岩壁覆满苔藓与蕨类，晴日崖间偶有彩虹浮现。',
+  }],
+  '799443a0-70f3-46ba-a66e-024f81b31fd6': [{
+    title: '佩尼亚尔瓦天然石桥',
+    foreign_title: 'Puente Natural de Peñalba',
+    image: '/gallery/scenes/penalba-natural-bridge-v1.webp',
+    alt: '佩尼亚尔瓦山地的巨大天然石拱横跨深谷，金色阳光照亮层叠岩壁，云雾与稀疏林木分布在峡谷之间',
+    description: '赭金色的天然石拱横跨山地背风侧的深谷，薄土与裸岩间生长着稀疏灌木，是佩尼亚尔瓦最醒目的奇观。漫长侵蚀掏空岩层，留下宛如巨桥的拱身；晨雾涌入谷底时，桥下群峰时隐时现，旧山径上的旅人常在对岸驻足眺望。',
+  }],
+  '08b480d7-bc21-48e4-8902-5f3cac21534e': [{
+    title: '恩塞纳达海湾',
+    foreign_title: 'Bahía de Ensenada',
+    image: '/gallery/scenes/ensenada-bay-v1.webp',
+    alt: '金色天光穿过云层映照恩塞纳达海湾，两岸青绿山崖与农庄笼罩在薄雾中，狭长水面通向远海',
+    description: '青绿山崖环抱的海湾向远海缓缓敞开，雾气沿坡地游移，农庄与林带散落其间。日光穿透云隙时，水面便铺出一道金色长路；湾内避风的水域，是沿岸渔船熟悉的归泊之所。',
+  }],
   '620e2693-629f-4f03-8c39-3f485111de9d': [{
     title: '塞雷诺大白崖',
     foreign_title: 'El Gran Acantilado Blanco de Sereno',
@@ -35,11 +97,11 @@ export const cityScenes = {
     description: '由奥兰尼亚哈考特轮船公司（Harcourt Steamship Company）运营的豪华洲际客轮，定期挂靠国王城。三座烟囱之下，宴会厅、海景长廊与分层客舱承载着商旅和移民，往返于帝国本土与海外诸港。',
   }],
   '6c22d09f-0f89-4ee2-9cc5-b38105e6d620': [{
-    title: '伊斯特黑文联合船坞',
-    foreign_title: 'Easthaven United Dockyards',
+    title: '波尔扎韦尔联合船坞',
+    foreign_title: 'Chanterioù Bigi Unanet Porzhavel',
     image: '/gallery/scenes/easthaven-united-dockyards-v1.webp',
-    alt: '夕照下的伊斯特黑文联合船坞，军舰穿行于宽阔港湾，起重机、修船泊位与仓栈沿工业城区铺展',
-    description: '由沿湾多家船厂合并而成的联合船坞，兼营商船修造与海军舰艇检修。起重机、舾装码头和机修车间连成庞大的港区，试航舰只穿过落日下的水道，汽笛与铆锤声终日回荡。',
+    alt: '夕照下的波尔扎韦尔联合船坞，军舰穿行于宽阔港湾，起重机、修船泊位与仓栈沿工业城区铺展',
+    description: '由沿湾多家船厂合并扩建而成，沿用本土港名与造船行会传统，兼营商船修造和海军舰艇检修。起重机、舾装码头与机修车间铺展于旧港之外，汽笛和铆锤声终日回荡。',
   }],
   '3a1da717-9ff4-44f8-953a-0093d122ba15': [{
     title: '克雷格莫尔国家公园',
@@ -77,6 +139,12 @@ export const cityScenes = {
     description: '梅里迪亚诺港颇负盛名的家族雕刻工坊，以大理石肖像与庭院雕塑见长。临街展间兼售小型石雕，拱顶下的工匠仍以锤凿细修衣褶，将内陆运来的白石化作远销各港的作品。',
   }],
   '6b250fa6-860a-4502-a470-99af8c8a5b20': [{
+    title: '石门溶洞',
+    foreign_title: 'Špilja Kamena vrata',
+    image: '/gallery/scenes/azurgrad-stone-gate-cavern-v1.webp',
+    alt: '蓝铜矿城附近的石门溶洞，巨大的石灰岩洞口横跨奔涌河流，侧洞瀑布汇入急流，钟乳石与藤蔓垂挂在透光岩拱下',
+    description: '山中河流穿过巨大的石灰岩拱门，丰水季里，侧洞涌出的瀑布汇入急流。钟乳石与藤蔓垂挂洞顶，天光将水雾照成薄纱；雨季水声响彻峡谷，当地人循着轰鸣便能找到这座天然石门。',
+  }, {
     title: '赤崖铜矿',
     foreign_title: 'Rudnik bakra Crvena stijena',
     image: '/gallery/scenes/azurcopper-redcliff-copper-mine-v1.webp',
@@ -267,14 +335,14 @@ export const cityScenes = {
     foreign_title: 'Skell Glacier Bay',
     image: '/gallery/scenes/northhaven-skell-glacier-bay-v1.webp',
     alt: '北港附近的斯凯尔冰川湾，雪峰之间的巨大冰川伸向海湾，云隙洒下金色阳光',
-    description: '北港最负盛名的观景胜地，绵延冰川自群峰间直抵海湾，雪岭与碧海相映。云隙透光时，冰壁与海面泛起金辉；旅人常乘船沿岸巡游，远眺冰川入海的壮阔景象。',
+    description: '位于北港主港区之外的冰川海湾，绵延冰川自群峰间直抵海面，崩落的浮冰随潮漂移，雪岭与碧海相映。云隙透光时，冰壁与海面泛起金辉；旅人常乘船沿岸巡游，远眺冰川入海的壮阔景象。',
   }],
   '5cd3778e-8fb6-4cc1-83c4-751f1377b700': [{
     title: '霜脉联合矿场',
     foreign_title: 'Frostvein Mining Complex',
     image: '/gallery/scenes/greylead-frostvein-mines-v1.webp',
     alt: '灰铅镇雪原上的阶梯状矿坑，井架、运矿列车与堆场沿矿壁分布',
-    description: '灰铅镇的主要铅锌矿区，阶梯状露天矿坑与地下巷道共同追索冻土深处的矿脉。蒸汽绞车昼夜运转，矿石经粗选后集中装运，源源不断送往昂格莱德要塞，是拓殖区重要的金属原料产地。',
+    description: '灰铅镇的主要铅锌矿区，阶梯状露天矿坑与地下巷道共同追索岩层深处的矿脉，冬季积雪覆盖采场。蒸汽绞车昼夜运转，矿石经粗选后集中装运，源源不断送往昂格莱德要塞，是拓殖区重要的金属原料产地。',
   }],
   '8699f08b-1495-439f-8831-b4cebc367eb1': [{
     title: '灰脊矿业基地',
@@ -288,7 +356,7 @@ export const cityScenes = {
     foreign_title: 'Crialago',
     image: '/gallery/scenes/riva-chiara-crystal-pool-v1.webp',
     alt: '连绵雪山与白云倒映于平静的水晶池，湛蓝湖面水天一色',
-    description: '雪山环抱的澄澈湖泊，无风时水天一色，群峰与流云完整倒映于湖面，令人难辨天地。因其宛如铺展于群山之间的明镜，被誉为“天空之镜”。',
+    description: '山间的澄澈湖泊，远处高耸雪峰环列天际，无风时水天一色，群峰与流云完整倒映于湖面，令人难辨天地。因其宛如铺展于群山之间的明镜，被誉为“天空之镜”。',
   }, {
     title: '丽瓦绮澜水务宫',
     foreign_title: 'Palazzo delle Acque di Riva Chiara',
@@ -308,7 +376,7 @@ export const cityScenes = {
     foreign_title: 'The Blood River',
     image: '/gallery/scenes/bloodmouth-blood-river-v1.webp',
     alt: '赤红水流在布拉德茅斯海岸汇入深蓝海面，白色浪花拍打黑色岩岸',
-    description: '流经红色岩层的河水裹挟赤色泥沙，在布拉德茅斯汇入大海，随潮汐铺展成血红水带。赤流与碧海交汇、白浪翻涌的壮观景象，使“血河口”成为这座港城最鲜明的地标。',
+    description: '丰水期，河流裹挟红色岩层风化形成的泥沙，在布拉德茅斯汇入大海，随潮汐铺展成赭红水带。赤流与碧海交汇、白浪翻涌的壮观景象，使“血河口”成为这座港城最鲜明的地标。',
   }],
   'db1db209-df35-46bc-8ecd-e025edec32b6': [{
     title: '铁桥第一要塞',

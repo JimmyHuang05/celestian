@@ -6,7 +6,7 @@ import '../page-actions.css'
 import BackButton from '../components/BackButton.jsx'
 import { useBackgroundMusic } from '../music-context.js'
 import { soundIcon } from '../page-actions.js'
-import { MAP_ROOT, fetchMapLabels, fetchLegacyRegions } from '../map-assets.js'
+import { MAP_ROOT, MAP_TILE_ROOT, fetchMapLabels, fetchLegacyRegions } from '../map-assets.js'
 import { attachMarkers } from '../map-markers.js'
 import { attachRegions, focusMap, moveMap } from '../map-regions.js'
 import { indexRegions } from '../map-ui/search.js'
@@ -145,16 +145,32 @@ export default function MapPage() {
         const updateZoom = () => setZoomLimits({ min: map.getZoom() <= map.getMinZoom(), max: map.getZoom() >= map.getMaxZoom() })
         map.on('zoomend', updateZoom)
         updateZoom()
-        const layer = L.tileLayer(`${MAP_ROOT}/{z}/{x}/{y}.webp`, {
-          tileSize: metadata.tileSize, minZoom: metadata.minZoom - 1, minNativeZoom: metadata.minZoom,
-          maxZoom: metadata.maxZoom, maxNativeZoom: metadata.maxZoom,
-          bounds, noWrap: true, keepBuffer: 1, updateWhenIdle: true, updateWhenZooming: false,
-        })
-        let tileFailed = false
-        layer.on('tileloadstart', ({ tile }) => { tile.fetchPriority = 'high' })
-        layer.on('load', () => { if (!tileFailed) setStatus('') })
-        layer.on('tileerror', () => { tileFailed = true; setFailed(true); setStatus('部分地图未能加载，请重试。') })
-        layer.addTo(map)
+        const reportBasemapError = () => { setFailed(true); setStatus('部分地图未能加载，请重试。') }
+        if (import.meta.env.DEV && window.__celestianLayeredPreview) {
+          const ocean = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+          ocean.style.backgroundColor = '#02243c'
+          ocean.setAttribute('aria-hidden', 'true')
+          L.svgOverlay(ocean, bounds, { pane: 'tilePane' }).addTo(map)
+          let remaining = 2
+          for (const name of ['land', 'mountains']) {
+            L.imageOverlay(`/__local-map/${name}.svg`, bounds, { pane: 'tilePane', className: `map-preview-${name}` })
+              .on('load', () => { if (--remaining === 0) setStatus('') })
+              .on('error', reportBasemapError)
+              .addTo(map)
+          }
+        } else {
+          const tileRoot = import.meta.env.DEV && window.__celestianCompositePreview ? '/__local-map/composite' : MAP_TILE_ROOT
+          const layer = L.tileLayer(`${tileRoot}/{z}/{x}/{y}.webp`, {
+            tileSize: metadata.tileSize, minZoom: metadata.minZoom - 1, minNativeZoom: metadata.minZoom,
+            maxZoom: metadata.maxZoom, maxNativeZoom: metadata.maxZoom,
+            bounds, noWrap: true, keepBuffer: 1, updateWhenIdle: true, updateWhenZooming: false,
+          })
+          let tileFailed = false
+          layer.on('tileloadstart', ({ tile }) => { tile.fetchPriority = 'high' })
+          layer.on('load', () => { if (!tileFailed) setStatus('') })
+          layer.on('tileerror', () => { tileFailed = true; reportBasemapError() })
+          layer.addTo(map)
+        }
 
         // Let the visible tiles claim bandwidth first without delaying search
         // or saved selections until every tile finishes.
@@ -163,11 +179,13 @@ export default function MapPage() {
           fetchLegacyRegions(overlayFetch.signal, overlayFetch.priority),
           fetch(`${MAP_ROOT}/legacy-region-metadata.json`, overlayFetch).then(r => { if (!r.ok) throw Error('区域资料暂时无法加载'); return r.json() }),
         ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
+        const labelRoot = import.meta.env.DEV && (window.__celestianCompositePreview || new URLSearchParams(window.location.search).get('labelPreview') === 'text')
+          ? '/__local-map/text-labels' : MAP_ROOT
         const labelRequest = Promise.all([
-          fetchMapLabels(overlayFetch.signal, overlayFetch.priority),
-          fetch(`${MAP_ROOT}/labels-index.json`, overlayFetch).then(r => { if (!r.ok) throw Error(); return r.json() }).catch(() => null),
+          fetchMapLabels(overlayFetch.signal, overlayFetch.priority, labelRoot),
+          fetch(`${labelRoot}/labels-index.json`, overlayFetch).then(r => { if (!r.ok) throw Error(); return r.json() }).catch(() => null),
         ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
-        map.createPane('mapLabelsPane').style.zIndex = '460'
+        map.createPane('mapLabelsPane').style.zIndex = '610'
         const saveView = () => {
           settings.current = { ...settings.current, frameVersion: 1, view: serializeView(map, metadata) }
           writePreferences(settings.current)

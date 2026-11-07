@@ -1,0 +1,70 @@
+{
+  "version": 1,
+  "source": "complete SVG terrain and water, updated ship PNG, texture last",
+  "width": 21600,
+  "height": 10400,
+  "tileSize": 512,
+  "maxZoom": 6,
+  "minZoom": 0,
+  "format": "webp",
+  "tileCount": 1238,
+  "bytes": 35957632,
+  "levels": [
+    {
+      "zoom": 0,
+      "width": 338,
+      "height": 163,
+      "columns": 1,
+      "rows": 1
+    },
+    {
+      "zoom": 1,
+      "width": 675,
+      "height": 325,
+      "columns": 2,
+      "rows": 1
+    },
+    {
+      "zoom": 2,
+      "width": 1350,
+      "height": 650,
+      "columns": 3,
+      "rows": 2
+    },
+    {
+      "zoom": 3,
+      "width": 2700,
+      "height": 1300,
+      "columns": 6,
+      "rows": 3
+    },
+    {
+      "zoom": 4,
+      "width": 5400,
+      "height": 2600,
+      "columns": 11,
+      "rows": 6
+    },
+    {
+      "zoom": 5,
+      "width": 10800,
+      "height": 5200,
+      "columns": 22,
+      "rows": 11
+    },
+    {
+      "zoom": 6,
+      "width": 21600,
+      "height": 10400,
+      "columns": 43,
+      "rows": 21
+    }
+  ],
+  "coordinateSystemSha256": "2acc2256324424aaf482a78d194fab5bfd899e1643c632db5c2526c983b0bc5e",
+  "sourceHashes": {
+    "output/WorldMap_240705_\u9646\u5730\u56fe_\u62a4\u8fb9.svg": "26b69200cb1dbfa8d774426c862a3bff7b8c74f720dfdf9741ae237f123adf61",
+    "output/mountain-svg-audit/WorldMap_240705_\u5c71\u7cfb_\u590d\u7528.svg": "216a6477375bbd2a234853632af5676c6117d7ab42ac0eee85b8f9b62c4efca4",
+    "output/WorldMap_240705_\u6c34\u7cfb_\u7cbe\u7ec6.svg": "1094fe2f410311a395ecbface633a87ef7843478eba8853069d5101e771d90d2",
+    "WorldMap_240705_\u5546\u8239.png": "d5dc3dece0490eaada40ebad175898eafd18eff237d196b8ca5e71e1c2d4b17b"
+  }
+}
