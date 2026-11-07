@@ -1,149 +1,183 @@
-#encyclopedia-app .galaxy-scene {
-  height: 100dvh;
-  background: #03060d;
-  isolation: isolate;
+@tailwind components;
+@tailwind utilities;
+
+.noise-overlay {
+    background-image: url('data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.8%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22 opacity=%220.06%22/%3E%3C/svg%3E');
+    pointer-events: none;
 }
-.galaxy-nebula, .galaxy-starfield {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  pointer-events: none;
+
+.vertical-text {
+    writing-mode: vertical-rl;
+    text-orientation: upright;
+    letter-spacing: 0.3em;
+    white-space: nowrap;
 }
-.galaxy-nebula {
-  background:
-    radial-gradient(ellipse at 61% 39%, #41617914, transparent 32%),
-    radial-gradient(ellipse at 84% 18%, #344b7826, transparent 30%),
-    radial-gradient(ellipse at 12% 91%, #12345338, transparent 40%),
-    radial-gradient(ellipse at 40% 60%, #141c281c, transparent 35%);
+
+.tarot-card {
+    @apply relative overflow-hidden rounded-xl shadow-2xl transition-all duration-500 block transform-gpu;
+    -webkit-tap-highlight-color: transparent;
+    -webkit-touch-callout: none;
 }
-.galaxy-nebula::after {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: radial-gradient(ellipse at 48% 48%, transparent 25%, #01030999 100%);
+
+@media (hover: hover) and (pointer: fine) {
+    .tarot-card:hover {
+        @apply scale-[1.04] shadow-[0_20px_40px_rgba(212,181,142,0.3)];
+        z-index: 20;
+    }
+    .group:hover .hover-text-gold-stroke {
+        color: #111111 !important;
+        -webkit-text-stroke: 0;
+        text-shadow: -1.5px -1.5px 0 #d4b58e, 1.5px -1.5px 0 #d4b58e, -1.5px 1.5px 0 #d4b58e, 1.5px 1.5px 0 #d4b58e, 0px -1.5px 0 #d4b58e, 0px 1.5px 0 #d4b58e, -1.5px 0px 0 #d4b58e, 1.5px 0px 0 #d4b58e !important;
+    }
 }
-.galaxy-map {
-  position: absolute;
-  inset: 64px 3% 66px;
-  --map-scale: 1;
+
+.tarot-card.is-active {
+    @apply scale-[1.04] shadow-[0_20px_40px_rgba(212,181,142,0.3)];
+    z-index: 20;
 }
-#encyclopedia-app .galaxy-node {
-  position: absolute;
-  display: flex;
-  align-items: center;
-  flex-direction: column;
-  width: 160px;
-  padding: 0;
-  border: 0;
-  background: transparent;
-  cursor: pointer;
-  color: #dcd9d2;
-  transform: translate(-50%, -50%) translate(var(--drift-x), var(--drift-y)) scale(calc(var(--importance) * var(--map-scale)));
-  -webkit-tap-highlight-color: transparent;
+.group.is-active .hover-text-gold-stroke,
+.group:focus-visible .hover-text-gold-stroke {
+    color: #111111 !important;
+    -webkit-text-stroke: 0;
+    text-shadow: -1.5px -1.5px 0 #d4b58e, 1.5px -1.5px 0 #d4b58e, -1.5px 1.5px 0 #d4b58e, 1.5px 1.5px 0 #d4b58e, 0px -1.5px 0 #d4b58e, 0px 1.5px 0 #d4b58e, -1.5px 0px 0 #d4b58e, 1.5px 0px 0 #d4b58e !important;
 }
-.galaxy-node[data-node="aeons"] { top: 46%; left: 54%; }
-.galaxy-node[data-node="characters"] { top: 28%; left: 74%; }
-.galaxy-node[data-node="enemies"] { top: 23%; left: 31%; }
-.galaxy-node[data-node="factions"] { top: 67%; left: 29%; }
-.galaxy-node[data-node="relics"] { top: 78%; left: 73%; }
-.galaxy-node[data-node="gallery"] { top: 45%; left: 11%; }
-.galaxy-node[data-node="terms"] { top: 48%; left: 91%; }
-.stellar-body {
-  width: 140px;
-  height: 140px;
-  display: block;
-  position: relative;
-  isolation: isolate;
+
+.vignette-overlay {
+    background: radial-gradient(circle, transparent 30%, rgba(28,25,23,0.9) 110%);
 }
-.stellar-corona {
-  position: absolute;
-  inset: -45%;
-  border-radius: 50%;
-  background: radial-gradient(circle, rgba(var(--star-color), .15) 0%, rgba(var(--star-color), .055) 24%, rgba(var(--star-color), .018) 44%, transparent 68%);
-  transition: opacity 1s, transform 1.2s;
-  animation: stellar-breath 12s ease-in-out infinite alternate;
-  pointer-events: none;
+
+.animate-pulse-slow {
+    animation: pulse-slow 4s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
-.stellar-core {
-  position: absolute;
-  width: 22px;
-  height: 22px;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(circle at 42% 40%, #fffefa 0%, #fff6dd 20%, rgb(var(--star-color)) 48%, rgba(var(--star-color), .6) 65%, transparent 74%);
-  box-shadow: 0 0 9px 2px rgba(var(--star-color), .75), 0 0 28px 8px rgba(var(--star-color), .22), 0 0 65px 20px rgba(var(--star-color), .09);
-  transition: opacity .9s, filter .9s, transform .9s;
+@keyframes pulse-slow {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.75; }
 }
-.stellar-ray {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  background: linear-gradient(90deg, transparent, rgba(var(--star-color), .1) 20%, rgba(var(--star-color), .65) 50%, rgba(var(--star-color), .1) 80%, transparent);
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-  transition: opacity 1s, width 1s;
+
+#app-container {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    z-index: 10;
 }
-.stellar-ray-horizontal { width: 160px; height: 1px; opacity: .8; }
-.stellar-ray-vertical { width: 82px; height: 1px; transform: translate(-50%, -50%) rotate(90deg); opacity: .4; }
-.stellar-inscription {
-  position: absolute;
-  inset: 22px;
-  display: grid;
-  place-items: center;
-  opacity: .06;
-  transform: scale(.82);
-  transition: opacity 1s, transform 1.2s, filter 1s;
-  filter: blur(1px);
-  mix-blend-mode: screen;
+@media (min-width: 1024px) {
+    #app-container {
+        aspect-ratio: 16 / 9;
+        max-height: 100vh;
+        max-width: 177.78vh;
+        margin: auto;
+        border-radius: 12px;
+    }
 }
-.stellar-inscription img { width: 100%; height: 100%; object-fit: contain; }
-.stellar-reticle {
-  position: absolute;
-  inset: 5px;
-  opacity: 0;
-  background:
-    linear-gradient(#d7decc88, #d7decc88) left top / 12px 1px,
-    linear-gradient(#d7decc88, #d7decc88) left top / 1px 12px,
-    linear-gradient(#d7decc88, #d7decc88) right bottom / 12px 1px,
-    linear-gradient(#d7decc88, #d7decc88) right bottom / 1px 12px;
-  background-repeat: no-repeat;
-  transition: opacity .8s;
+
+/* ================= 百科全书页面样式 ================= */
+#encyclopedia-app,
+#encyclopedia-app body,
+#encyclopedia-app html {
+    margin: 0; padding: 0;
+    width: 100%; height: 100%;
+    background-color: #111827;
+    overflow: hidden;
 }
-.stellar-label { display: flex; flex-direction: column; align-items: center; margin-top: -6px; }
-.stellar-title { font-size: 20px; letter-spacing: .25em; padding-left: .25em; color: #dcdedb; text-shadow: 0 2px 15px #000; }
-.stellar-subtitle { font-family: serif; font-size: 11px; letter-spacing: .16em; color: #a6a89e; margin-top: 3px; }
-.stellar-records { margin-top: 9px; font-family: monospace; font-size: 11px; letter-spacing: .12em; color: #c1b699; }
-.stellar-records > span { color: #737d87; }
-.stellar-alien { margin-top: 10px; white-space: nowrap; font-family: monospace; font-size: 8px; letter-spacing: .24em; color: #798692; opacity: 0; transition: opacity .7s; }
-#encyclopedia-app .galaxy-node:focus-visible { outline: none; }
-.galaxy-node:is(:hover, :focus-visible) .stellar-core { opacity: .18; filter: blur(4px); transform: translate(-50%, -50%) scale(1.4); }
-.galaxy-node:is(:hover, :focus-visible) .stellar-inscription { opacity: .95; transform: scale(1); filter: blur(0); }
-.galaxy-node:is(:hover, :focus-visible) .stellar-ray { opacity: .2; width: 210px; }
-.galaxy-node:is(:hover, :focus-visible) .stellar-reticle,
-.galaxy-node:is(:hover, :focus-visible) .stellar-alien { opacity: 1; }
-.galaxy-node:is(:hover, :focus-visible) .stellar-title { color: #fff0c9; }
-.galaxy-map[data-reading="true"] .galaxy-node:not(:hover):not(:focus-visible) .stellar-corona { opacity: .6; }
-@keyframes stellar-breath { from { opacity: .65; transform: scale(.97); } to { opacity: 1; transform: scale(1.04); } }
-@media (min-width: 768px) and (max-width: 1100px) { .galaxy-map { --map-scale: .8; } }
-@media (min-width: 768px) and (max-height: 650px) { .galaxy-map { --map-scale: .7; } }
-@media (max-width: 767px) {
-  .galaxy-heading { display: none; }
-  .galaxy-map { inset: 70px 0 72px; --map-scale: .72; }
-  .galaxy-node[data-node="aeons"] { top: 43%; left: 51%; }
-  .galaxy-node[data-node="characters"] { top: 15%; left: 75%; }
-  .galaxy-node[data-node="enemies"] { top: 10%; left: 25%; }
-  .galaxy-node[data-node="factions"] { top: 65%; left: 22%; }
-  .galaxy-node[data-node="relics"] { top: 73%; left: 78%; }
-  .galaxy-node[data-node="gallery"] { top: 91%; left: 33%; }
-  .galaxy-node[data-node="terms"] { top: 43%; left: 87%; }
-  .stellar-alien { display: none; }
+
+#encyclopedia-app .hardware-accelerated {
+    will-change: transform, opacity;
+    transform: translateZ(0);
 }
-@media (max-width: 767px) and (max-height: 700px) {
-  .galaxy-map { inset: 62px 0 65px; --map-scale: .59; }
+
+@keyframes ripple {
+    0% { transform: scale(0.8); opacity: 0.8; }
+    100% { transform: scale(1.5); opacity: 0; }
 }
-@media (prefers-reduced-motion: reduce) {
-  #encyclopedia-app *, #encyclopedia-app *::before, #encyclopedia-app *::after { animation: none !important; transition: none !important; }
+#encyclopedia-app .group:hover .ripple-effect { animation: ripple 1.5s cubic-bezier(0.2, 0.8, 0.4, 1) infinite; }
+
+#encyclopedia-app .milky-way {
+    position: absolute; top: 50%; left: 50%;
+    width: 150vw; height: 30vh;
+    background: radial-gradient(ellipse at center, rgba(212, 181, 142, 0.15) 0%, rgba(28, 25, 23, 0.25) 40%, transparent 70%);
+    transform: translate(-50%, -50%) rotate(-30deg); filter: blur(50px);
+    pointer-events: none; will-change: transform;
 }
+
+#encyclopedia-app .node-image {
+    transition: transform 0.5s ease, filter 0.5s ease;
+    filter: grayscale(30%) contrast(110%);
+    will-change: transform, filter;
+}
+#encyclopedia-app .group:hover .node-image {
+    transform: scale(1.1); filter: grayscale(0%) contrast(100%);
+}
+
+@keyframes space-ripple {
+    0% { transform: translate(-50%, -50%) scale(0); opacity: 0.8; border-width: 2px; }
+    100% { transform: translate(-50%, -50%) scale(2.5); opacity: 0; border-width: 0px; }
+}
+#encyclopedia-app .space-ripple-point {
+    position: absolute; top: 0; left: 0;
+    border-radius: 50%; border-style: solid; border-color: rgba(212, 181, 142, 0.8);
+    animation: space-ripple 2.2s cubic-bezier(0.1, 0.8, 0.3, 1) both; pointer-events: none; will-change: transform, opacity;
+}
+
+@keyframes core-fade {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1.5); }
+    10% { opacity: 0.8; transform: translate(-50%, -50%) scale(1.15); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(0); }
+}
+#encyclopedia-app .space-ripple-core {
+    position: absolute; top: 0; left: 0;
+    width: 6px; height: 6px; background-color: #d4b58e; border-radius: 50%;
+    box-shadow: 0 0 12px 2px #d4b58e; opacity: 0;
+    animation: core-fade 2.2s cubic-bezier(0.2, 0.8, 0.3, 1) both; transform-origin: center; will-change: transform, opacity;
+}
+
+#encyclopedia-app .no-scrollbar::-webkit-scrollbar { display: none; }
+#encyclopedia-app .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+@keyframes spin-slow {
+    from { transform: translate(-50%, -50%) rotate(0deg); }
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes spin-slow-reverse {
+    from { transform: translate(-50%, -50%) rotate(360deg); }
+    to { transform: translate(-50%, -50%) rotate(0deg); }
+}
+#encyclopedia-app .halo-ring-1 { animation: spin-slow 40s linear infinite; }
+#encyclopedia-app .halo-ring-2 { animation: spin-slow-reverse 60s linear infinite; }
+
+@keyframes shrine-float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-12px); }
+}
+#encyclopedia-app .animate-shrine { animation: shrine-float 10s ease-in-out infinite; }
+
+#encyclopedia-app .holy-text > p:first-of-type::first-letter {
+    float: left; font-size: 4rem; line-height: 0.8;
+    padding-top: 0.2rem; padding-right: 0.6rem; color: #d4b58e;
+    font-family: var(--font-display); font-weight: 500; text-shadow: 0 0 20px rgba(212, 181, 142, 0.4);
+}
+
+#encyclopedia-app .has-drop-cap {
+    text-indent: 0 !important;
+}
+
+#encyclopedia-app .arch-window { border-radius: 500px 500px 12px 12px; }
+
+#encyclopedia-app .extreme-dark-scrollbar::-webkit-scrollbar { width: 4px; }
+#encyclopedia-app .extreme-dark-scrollbar::-webkit-scrollbar-track { background: transparent; }
+#encyclopedia-app .extreme-dark-scrollbar::-webkit-scrollbar-thumb { background: rgba(212,181,142,0.2); border-radius: 4px; }
+#encyclopedia-app .extreme-dark-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(212,181,142,0.4); }
+
+#encyclopedia-app .fade-enter-active,
+#encyclopedia-app .fade-leave-active { transition: opacity 0.5s ease, transform 0.5s ease; }
+#encyclopedia-app .fade-enter-from,
+#encyclopedia-app .fade-leave-to { opacity: 0; transform: scale(0.98); }
+
+#encyclopedia-app .fade-simple-enter-active,
+#encyclopedia-app .fade-simple-leave-active { transition: opacity 0.5s ease; }
+#encyclopedia-app .fade-simple-enter-from,
+#encyclopedia-app .fade-simple-leave-to { opacity: 0; }
+
+#encyclopedia-app .slide-up-enter-active,
+#encyclopedia-app .slide-up-leave-active { transition: opacity 0.3s ease, transform 0.3s ease; }
+#encyclopedia-app .slide-up-enter-from,
+#encyclopedia-app .slide-up-leave-to { opacity: 0; transform: translateY(20px); }

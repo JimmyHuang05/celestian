@@ -8,6 +8,7 @@
   position:relative;width:100%;height:100%;isolation:isolate;
 }
 .tiled-map__canvas {position:absolute;inset:0;background:#101725!important}
+.tiled-map .sr-only {position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
 .map-atlas-frame {pointer-events:none!important;overflow:hidden}
 .tiled-map__header {position:absolute;z-index:850;left:24px;top:24px;width:var(--map-panel-width);pointer-events:none}
 .tiled-map .map-icon {display:block;flex:none;width:20px;height:20px}

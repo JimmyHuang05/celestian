@@ -1,3 +1,5 @@
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import { CHUNK, WORLD, PainterModel } from './model.js'
 import { openPaintDatabase, readPaint, writePaint } from './storage.js'
 import { downloadFile, exportPaintSVG } from './export.js'
@@ -111,10 +113,8 @@ export class PaintRuntime {
         this.saveStatus = this.db ? '旧区域已迁入，正在保存…' : '旧区域已迁入，请下载备份'
       }
     }
-    const L = window.L
     assignEditorColors(this.model)
     this.model.changed()
-    if (!L) throw Error('地图组件加载失败，请刷新重试')
     this.scale = 2 ** meta.maxZoom
     this.bounds = L.latLngBounds([[-WORLD.height / this.scale, 0], [0, WORLD.width / this.scale]])
     this.map = L.map(this.container, { crs: L.CRS.Simple, zoomControl: false, attributionControl: false, minZoom: 0, maxZoom: meta.maxZoom, zoomSnap: .25, zoomDelta: .5, maxBounds: this.bounds, maxBoundsViscosity: 1, zoomAnimation: false, fadeAnimation: false, inertia: false })

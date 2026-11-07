@@ -2,6 +2,7 @@ import { defineConfig } from 'vite'
 import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { execSync } from 'child_process'
+import { readFileSync } from 'node:fs'
 import oldPreview from './scripts/old-preview.js'
 import devNavigation from './scripts/dev-navigation.js'
 import retiredEditor from './scripts/retired-editor.js'
@@ -57,6 +58,31 @@ const galleryProxy = {
   },
 }
 
+// The atlas can start with system fonts while the shared font rules download.
+// Keep the normal blocking stylesheet on the other entry routes.
+function optimizeMapEntry() {
+  return {
+    name: 'optimize-map-entry',
+    apply: 'build',
+    transformIndexHtml: {
+      order: 'post',
+      handler(html, { path, bundle }) {
+        if (path !== '/index.html') return html
+        const { width, height, tileSize, minZoom, maxZoom } = JSON.parse(readFileSync(
+          new URL('./public/map/world-240705-base-v2/manifest.json', import.meta.url), 'utf8',
+        ))
+        html = html.replace('/* map-boot-geometry */ null', JSON.stringify({ width, height, tileSize, minZoom, maxZoom }))
+        return html.replace(/<link\b[^>]*rel="stylesheet"[^>]*href="\/([^"]+)"[^>]*>/g, (link, file) => {
+          const asset = bundle?.[file]
+          if (asset?.type !== 'asset' || !String(asset.source).includes('@font-face')) return link
+          return link.replace('>', ' media="print" onload="this.media=\'all\'">') +
+            '<script>if (!document.documentElement.dataset.mapBoot) document.currentScript.previousElementSibling.media = "all"</script>'
+        })
+      },
+    },
+  }
+}
+
 export default defineConfig({
   server: { proxy: galleryProxy },
   preview: { proxy: galleryProxy },
@@ -76,6 +102,7 @@ export default defineConfig({
     }),
   },
   plugins: [
+    optimizeMapEntry(),
     retiredEditor(),
     devNavigation(),
     oldPreview(),

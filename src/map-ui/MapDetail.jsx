@@ -3,6 +3,7 @@ import MapIcon from './MapIcon.jsx'
 import { regionMeta, POLLUTION_STYLES } from './region-presentation.js'
 import { cityScenes } from './city-scenes.js'
 import { regionScenes } from './region-scenes.js'
+import scenePreviews from './scene-previews.json'
 
 const sizes = ['summary', 'half', 'full']
 const names = ['摘要', '半屏', '展开']
@@ -10,10 +11,15 @@ const names = ['摘要', '半屏', '展开']
 function SceneImage({ scene }) {
   const [loaded, setLoaded] = useState(false)
   const [failed, setFailed] = useState(false)
+  const [useOriginal, setUseOriginal] = useState(false)
   if (!scene.image) return null
+  const preview = scenePreviews[scene.image]
   return <div className={`map-scene-image${loaded ? ' is-loaded' : ''}`}>
     {!loaded && <div className="map-scene-placeholder" role="img" aria-label={`${scene.title}：${failed ? '图片暂时无法加载' : '图片加载中'}`} />}
-    <img src={scene.image} alt={scene.alt || scene.title} loading="lazy" decoding="async" onLoad={() => setLoaded(true)} onError={() => setFailed(true)} />
+    <img src={!useOriginal && preview ? preview : scene.image} alt={scene.alt || scene.title} loading="lazy" decoding="async" onLoad={() => setLoaded(true)} onError={() => {
+      if (preview && !useOriginal) setUseOriginal(true)
+      else setFailed(true)
+    }} />
   </div>
 }
 

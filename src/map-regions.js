@@ -34,8 +34,8 @@ export function focusMap(map, latlng, zoom = map.getZoom()) {
 export function fitRegionBounds(map, bounds) {
   const size = map.getSize(), mobile = size.x <= 640
   const sheet = Math.min(size.y * .46, 420, Math.max(120, size.y - 180))
-  const topLeft = window.L.point(mobile ? 24 : 408, mobile ? 132 : 142)
-  const bottomRight = window.L.point(mobile ? 24 : 80, mobile ? sheet + 76 : 56)
+  const topLeft = [mobile ? 24 : 408, mobile ? 132 : 142]
+  const bottomRight = [mobile ? 24 : 80, mobile ? sheet + 76 : 56]
   // Compute before applying minZoom: an explicit whole-territory view may need
   // to go below the normal overview limit to leave room for the dossier.
   const worldA = map.project(bounds.getNorthWest(), 0), worldB = map.project(bounds.getSouthEast(), 0)
@@ -45,7 +45,7 @@ export function fitRegionBounds(map, bounds) {
     Math.max(1, available.y) / Math.max(.001, worldB.y - worldA.y),
   ))))
   const a = map.project(bounds.getNorthWest(), zoom), b = map.project(bounds.getSouthEast(), zoom)
-  const center = a.add(b).divideBy(2).add(bottomRight.subtract(topLeft).divideBy(2))
+  const center = a.add(b).divideBy(2).add([(bottomRight[0] - topLeft[0]) / 2, (bottomRight[1] - topLeft[1]) / 2])
   moveMap(map, map.unproject(center, zoom), zoom, { allowPadding: true })
 }
 
@@ -64,7 +64,7 @@ export function moveMap(map, position, zoom = map.getZoom(), { allowPadding = fa
       max.x = Math.max(max.x, center.x + size.x); max.y = Math.max(max.y, center.y + size.y)
       // The existing maxBounds moveend/drag handlers read this option. Updating
       // it directly avoids setMaxBounds starting a competing pan at the OLD zoom.
-      map.options.maxBounds = window.L.latLngBounds([map.unproject(min, zoom), map.unproject(max, zoom)])
+      map.options.maxBounds = world.pad(0).extend(map.unproject(min, zoom)).extend(map.unproject(max, zoom))
     } else map.options.maxBounds = world
   }
   // Clamp before animating, so maxBounds cannot trigger a second corrective pan.

@@ -290,10 +290,10 @@ export const cityScenes = {
     alt: '连绵雪山与白云倒映于平静的水晶池，湛蓝湖面水天一色',
     description: '雪山环抱的澄澈湖泊，无风时水天一色，群峰与流云完整倒映于湖面，令人难辨天地。因其宛如铺展于群山之间的明镜，被誉为“天空之镜”。',
   }, {
-    title: '里瓦基亚拉水务宫',
+    title: '丽瓦绮澜水务宫',
     foreign_title: 'Palazzo delle Acque di Riva Chiara',
     image: '/gallery/scenes/riva-chiara-water-palace-v1.webp',
-    alt: '里瓦基亚拉城区的白石水务宫，中央穹顶与钟塔高出红瓦街区，宽阔阶梯连接柱廊和前庭',
+    alt: '丽瓦绮澜城区的白石水务宫，中央穹顶与钟塔高出红瓦街区，宽阔阶梯连接柱廊和前庭',
     description: '统筹水晶池沿岸堤防、航运与引水工程的水务机关。白石穹顶下保存着历代水位记录和湖区测绘图，工程师与船主常在此议事，钟塔则为往来船班报时。',
   }],
   'b97014ed-a6ed-4e3b-a251-305b862ddb1a': [{

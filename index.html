@@ -13,12 +13,37 @@
     <meta name="baidu-site-verification" content="codeva-9nWPZdui8T" />
 
     <link rel="icon" type="image/png" href="/data/images/icons/favicon.png">
+    <script>
+      if (/^\/map\/?$/.test(location.pathname)) {
+        document.documentElement.dataset.mapBoot = 'true'
+        const root = '/map/world-240705-base-v2'
+        window.__celestianMapManifest = fetch(root + '/manifest.json', { priority: 'high' })
+          .then(response => response.ok ? response.json() : null)
+          .catch(() => null)
+        const geometry = /* map-boot-geometry */ null
+        const primeTile = map => {
+          if (!map || new URLSearchParams(location.search).has('map')) return
+          try {
+            if (localStorage.getItem('celestian-map-view-v2')) return
+          } catch { /* Storage can be unavailable on an embedded map. */ }
+          const scale = 2 ** map.maxZoom
+          // The default camera covers the viewport with the framed atlas.
+          // Prime just the central tile, leaving saved/shared views to Leaflet.
+          const coverScale = Math.max(innerWidth * (1 - 49.2 / 2232) / map.width, innerHeight * (1 - 49.2 / 1112) / map.height) * scale
+          const zoom = Math.max(map.minZoom, Math.min(map.maxZoom, Math.round(Math.log2(coverScale))))
+          const tileSpan = map.tileSize * 2 ** (map.maxZoom - zoom)
+          const preload = document.createElement('link')
+          preload.rel = 'preload'
+          preload.as = 'image'
+          preload.fetchPriority = 'high'
+          preload.href = root + '/' + zoom + '/' + Math.floor(map.width / (2 * tileSpan)) + '/' + Math.floor(map.height / (2 * tileSpan)) + '.webp'
+          document.head.append(preload)
+        }
+        if (geometry) primeTile(geometry)
+        else window.__celestianMapManifest.then(primeTile)
+      }
+    </script>
 
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-    <script defer src="https://unpkg.com/lucide@latest"></script>
 </head>
 <body class="font-serif antialiased selection:bg-[#d4b58e] selection:text-[#1c1917]">
     <div id="root"></div>

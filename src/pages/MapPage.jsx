@@ -1,4 +1,6 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { lazy, Suspense, useCallback, useEffect, useRef, useState } from 'react'
+import L from 'leaflet'
+import 'leaflet/dist/leaflet.css'
 import './map.css'
 import '../page-actions.css'
 import BackButton from '../components/BackButton.jsx'
@@ -9,13 +11,14 @@ import { attachMarkers } from '../map-markers.js'
 import { attachRegions, focusMap, moveMap } from '../map-regions.js'
 import { indexRegions } from '../map-ui/search.js'
 import MapSearch from '../map-ui/MapSearch.jsx'
-import MapDetail from '../map-ui/MapDetail.jsx'
 import MapControls from '../map-ui/MapControls.jsx'
 import MapShare from '../map-ui/MapShare.jsx'
 import { attachLabelDisplay } from '../map-labels.js'
 import { attachMapFrame, coverMap, frameZoom } from '../map-frame.js'
 import { buildMapShare, readMapShare } from '../map-ui/share.js'
 import { DEFAULT_LAYERS, normalizePreferences, readPreferences, writePreferences, serializeView, restoreView } from '../map-ui/preferences.js'
+
+const MapDetail = lazy(() => import('../map-ui/MapDetail.jsx'))
 
 export default function MapPage() {
   const { enabled, toggleMusic } = useBackgroundMusic()
@@ -101,22 +104,17 @@ export default function MapPage() {
       .then(response => { if (!response.ok) throw new Error('地点数据暂时无法加载'); return response.json() })
       .then(payload => { if (!Array.isArray(payload.data)) throw new Error('地点数据格式无效'); return payload.data })
       .catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return [] })
-    const regionRequest = Promise.all([
-      fetchLegacyRegions(controller.signal),
-      fetch(`${MAP_ROOT}/legacy-region-metadata.json`, { signal: controller.signal }).then(r => { if (!r.ok) throw Error('区域资料暂时无法加载'); return r.json() }),
-    ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
-    const labelRequest = Promise.all([
-      fetchMapLabels(controller.signal),
-      fetch(`${MAP_ROOT}/labels-index.json`, { signal: controller.signal }).then(r => { if (!r.ok) throw Error(); return r.json() }).catch(() => null),
-    ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
     async function open() {
       try {
-        const response = await fetch(`${MAP_ROOT}/manifest.json`, { signal: controller.signal })
-        if (!response.ok) throw new Error('地图暂时无法打开，请重试。')
-        const metadata = await response.json()
+        let metadata = attempt === 0 ? await window.__celestianMapManifest : null
         if (controller.signal.aborted) return
-        const L = window.L
-        if (!L) throw new Error('地图组件未能加载，请刷新页面。')
+        delete window.__celestianMapManifest
+        if (!metadata) {
+          const response = await fetch(`${MAP_ROOT}/manifest.json`, { signal: controller.signal, priority: 'high' })
+          if (!response.ok) throw new Error('地图暂时无法打开，请重试。')
+          metadata = await response.json()
+        }
+        if (controller.signal.aborted) return
         const scale = 2 ** metadata.maxZoom
         const bounds = L.latLngBounds([[-metadata.height / scale, 0], [0, metadata.width / scale]])
         const reduced = matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -153,9 +151,22 @@ export default function MapPage() {
           bounds, noWrap: true, keepBuffer: 1, updateWhenIdle: true, updateWhenZooming: false,
         })
         let tileFailed = false
+        layer.on('tileloadstart', ({ tile }) => { tile.fetchPriority = 'high' })
         layer.on('load', () => { if (!tileFailed) setStatus('') })
         layer.on('tileerror', () => { tileFailed = true; setFailed(true); setStatus('部分地图未能加载，请重试。') })
         layer.addTo(map)
+
+        // Let the visible tiles claim bandwidth first without delaying search
+        // or saved selections until every tile finishes.
+        const overlayFetch = { signal: controller.signal, priority: 'low' }
+        const regionRequest = Promise.all([
+          fetchLegacyRegions(overlayFetch.signal, overlayFetch.priority),
+          fetch(`${MAP_ROOT}/legacy-region-metadata.json`, overlayFetch).then(r => { if (!r.ok) throw Error('区域资料暂时无法加载'); return r.json() }),
+        ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
+        const labelRequest = Promise.all([
+          fetchMapLabels(overlayFetch.signal, overlayFetch.priority),
+          fetch(`${MAP_ROOT}/labels-index.json`, overlayFetch).then(r => { if (!r.ok) throw Error(); return r.json() }).catch(() => null),
+        ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
         map.createPane('mapLabelsPane').style.zIndex = '460'
         const saveView = () => {
           settings.current = { ...settings.current, frameVersion: 1, view: serializeView(map, metadata) }
@@ -302,9 +313,9 @@ export default function MapPage() {
       {markerError && <div className="map-marker-error" role="status">{markerError} <button onClick={retry}>重试</button></div>}
       {notice && <div className="map-notice" role="status"><span>{notice}</span><button onClick={() => setNotice('')} aria-label="关闭地图提示">知道了</button></div>}
       {share && <MapShare value={share} onClose={() => setShare(null)} />}
-      {activeMarker && <MapDetail row={activeMarker} closing={closing} size={sheetSize} onSize={setSheetSize} onClose={closeMarker} onShare={() => shareView(true)} onTerritoryView={all => {
+      {activeMarker && <Suspense fallback={null}><MapDetail row={activeMarker} closing={closing} size={sheetSize} onSize={setSheetSize} onClose={closeMarker} onShare={() => shareView(true)} onTerritoryView={all => {
         setSheetSize('half'); viewer.current?.territories?.focus(activeMarker.sourceRegionId, { all })
-      }} />}
+      }} /></Suspense>}
       <MapControls layers={layers} onLayer={key => setLayers(value => ({ ...value, [key]: !value[key] }))} labelMode={labelMode} onLabelMode={setLabelMode} onShare={() => shareView()} legend={legend} pointTypes={[...new Set(markerRows.map(row => row.type))]} onFull={fullView} onCenter={centerMap} onReset={resetView} onBack={previousView} canGoBack={canGoBack} zoomLimits={zoomLimits} onZoom={direction => {
         const map = viewer.current?.map
         if (!map) return

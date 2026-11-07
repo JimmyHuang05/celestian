@@ -4,9 +4,6 @@ import { BrowserRouter } from 'react-router-dom'
 import './index.css'
 import App from './App.jsx'
 import BackgroundMusic from './components/BackgroundMusic.jsx'
-import { installProfileNavigation } from './profile-navigation.js'
-
-installProfileNavigation()
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
