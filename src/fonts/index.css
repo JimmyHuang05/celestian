@@ -1,0 +1,20 @@
+@import './faces.css';
+
+/* Public type roles. Page themes may change sizing and spacing, not font URLs. */
+:root {
+  --font-body:'Noto Serif SC','Songti SC',SimSun,serif;
+  --font-display:'Cinzel',var(--font-body);
+  --font-mono:'JetBrains Mono',var(--font-body),monospace;
+  --font-ui:system-ui,-apple-system,BlinkMacSystemFont,'Segoe UI','Microsoft YaHei',sans-serif;
+  --font-decorative:'峄山碑篆体',var(--font-body);
+  --font-signature:'Mrs Saint Delafield',cursive;
+  --font-classic:Georgia,'Times New Roman',var(--font-body);
+  --font-editorial:'Bodoni MT',Didot,'Times New Roman',var(--font-body);
+}
+
+.font-body,.font-serif-sc {font-family:var(--font-body)}
+.font-display {font-family:var(--font-display)}
+.font-mono-ef {font-family:var(--font-mono)}
+.font-ui {font-family:var(--font-ui)}
+.font-decorative {font-family:var(--font-decorative)}
+:where(button,input,select,textarea) {font-family:inherit}

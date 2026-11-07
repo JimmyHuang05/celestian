@@ -2,33 +2,17 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
+  <!-- shared-font-preload:start -->
+  <link rel="preload" href="/fonts/v1/song-critical-d63e1a85af8bcdb4.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
+  <link rel="stylesheet" href="/src/fonts/index.css">
+  <!-- shared-font-preload:end -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <script>
-      // Discover home artwork before downloading fonts or booting React.
-      if (location.pathname === '/') {
-        for (const name of ['hero-front', 'encyclopedia-card', 'map-card', 'functions-card']) {
-          const link = document.createElement('link');
-          link.rel = 'preload';
-          link.as = 'image';
-          link.href = '/images/cards/' + name + '-original.webp';
-          if (name === 'hero-front') link.fetchPriority = 'high';
-          else link.media = '(min-width: 1024px)';
-          document.head.appendChild(link);
-        }
-      }
-    </script>
+
     <title>无光的伊甸园丨个人原创世界观展示</title>
 
     <meta name="baidu-site-verification" content="codeva-9nWPZdui8T" />
 
     <link rel="icon" type="image/png" href="/data/images/icons/favicon.png">
-
-    <link rel="preconnect" href="https://fontsapi.zeoseven.com">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/285/main/result.css">
-    <link rel="stylesheet" href="https://fontsapi.zeoseven.com/236/main/result.css">
-    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;500;600;700;900&family=Noto+Serif+SC:wght@300;400;600;900&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <script defer src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>

@@ -1,0 +1,74 @@
+/* The paintings are a subdued backdrop; the provisional faction emblem is the focal point. */
+.preview[data-faction=eternal-astrology]{padding:0;background:#080807;min-height:100svh;color:#e8e2d6}
+.preview [hidden]{display:none!important}
+.astrology-chaos{display:none;position:absolute;inset:0;z-index:-3;width:100%;height:100%;object-fit:cover;pointer-events:none;opacity:.64}
+.preview[data-faction=eternal-astrology] .astrology-chaos{display:block}
+.astrology-chaos-canvas{opacity:0;transition:opacity 1.2s}
+.astrology-chaos-canvas[data-ready=true]{opacity:1}
+.astrology-chaos-fallback{opacity:1;background:radial-gradient(ellipse at 50% 46%,#050606 0%,#050606ee 17%,transparent 44%),radial-gradient(ellipse at 16% 24%,#a5a7a655,transparent 51%),radial-gradient(ellipse at 86% 76%,#a38f6155,transparent 51%),#090b0c}
+.preview[data-atmosphere="4"] .astrology-chaos-fallback{background:#080807 var(--astrology-artwork,url('/eternal-astrology/chaos-v1.webp')) center/cover no-repeat}
+.astrology-background-chooser{display:none;position:absolute;z-index:7;top:20px;left:50%;transform:translateX(-50%);align-items:center;gap:14px}
+.preview[data-faction=eternal-astrology] .astrology-background-chooser{display:flex}
+.astrology-background-options{display:flex;gap:3px;padding:4px;background:#0b0c0cbd;border:1px solid #d3c8ae29;border-radius:3px;backdrop-filter:blur(16px)}
+.astrology-background-chooser button{padding:8px 13px;border:0;border-radius:2px;background:transparent;color:#b8b8b0;font:11px var(--font-body);letter-spacing:.1em;white-space:nowrap;cursor:pointer}
+.astrology-background-options button[aria-pressed=true]{background:#d4c6a01c;color:#e4d5b7;box-shadow:inset 0 -1px #d0b9888a}
+.astrology-background-chooser button:hover{color:#f0e5ce;background:#d4c6a00c}
+.astrology-background-chooser button:focus-visible{outline:1px solid #cdbd9d;outline-offset:3px}
+.astrology-background-chooser .astrology-background-inspect{padding:9px 0;color:#c1bcae;border-bottom:1px solid #c1bcae40;border-radius:0}
+.astrology-background-caption{display:none;position:absolute;z-index:5;bottom:30px;left:4.5%;right:4.5%;margin:0;color:#c4c1b899;font:10px var(--font-body);letter-spacing:.09em;line-height:1.9;pointer-events:none}
+.preview[data-faction=eternal-astrology] .astrology-background-caption{display:block}
+.preview[data-faction=eternal-astrology][data-background-only=true] .astrology-view{visibility:hidden}
+.preview[data-faction=eternal-astrology][data-background-only=true] ~ .faction-switcher{display:none}
+.preview[data-faction=eternal-astrology][data-background-only=true]:before{opacity:0}
+.preview[data-faction=eternal-astrology][data-background-only=true] .astrology-background-caption{color:#d8d5ccba}
+.astrology-motion{display:none;position:absolute;z-index:6;top:27px;right:4.5%;padding:8px 0 8px 12px;border:0;background:none;font:10px var(--font-body);letter-spacing:.16em;color:#c7c0b4a6;cursor:pointer}
+.preview[data-faction=eternal-astrology] .astrology-motion{display:block}
+.astrology-motion:before{content:'Ⅱ';margin-right:8px;font:10px var(--font-classic)}
+.astrology-motion[aria-pressed=true]:before{content:'▷'}
+.astrology-motion:hover{color:#eee5d2}
+.astrology-motion:focus-visible{outline:1px solid #c7c0b4;outline-offset:5px}
+.preview[data-faction=eternal-astrology]:before{content:'';position:absolute;inset:0;z-index:-2;pointer-events:none;background:linear-gradient(0deg,#08080799,transparent 24%,transparent 84%,#08080726)}
+.preview[data-faction=eternal-astrology] .preview-stars,
+.preview[data-faction=eternal-astrology] .preview-orbit,
+.preview[data-faction=eternal-astrology] .preview-hint{display:none}
+.preview[data-faction=eternal-astrology] .preview-header{position:absolute;z-index:5;top:34px;left:4.5%;right:4.5%;font:10px var(--font-classic);letter-spacing:.23em;color:#c7c0b480}
+.astrology-view{position:relative;isolation:isolate;display:grid;place-items:center;min-height:100svh;padding:76px 0 116px}
+.astrology-scroll{width:100%;pointer-events:none;grid-area:1/1}
+.astrology-columns{width:min(89vw,1500px,calc((100svh - 238px)*2.285714 + 90px));margin:0 auto;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(18px,2.5vw,42px);align-items:start}
+.astrology-column{margin:0;min-width:0;position:relative}
+.astrology-column:nth-child(odd){margin-top:clamp(24px,5.5svh,60px)}
+.astrology-art{position:relative;border:1px solid #cfbd9333;background:#090909;box-shadow:0 15px 36px #00000045}
+.astrology-art:after{content:'';position:absolute;inset:0;pointer-events:none;background:linear-gradient(0deg,#08080728,transparent 45%,#08080715)}
+.astrology-art img{display:block;width:100%;height:auto;filter:saturate(.3);opacity:.72}
+.astrology-caption{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
+.astrology-presence{grid-area:1/1;position:relative;z-index:3;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;align-self:center;pointer-events:none;transform:translateY(-8px);padding:0 20px}
+.astrology-presence:before{content:'';position:absolute;z-index:-1;left:50%;top:45%;width:min(680px,72vw);height:490px;transform:translate(-50%,-50%);background:radial-gradient(ellipse,#070706e8 2%,#070706bd 26%,#07070670 46%,#07070626 64%,transparent 76%)}
+.astrology-emblem{display:block;height:clamp(210px,34svh,350px);width:auto;max-width:40vw;object-fit:contain;filter:drop-shadow(0 0 16px #eadac514) drop-shadow(0 3px 8px #000);margin:0 auto 26px}
+.astrology-title{position:relative;margin:0;padding-left:.24em;font-family:var(--font-decorative);font-size:clamp(24px,2.6vw,36px);font-weight:400;line-height:1.5;letter-spacing:.24em;color:#d4b58e;text-shadow:0 2px 22px #000,0 0 8px #000}
+.astrology-subtitle{margin:9px 0 0;padding-left:.05em;font-family:var(--font-body);font-size:clamp(14px,1.2vw,16px);font-weight:400;line-height:2.2;letter-spacing:.05em;color:#dcd6cc;text-align:center;-webkit-font-smoothing:antialiased;text-shadow:0 2px 8px #000}
+.astrology-subtitle:after{content:'';display:block;width:36px;height:1px;margin:18px auto 0;background:#c6ad7e77}
+.preview[data-faction=eternal-astrology] ~ .faction-switcher .fs-dock{background:linear-gradient(130deg,#171714f2,#10100ff5);border-color:#c5b28a28}
+.preview[data-faction=eternal-astrology] ~ .faction-switcher .fs-country{color:#9c9a91}
+@media(max-width:650px){
+  .astrology-background-chooser{top:53px;gap:8px;width:max-content;max-width:94vw;flex-wrap:wrap;justify-content:center}
+  .astrology-background-chooser button{font-size:10px;padding:7px 10px}
+  .astrology-background-caption{bottom:12px;font-size:9px;max-width:92%;line-height:1.6}
+  .preview[data-faction=eternal-astrology]:not([data-background-only=true]) .astrology-background-caption{display:none}
+  .astrology-motion{top:17px;font-size:9px}
+  .preview[data-faction=eternal-astrology] .preview-header{top:25px;font-size:9px}
+  .astrology-view{min-height:max(100svh,750px);padding:76px 0 124px}
+  .astrology-columns{width:min(80vw,430px);grid-template-columns:repeat(2,minmax(0,1fr));gap:16px 21px}
+  .astrology-column:nth-child(odd){margin-top:22px}
+  .astrology-art img{filter:saturate(.3);opacity:.66}
+  .astrology-presence{padding:0 12px;transform:translateY(-10px)}
+  .astrology-presence:before{width:100vw;height:460px;background:radial-gradient(ellipse,#070706ee 3%,#070706ba 35%,#07070655 62%,transparent 78%)}
+  .astrology-emblem{height:235px;max-width:38vw;margin-bottom:23px}
+  .astrology-title{font-size:24px;letter-spacing:.12em;padding-left:.12em}
+}
+@media(max-height:560px) and (min-width:651px){
+  .astrology-view{min-height:570px}
+  .astrology-columns{width:min(82vw,850px)}
+  .astrology-emblem{height:205px;margin-bottom:18px}
+  .astrology-title{font-size:26px}
+}
+@media(prefers-reduced-motion:reduce){.astrology-chaos-canvas{transition:none}}

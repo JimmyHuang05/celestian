@@ -12,9 +12,9 @@
   .profile .sound-replay{display:none}
   .mobile-archive{display:block;position:relative;z-index:8;margin:0 -24px}
   .mobile-archive-heading{display:flex;justify-content:space-between;align-items:center;margin:0 24px 13px;color:#b7a583;font-size:10px;letter-spacing:.18em}
-  .mobile-archive-heading>span:first-child{font-family:Georgia,'Microsoft YaHei',serif}
+  .mobile-archive-heading>span:first-child{font-family:var(--font-classic)}
   .mobile-archive-heading i{font-style:normal;color:#665e50;margin:0 6px}
-  .mobile-archive-count{font-family:Georgia,serif;font-variant-numeric:tabular-nums;letter-spacing:.12em}
+  .mobile-archive-count{font-family:var(--font-classic);font-variant-numeric:tabular-nums;letter-spacing:.12em}
   .mobile-portraits{position:relative;display:flex;gap:13px;overflow-x:auto;overscroll-behavior-x:contain;padding:5px 24px 15px;scrollbar-width:none;scroll-padding-inline:24px}
   .mobile-portraits::-webkit-scrollbar{display:none}
   .mobile-character{position:relative;flex:0 0 60px;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 0 9px;border:0;background:none;color:#8592a6}
@@ -36,7 +36,7 @@
   .profile .identity .profession:before{width:12px;height:1px}
   .profile .portrait-area{position:relative;inset:auto;width:100%;height:clamp(330px,112vw,580px);container-type:size;margin:12px auto 36px;z-index:1;overflow:visible;isolation:isolate}
   .profile .portrait{left:50%;top:50%;width:auto;height:auto;max-width:100%;max-height:100%;transform:translate(-50%,-50%);filter:saturate(.85) brightness(.96) drop-shadow(0 8px 14px #060e2540)}
-  .mobile-portrait-caption{position:absolute;inset:auto 0 -16px;display:flex;justify-content:space-between;align-items:center;font:9px Georgia,serif;letter-spacing:.28em;color:#a79573;pointer-events:none}
+  .mobile-portrait-caption{position:absolute;inset:auto 0 -16px;display:flex;justify-content:space-between;align-items:center;font:9px var(--font-classic);letter-spacing:.28em;color:#a79573;pointer-events:none}
   .mobile-portrait-caption:before{content:'';height:1px;flex:1;background:linear-gradient(90deg,transparent,#b49b6c50);order:1;margin:0 18px}
   .mobile-portrait-index{order:2}
   .profile .dossier-panel{position:relative;inset:auto;width:100%;display:block;padding-top:26px}

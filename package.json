@@ -5,7 +5,10 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vite build",
+    "build": "npm run fonts:check && vite build",
+    "fonts:check": "node scripts/check-fonts.mjs",
+    "fonts:test-loading": "node scripts/check-font-loading.cjs",
+    "fonts:sync": "python scripts/sync-fonts.py",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -14,7 +17,8 @@
     "react": "^19.2.5",
     "react-dom": "^19.2.5",
     "react-router-dom": "^7.14.2",
-    "supabase": "^2.98.0"
+    "supabase": "^2.98.0",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

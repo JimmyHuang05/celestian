@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0d1422">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ctext y='26' font-size='30'%3E✧%3C/text%3E%3C/svg%3E">
+  <title>众生录 · 动态立绘样板</title>
+</head>
+<body>
+<main class="motion-demo profile">
+  <div id="sample-galaxy" class="profile-galaxy" aria-hidden="true"></div>
+  <header class="sample-header">
+    <a href="/character-profile.html" class="back-link"><span aria-hidden="true">↶</span> 返回角色页</a>
+    <span class="sample-wordmark">CELESTIAN <i>／</i> MOTION STUDY</span>
+    <span class="live-status" id="live-status" role="status">正在加载模型</span>
+  </header>
+
+  <section class="model-stage" aria-label="可互动的动态立绘">
+    <div class="stage-band" aria-hidden="true"></div>
+    <div class="stage-caption"><span>众生录 · 动态试作 01</span><h1>让立绘<br>有一点呼吸。</h1><p>开启「鼠标跟随」，与她对视。</p></div>
+    <div class="canvas-host" id="canvas-host"><canvas id="puppet" aria-label="Aka 示例角色，支持鼠标跟随和动态表情"></canvas></div>
+    <div class="loading-state" id="loading" role="status"><span class="loading-star">✧</span><p id="loading-text">正在展开动态立绘…</p><button id="retry" hidden>重新加载</button></div>
+    <div class="stage-footer"><div><span class="model-name">AKA</span><span class="model-caption">开源示例角色 · 非本站角色</span></div><div class="view-switch" aria-label="取景"><button data-view="full" aria-pressed="true">全身</button><button data-view="close" aria-pressed="false">近景</button></div></div>
+  </section>
+
+  <aside class="motion-panel" aria-labelledby="panel-heading">
+    <div class="panel-ornament" aria-hidden="true">✧</div>
+    <p class="eyebrow">A LITTLE LIFE IN THE STARS</p>
+    <h2 id="panel-heading">动态立绘</h2>
+    <p class="panel-intro">轻微呼吸、自然眨眼，<br>还有跟随动作的发丝与衣摆。</p>
+    <fieldset id="controls" disabled>
+      <legend class="sr-only">动画控制</legend>
+      <div class="mode-switch" aria-label="选择动作模式"><button id="idle-mode" aria-pressed="true">自然待机</button><button id="follow-mode" aria-pressed="false">鼠标跟随</button></div>
+      <div class="setting-row"><label for="breathing">呼吸与轻摆</label><input id="breathing" type="checkbox" checked role="switch"></div>
+      <div class="setting-row"><label for="blinking">自动眨眼</label><input id="blinking" type="checkbox" checked role="switch"></div>
+      <div class="setting-row"><label for="secondary">发丝与衣摆</label><input id="secondary" type="checkbox" checked role="switch"></div>
+      <div class="intensity-label"><label for="intensity">动作幅度</label><output for="intensity" id="intensity-value">轻柔 · 35%</output></div>
+      <input id="intensity" class="intensity-slider" type="range" min="0" max="100" value="35">
+      <div class="reaction-label">试一个小动作 <span>INTERACTION</span></div>
+      <div class="reaction-grid"><button id="blink-once">眨眨眼</button><button id="nod-once">点点头</button><button id="smile-once">微笑</button></div>
+      <button id="pause" class="pause-button" aria-pressed="false"><span aria-hidden="true">Ⅱ</span> 暂停，看看静态</button>
+    </fieldset>
+    <p class="sample-note">这是已拆层、绑定的真实动态模型。<br>用于验证效果，后续再制作我们的角色。</p>
+    <details class="credits"><summary>模型与开源来源</summary><p>Aka：绘制与绑定 <a href="https://github.com/Inochi2D/example-models" target="_blank" rel="noreferrer">seagetch</a> · <a href="https://creativecommons.org/licenses/by/4.0/" target="_blank" rel="noreferrer">CC BY 4.0</a>。采用 AITuber OnAir 的扩展绑定版本，样板重新编排待机和互动动作。</p><p>引擎：<a href="https://github.com/Inochi2D/inox2d" target="_blank" rel="noreferrer">Inox2D</a> / WebAssembly。浏览器运行库来自 <a href="https://github.com/shinshin86/aituber-onair" target="_blank" rel="noreferrer">AITuber OnAir</a>。<a href="/inochi-sample/THIRD-PARTY-NOTICES.md" target="_blank">许可说明</a></p></details>
+  </aside>
+</main>
+<script type="module" src="/src/character-motion-demo.js"></script>
+</body>
+</html>

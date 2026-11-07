@@ -1,0 +1,19 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#0c0d0c"><title>占星会 · 层叠星弦</title>
+  <style>
+    @font-face{font-family:Celestian;src:url('/src/fonts/identity/noto-serif-sc-400.ttf') format('truetype');font-display:swap}
+    *{box-sizing:border-box}body{margin:0;background:#0b0c0c;color:#e5ddcc;font-family:Celestian,'Songti SC',serif;min-height:100svh}body:before{content:'';position:fixed;inset:0;z-index:-1;background:linear-gradient(#090b0bec,#090b0be6),url('/eternal-astrology/chaos-v1.webp') center/cover;pointer-events:none}
+    main{max-width:1600px;margin:auto;padding:42px 4vw 30px}header{display:flex;justify-content:space-between;align-items:start;gap:24px;margin-bottom:38px}.eyebrow{font:10px Georgia,serif;letter-spacing:.25em;color:#ad9d80;margin:0 0 14px}h1{font-size:clamp(23px,2.6vw,34px);font-weight:400;letter-spacing:.16em;margin:0 0 13px}.intro{font-size:12px;color:#a29f95;line-height:1.9;margin:0}a{color:#d9c7a5;text-decoration:none}header a{font-size:11px;white-space:nowrap;padding:8px 0;border-bottom:1px solid #bda88155}
+    .grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:20px}.card{min-width:0;border-top:1px solid #c8b68e45;padding-top:16px}.number{color:#9e8b65;font:11px Georgia,serif;letter-spacing:.16em}.art{height:320px;display:grid;place-items:center;background:radial-gradient(ellipse,#d6c9a806,transparent 70%);margin:4px 0 15px}.art img{height:100%;width:100%;object-fit:contain;max-width:100%;filter:drop-shadow(0 0 12px #ead7ac09)}h2{font-size:18px;font-weight:400;letter-spacing:.14em;margin:0 0 9px}.theme{font-size:10px;letter-spacing:.09em;color:#b7a784;margin:0 0 13px}.description{font-size:11px;line-height:1.95;color:#9d9e95;min-height:67px;margin:0 0 20px}.actions{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #c5b58f20;padding-top:14px;font-size:10px}.actions a{padding:5px 0}.actions a:first-child{color:#e0d2b8}.actions a:last-child{color:#9b978b}.actions a:hover{color:#fff0d0}a:focus-visible{outline:1px solid #ddc69b;outline-offset:4px}footer{margin-top:35px;display:flex;justify-content:space-between;gap:20px;color:#777a72;font-size:10px;line-height:1.9;border-top:1px solid #c5b58f20;padding-top:17px}
+    @media(max-width:1000px){.grid{grid-template-columns:repeat(3,minmax(0,1fr))}.art{height:290px}}@media(max-width:650px){main{padding:28px 6vw}header{flex-direction:column;gap:10px;margin-bottom:28px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:28px 20px}.art{height:230px}.description{min-height:100px}h2{font-size:16px}.actions{gap:12px;flex-wrap:wrap}footer{flex-direction:column;gap:4px}}@media(max-width:360px){.grid{grid-template-columns:1fr}.description{min-height:0}}
+  </style>
+</head>
+<body><main>
+  <header><div><p class="eyebrow">CELESTIAN / LAYERED STRINGS — VI</p><h1>占星会 · 层叠星弦</h1><p class="intro">成束的垂弦、错落的星芒、两到三层向上展开的长弧。五种轮廓，介于原稿与简约版之间。</p></div><a href="/faction-switcher.html?faction=eternal-astrology">返回势力页面 ↗</a></header>
+  <section class="grid" id="logo-grid" aria-label="五版徽记方案"></section>
+  <footer><span>透明底 SVG · 可缩放矢量 · 概念提案</span><span>背景与四幕寓言沿用当前已确认版本</span></footer>
+</main><script type="module" src="/src/astrology-logo-gallery.js"></script></body>
+</html>

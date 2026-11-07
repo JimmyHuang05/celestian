@@ -1,0 +1,52 @@
+const { chromium } = require('C:/Users/admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
+const assert = require('node:assert/strict')
+;(async () => {
+  const browser = await chromium.launch({ executablePath: 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true })
+  try {
+    const page = await browser.newPage()
+    const errors = []
+    page.on('console', msg => { if (msg.type() === 'error') console.error(msg.text()) })
+    page.on('pageerror', error => { errors.push(error.message); console.error(error.stack) })
+    await page.addInitScript(() => { if (window === window.top) { sessionStorage.setItem('hasSeenIntro', 'true'); localStorage.setItem('celestian-music-enabled', 'false') } })
+    await page.goto('http://127.0.0.1:5173/encyclopedia/')
+    await page.waitForFunction(() => window.__celestianMusicManager)
+    await page.evaluate(async () => {
+      // Vite's hot-update URL must be reused; a bare dynamic import creates a second lifecycle.
+      const lifecycleUrl = performance.getEntriesByType('resource').map(entry => entry.name).find(url => new URL(url).pathname === '/src/page-lifecycle.js')
+      const lifecycle = await import(lifecycleUrl || '/src/page-lifecycle.js')
+      window.testTicks = 0
+      window.stopTestLoop = lifecycle.startPageLoop(() => window.testTicks++)
+      window.savedManager = window.__celestianMusicManager
+      window.__celestianMusicNavigation.navigate('/character-profile.html')
+    })
+    await page.waitForFunction(() => document.getElementById('music-page-frame')?.contentDocument?.querySelector('.page-action--close'))
+    assert.equal(await page.evaluate(() => document.documentElement.dataset.pageActive), 'false')
+    const ticks = await page.evaluate(() => window.testTicks)
+    await page.waitForTimeout(150)
+    assert.equal(await page.evaluate(() => window.testTicks), ticks)
+    const frame = page.frames().find(f => f.parentFrame() && f.url().includes('character-profile.html'))
+    await frame.waitForLoadState('domcontentloaded')
+    await frame.locator('.page-action--sound').waitFor({ state: 'attached', timeout: 15000 }).catch(async error => { console.log(await frame.evaluate(() => ({url:location.href,body:document.body.innerText.slice(-1200),scripts:[...document.scripts].map(s=>s.src)}))); throw error })
+    await frame.evaluate(() => parent.postMessage({ type: 'profile:selection', id: 'test-character' }, location.origin))
+    await page.waitForFunction(() => new URLSearchParams(location.search).get('id') === 'test-character')
+    await frame.locator('.page-action--close').click()
+    await page.waitForFunction(() => !document.getElementById('music-page-frame') && document.documentElement.dataset.pageActive === 'true')
+    await page.waitForFunction(previous => window.testTicks > previous, ticks)
+    assert.equal(await page.evaluate(() => window.savedManager === window.__celestianMusicManager), true)
+    assert.equal(await page.locator('#root').evaluate(el => el.inert), false)
+    await page.evaluate(async () => {
+      window.stopTestLoop()
+      const { readPreference, writePreference } = await import('/src/preferences.js')
+      localStorage.setItem('babel_ai_quota', '{broken')
+      if (readPreference('aiQuota') !== null) throw Error('Corrupt preference fallback failed')
+      const { getSoundManager } = await import('/src/sound-manager.js')
+      const sound = getSoundManager()
+      writePreference('soundMuted', true)
+      if (!sound.muted) throw Error('Shared sound preference failed')
+      writePreference('soundMuted', false)
+      if (sound.muted) throw Error('Sound preference restore failed')
+    })
+    assert.deepEqual(errors, [])
+    console.log('Profile navigation, history selection, activity pause/resume, music identity, inert restoration and preferences passed.')
+  } finally { await browser.close() }
+})().catch(error => { console.error(error); process.exitCode = 1 })

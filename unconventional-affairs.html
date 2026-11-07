@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <!-- shared-font-preload:start -->
+  <link rel="preload" href="/fonts/v1/song-critical-d63e1a85af8bcdb4.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
+  <link rel="stylesheet" href="/src/fonts/index.css">
+  <!-- shared-font-preload:end -->
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#101827">
+  <title>非常规事务署 · 无光的伊甸园</title>
+</head>
+<body data-faction="unconventional-affairs">
+  <main class="faction-archive">
+    <div id="faction-sky" aria-hidden="true"></div>
+    <header class="archive-header">CELESTIAN <span>势力档案</span></header>
+    <a class="page-action page-action--close" href="/encyclopedia/" aria-label="关闭并返回百科" title="关闭并返回百科"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></a>
+    <dialog id="faction-directory" class="faction-directory" aria-labelledby="directory-title">
+      <div class="directory-heading"><h2 id="directory-title">势力目录</h2><span id="faction-count"></span><button id="directory-close" type="button" aria-label="关闭势力目录"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div>
+      <label class="archive-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10" cy="10" r="6"/><path d="m15 15 6 6"/></svg><input id="faction-search" type="search" placeholder="查找势力或所属地区" aria-label="查找势力或所属地区" autocomplete="off"></label>
+      <nav id="faction-list" aria-label="选择势力"></nav>
+    </dialog>
+    <div class="archive-layout">
+      <div id="archive-notice" role="status">正在打开势力档案…</div>
+      <div id="faction-content" hidden>
+        <section class="faction-identity" aria-label="势力纹章">
+          <div class="faction-seal"><span class="seal-fallback" aria-hidden="true">✧</span><img id="faction-emblem" alt="" decoding="async" fetchpriority="high"></div>
+        </section>
+        <section class="faction-details" aria-labelledby="faction-name">
+          <article class="faction-dossier" aria-label="势力档案正文" tabindex="0">
+            <header class="faction-heading">
+              <p class="dossier-eyebrow">FACTION ARCHIVE <span id="faction-affiliation"></span></p>
+              <h1 id="faction-name"></h1><p id="faction-subtitle"></p>
+            </header>
+            <dl id="faction-facts"></dl><div id="faction-story"></div>
+          </article>
+          <nav class="faction-pager" aria-label="依次浏览势力">
+            <button id="faction-prev" type="button" aria-label="上一个势力"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M27 12H5m7-7-7 7 7 7"/></svg></button>
+            <button id="directory-open" type="button" aria-label="打开势力目录" aria-haspopup="dialog" aria-controls="faction-directory"><span id="faction-index"></span><small>势力目录</small></button>
+            <button id="faction-next" type="button" aria-label="下一个势力"><svg viewBox="0 0 32 24" aria-hidden="true"><path d="M5 12h22m-7-7 7 7-7 7"/></svg></button>
+          </nav>
+        </section>
+      </div>
+    </div>
+  </main>
+  <script type="module" src="/src/faction-archive.js"></script>
+</body>
+</html>

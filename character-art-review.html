@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>伊洛薇恩 · 立绘试稿</title>
+  <style>
+    *{box-sizing:border-box}body{margin:0;background:#0d1522;color:#e5dfd2;font:14px/1.7 "Microsoft YaHei",sans-serif}header{height:100px;display:flex;align-items:center;justify-content:space-between;padding:0 5vw;border-bottom:1px solid #a78d5e30}h1{font-family:Georgia,"Songti SC",serif;font-size:25px;font-weight:400;letter-spacing:4px;margin:0}small{display:block;color:#a68e64;font-size:10px;letter-spacing:3px}p{color:#9ca5b2;margin:0;font-size:12px}main{height:calc(100dvh - 100px);display:grid;grid-template-columns:1fr 1fr;max-width:1500px;margin:auto;padding:22px 5vw 20px;gap:40px}figure{margin:0;min-height:0;display:flex;flex-direction:column;align-items:center;position:relative}figure+figure{border-left:1px solid #a78d5e25}figcaption{height:38px;flex-shrink:0;letter-spacing:3px;font-size:12px;color:#bca77f}img{display:block;height:calc(100% - 38px);width:100%;object-fit:contain}a{color:#bca77f;text-decoration:none;font-size:12px}a:hover{text-decoration:underline}.new{background:radial-gradient(ellipse at 50% 40%,#19263b50,transparent 65%)}
+  </style>
+</head>
+<body>
+  <header>
+    <div><small>CELESTIAN / CHARACTER ART STUDY 01</small><h1>伊洛薇恩</h1></div>
+    <div><p>以最初原图为参考 · 重新生成</p><p>点击立绘可打开大图检查细节</p></div>
+    <nav><a href="?character=elowen">伊洛薇恩</a> · <a href="?character=sylvia">希尔维娅</a> · <a href="?character=euphemia">尤菲米娅</a> · <a href="?character=xianna">汐安娜</a> · <a href="?character=day-fourteen">第十四天</a> · <a href="/character-profile.html">角色档案 ↗</a></nav>
+  </header>
+  <main>
+    <figure><figcaption>最初原立绘</figcaption><img src="/character-profile/portrait-2a9bf85c-f975-4054-9597-5f4f11414983.webp" alt="伊洛薇恩最初原立绘" tabindex="0" role="link" aria-label="打开原立绘大图"></figure>
+    <figure class="new"><figcaption>原图参考重绘 · 05</figcaption><img src="/character-profile/redraws/elowen-v5.png" alt="直接以最初原图为参考重新生成的伊洛薇恩" tabindex="0" role="link" aria-label="打开重绘大图"></figure>
+  </main>
+  <script>
+    const studies={
+      euphemia:{name:'尤菲米娅',id:'4ea0b64e-1c59-43a5-a082-caf6c6a5a790',index:'03'},
+      xianna:{name:'汐安娜',id:'5bf8f6ab-da96-4cc6-a715-45050f289dd5',index:'04'},
+      'day-fourteen':{name:'第十四天',id:'ec561630-2810-41a0-8524-857bfa8365e1',index:'05'}
+    };
+    const characterKey=new URLSearchParams(location.search).get('character');
+    const study=studies[characterKey];
+    if(study){
+      document.title=`${study.name} · 立绘试稿`;
+      document.querySelector('h1').textContent=study.name;
+      document.querySelector('header small').textContent=`CELESTIAN / CHARACTER ART STUDY ${study.index}`;
+      const figures=document.querySelectorAll('figure');
+      figures[0].querySelector('img').src=`/character-profile/portrait-${study.id}.webp`;
+      figures[0].querySelector('img').alt=`${study.name}最初原立绘`;
+      figures[1].querySelector('figcaption').textContent='原图参考重绘 · 01';
+      figures[1].querySelector('img').src=`/character-profile/redraws/${characterKey}-v1.png`;
+      figures[1].querySelector('img').alt=`${study.name}原图参考重绘`;
+    }
+    if (new URLSearchParams(location.search).get('character') === 'sylvia') {
+      document.title = '希尔维娅 · 立绘试稿';
+      document.querySelector('h1').textContent = '希尔维娅';
+      document.querySelector('header small').textContent = 'CELESTIAN / CHARACTER ART STUDY 02';
+      const figures = document.querySelectorAll('figure');
+      figures[0].querySelector('img').src = '/character-profile/portrait-bf217625-407b-4cff-ae92-4f1ba3ba8cca.webp';
+      figures[0].querySelector('img').alt = '希尔维娅最初原立绘';
+      figures[1].querySelector('figcaption').textContent = '原图参考重绘 · 01';
+      figures[1].querySelector('img').src = '/character-profile/redraws/sylvia-v1.png';
+      figures[1].querySelector('img').alt = '希尔维娅原图参考重绘';
+    }
+    document.querySelectorAll('figure img').forEach(img => {
+      img.style.cursor = 'zoom-in';
+      const open = () => window.open(img.src, '_blank', 'noopener');
+      img.addEventListener('click', open);
+      img.addEventListener('keydown', event => { if (event.key === 'Enter') open(); });
+    });
+  </script>
+</body>
+</html>

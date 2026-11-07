@@ -249,6 +249,7 @@ function BadgePage() {
 
     await new Promise(resolve => setTimeout(resolve, 300))
     try {
+      await document.fonts.ready
       const canvas = await html2canvas(exportWrapper, { scale: 3, backgroundColor: '#111', useCORS: true, logging: false })
       const imgData = canvas.toDataURL('image/png')
       const link = document.createElement('a')
@@ -386,7 +387,7 @@ function BadgePage() {
 
   return (
     <div id="badge-app" className="w-full h-full relative" ref={mainContentRef}
-      style={{ fontFamily: "'Noto Serif SC', serif", backgroundColor: '#050505', color: '#e7e5e4', overflow: 'hidden' }}>
+      style={{ fontFamily: "var(--font-body)", backgroundColor: '#050505', color: '#e7e5e4', overflow: 'hidden' }}>
       <div className="noise-overlay fixed inset-0 z-[-1]" />
       <main className="w-full h-full relative flex items-center justify-center"
         style={{ background: 'radial-gradient(ellipse at center, #1a1816, #0a0a0a, black)' }}>

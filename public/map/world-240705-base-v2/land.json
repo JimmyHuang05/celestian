@@ -1,0 +1,11 @@
+{
+  "source": "WorldMap_240705_svg.png",
+  "sourceSha256": "0ee15d9a98848c6673e9d942ad3c3ed54a847687fb7b4e57bdfdf4569d3c1c6b",
+  "width": 21600,
+  "height": 10400,
+  "alphaThreshold": 128,
+  "traceScale": 1,
+  "filterSpeckle": 0,
+  "pathCount": 186,
+  "bytes": 326240
+}

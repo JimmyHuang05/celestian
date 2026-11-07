@@ -1,0 +1,68 @@
+const { chromium } = require('C:/Users/admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright');
+const assert = require('node:assert/strict');
+const fs = require('node:fs');
+(async () => {
+  const browser = await chromium.launch({executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe',headless:true});
+  const page = await browser.newPage({viewport:{width:1440,height:960}});
+  const errors=[]; page.on('pageerror',e=>errors.push(e.message));
+  const base='http://127.0.0.1:5173';
+  await page.goto(base+'/faction-profile.html');
+  await page.locator('#faction-content').waitFor({state:'visible'});
+  assert.equal(await page.locator('.faction-list__item').count(),3);
+  await page.locator('#faction-story img').first().evaluate(img=>img.decode());
+  const pagerBefore=await page.locator('.faction-pager').boundingBox();
+  await page.locator('.faction-dossier').evaluate(node=>{node.scrollTop=node.scrollHeight});
+  assert.deepEqual(await page.locator('.faction-pager').boundingBox(),pagerBefore);
+  await page.locator('#faction-next').click();
+  assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),'unconventional-affairs');
+  await page.locator('#faction-prev').click();
+  assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),'eternal-astrology');
+  await page.locator('#faction-story img').first().evaluate(img=>img.decode());
+  await page.screenshot({path:'../design/faction-template-desktop.png',animations:'disabled'});
+  for (const id of ['unconventional-affairs','imperial-knights','eternal-astrology']) {
+    await page.locator('#directory-open').click();
+    await page.locator(`[data-id="${id}"]`).click();
+    assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),id);
+    assert.equal(new URL(page.url()).searchParams.get('id'),id);
+  }
+  await page.locator('#directory-open').click();
+  await page.locator('#faction-search').fill('不存在');
+  assert.equal(await page.locator('.faction-list__item').count(),0);
+  await page.locator('#faction-search').fill('五军');
+  assert.equal(await page.locator('.faction-list__item').count(),1);
+  await page.setViewportSize({width:390,height:844});
+  await page.locator('.faction-list__item').click();
+  await page.screenshot({path:'../design/faction-template-mobile.png',fullPage:true,animations:'disabled'});
+  assert.ok(await page.evaluate(()=>document.documentElement.scrollWidth<=innerWidth));
+  for(const id of ['unconventional-affairs','imperial-knights']) {
+    await page.goto(base+'/'+id+'.html');
+    await page.locator('#faction-content').waitFor({state:'visible'});
+    assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),id);
+  }
+  await page.goto(base+'/faction-profile.html?id=missing');
+  await page.getByText('未找到这份势力档案，请从目录中选择。',{exact:false}).waitFor();
+  const data=JSON.parse(fs.readFileSync('public/faction-profile/factions.json','utf8'));
+  await page.route('**/faction-profile/factions.json',route=>route.fulfill({json:[...data,{id:'new-faction',name:'新增势力',blocks:{}}]}));
+  await page.goto(base+'/faction-profile.html?id=new-faction');
+  await page.locator('#faction-content').waitFor({state:'visible'});
+  assert.equal(await page.locator('#faction-name').textContent(),'新增势力');
+  assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),'encyclopedia');
+  await page.route('**/faction-profile/factions.json',route=>route.fulfill({json:[]}));
+  await page.reload(); await page.getByRole('button',{name:'重新加载'}).waitFor();
+  await page.unroute('**/faction-profile/factions.json');
+  await page.goto(base+'/encyclopedia/');
+  await page.waitForFunction(()=>Boolean(window.__celestianMusicNavigation));
+  await page.evaluate(()=>window.__celestianMusicNavigation.navigate('/faction-profile.html'));
+  const frame = page.frameLocator('#music-page-frame');
+  await frame.locator('#faction-content').waitFor({state:'visible'});
+  await frame.locator('#directory-open').click();
+  await frame.locator('[data-id="imperial-knights"]').click();
+  await page.waitForURL('**/faction-profile.html?id=imperial-knights');
+  assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),'imperial-knights');
+  await frame.locator('.page-action--close').click();
+  await page.waitForURL('**/encyclopedia/');
+  await page.locator('#music-page-frame').waitFor({state:'detached'});
+  assert.equal(await page.evaluate(()=>window.__celestianMusicManager.getSnapshot().trackId),'encyclopedia');
+  assert.deepEqual(errors,[]);
+  await browser.close(); console.log('Faction archive: desktop/mobile, search, selection/music, legacy links, new entries and empty archive passed.');
+})().catch(e=>{console.error(e);process.exit(1)});

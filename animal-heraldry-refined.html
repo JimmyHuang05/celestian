@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#e7e3da">
+  <title>三兽纹章 · 盾徽重绘九案</title>
+  <link rel="stylesheet" href="/src/fonts/faction-song.css">
+  <link rel="stylesheet" href="/src/animal-heraldry-refined.css">
+</head>
+<body>
+  <main class="page">
+    <header>
+      <div><p class="eyebrow">CELESTIAN / ARMORIAL STUDIES · II</p><h1>三兽纹章 <span>·</span> 盾徽重绘</h1></div>
+      <a href="/imperial-knights.html">返回五旗页面 ↗</a>
+    </header>
+    <div class="toolbar">
+      <div class="tabs" role="group" aria-label="选择动物组">
+        <button data-group="bear" aria-pressed="false">熊 <small>B1—B3</small></button>
+        <button data-group="lynx" aria-pressed="false">猞猁 <small>L1—L3</small></button>
+        <button data-group="wolf" aria-pressed="false">狼 <small>W1—W3</small></button>
+        <button data-group="all" aria-pressed="true">九案总览</button>
+      </div>
+      <button class="reference-button">狮子工艺参照 ↗</button>
+    </div>
+    <section class="intro" aria-live="polite"><h2 id="group-title">三兽九案</h2><p id="group-description">金熊镇守，银猞猁巡影，银狼远征。</p></section>
+    <section id="board" class="board" aria-label="完整盾徽候选对比"></section>
+    <footer><span>金熊 · 银猞猁 · 银狼　／　分团无冠冕</span><span>点击放大查看　／　按 B、L、W 编号选案</span></footer>
+  </main>
+  <dialog aria-labelledby="detail-title">
+    <div class="dialog-head"><div><p class="eyebrow" id="detail-group"></p><h2 id="detail-title"></h2></div><button class="close" aria-label="关闭大图">×</button></div>
+    <div class="detail-art"><img id="detail-image" alt=""></div>
+    <div class="dialog-foot"><p id="detail-description"></p><a id="download" download>下载透明原图 ↓</a></div>
+  </dialog>
+  <script type="module" src="/src/animal-heraldry-refined.js"></script>
+</body>
+</html>

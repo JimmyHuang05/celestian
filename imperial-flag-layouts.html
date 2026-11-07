@@ -1,0 +1,25 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>五军同盟 · 五种旗帜排列</title>
+  <link rel="stylesheet" href="/src/fonts/index.css">
+  <link rel="stylesheet" href="/src/imperial-flag-layouts.css">
+</head>
+<body>
+  <header class="comparison">
+    <div class="comparison-heading"><h1>五军同盟 <span>旗帜排列对比</span></h1><a href="/faction-profile.html?id=imperial-knights">返回当前版本 ↗</a></div>
+    <nav class="layout-options" aria-label="选择旗帜排列">
+      <button type="button" data-layout="depth" aria-pressed="true"><span>01</span>中央主旗，两翼后退</button>
+      <button type="button" data-layout="equal" aria-pressed="false"><span>02</span>五旗等高并列</button>
+      <button type="button" data-layout="arch" aria-pressed="false"><span>03</span>中央高挂，两翼垂落</button>
+      <button type="button" data-layout="fan" aria-pressed="false"><span>04</span>轻微扇形展开</button>
+      <button type="button" data-layout="layers" aria-pressed="false"><span>05</span>三前两后</button>
+    </nav>
+    <p id="layout-description" role="status"></p>
+  </header>
+  <iframe id="layout-preview" src="/faction-profile.html?id=imperial-knights" title="五军同盟旗帜排列预览"></iframe>
+  <script type="module" src="/src/imperial-flag-layouts.js"></script>
+</body>
+</html>

@@ -1,0 +1,8 @@
+{
+  "sourceRegions": 208,
+  "editableNonempty": 207,
+  "requiresAlignment": [
+    "region_194"
+  ],
+  "note": "Original SVG paths retained in source.geometry."
+}

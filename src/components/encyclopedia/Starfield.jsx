@@ -1,10 +1,14 @@
+import { startPageLoop } from '../../page-lifecycle.js'
 import { useRef, useEffect, useState, useCallback } from 'react'
 import useMusicBeats from './useMusicBeats.js'
 import { galaxyDensity } from './galaxyDensity.js'
+import { starArrivalOpacity } from './starArrival.js'
 import './galaxy-canvas.css'
 
-function Starfield({ mouseX, mouseY, audioRef }) {
+function Starfield({ mouseX, mouseY, audioRef, revealRef }) {
   const canvasRef = useRef(null)
+  const pointerRef = useRef({ x: 0, y: 0 })
+  useEffect(() => { pointerRef.current = { x: mouseX, y: mouseY } }, [mouseX, mouseY])
   const [ripples, setRipples] = useState([])
   const rippleIdCounter = useRef(0)
   const timers = useRef(new Set())
@@ -32,7 +36,6 @@ function Starfield({ mouseX, mouseY, audioRef }) {
     const canvas = canvasRef.current
     if (!canvas) return
     const ctx = canvas.getContext('2d', { alpha: true })
-    let animationFrameId
     let width = window.innerWidth
     let height = window.innerHeight
     const stars = []
@@ -67,8 +70,8 @@ function Starfield({ mouseX, mouseY, audioRef }) {
         const time = Number.isFinite(currentTime) ? currentTime : performance.now()
         const w = width > 0 ? width : window.innerWidth || 1024
         const h = height > 0 ? height : window.innerHeight || 768
-        const mX = Number.isFinite(Number(mouseX)) ? Number(mouseX) : 0
-        const mY = Number.isFinite(Number(mouseY)) ? Number(mouseY) : 0
+        const mX = Number.isFinite(Number(pointerRef.current.x)) ? Number(pointerRef.current.x) : 0
+        const mY = Number.isFinite(Number(pointerRef.current.y)) ? Number(pointerRef.current.y) : 0
 
         ctx.clearRect(0, 0, w, h)
         for (let i = 0; i < stars.length; i++) {
@@ -78,7 +81,9 @@ function Starfield({ mouseX, mouseY, audioRef }) {
           let py = (s.y * h - mY * s.parallaxBaseY) % h
           if (py < 0) py += h
           if (!Number.isFinite(px) || !Number.isFinite(py) || !Number.isFinite(s.size)) continue
-          const coreAlpha = 0.5 + Math.sin(time * s.twinkleSpeed + s.phase) * 0.5
+          const arrivalAlpha = starArrivalOpacity(i, time, revealRef?.current)
+          if (arrivalAlpha <= 0) continue
+          const coreAlpha = (0.5 + Math.sin(time * s.twinkleSpeed + s.phase) * 0.5) * arrivalAlpha
           if (coreAlpha > 0.3 && s.size > 0.4) {
             const r1 = Math.max(0.01, s.size * 0.5)
             const r2 = Math.max(0.01, s.size * 4)
@@ -127,10 +132,6 @@ function Starfield({ mouseX, mouseY, audioRef }) {
       }
     }
 
-    const loop = (currentTime) => {
-      animationFrameId = requestAnimationFrame(loop)
-      drawCanvas(currentTime)
-    }
 
     const handleResize = () => {
       try {
@@ -140,22 +141,22 @@ function Starfield({ mouseX, mouseY, audioRef }) {
           canvasRef.current.width = width
           canvasRef.current.height = height
         }
-        initCanvasData()
       } catch (e) {
         console.warn('Starfield resize error', e)
       }
     }
 
+    initCanvasData()
     handleResize()
     window.addEventListener('resize', handleResize)
-    animationFrameId = requestAnimationFrame(loop)
+    const stopLoop = startPageLoop(drawCanvas)
 
 
     return () => {
-      cancelAnimationFrame(animationFrameId)
+      stopLoop()
       window.removeEventListener('resize', handleResize)
     }
-  }, [])
+  }, [revealRef])
 
   return (
     <div className="celestian-starfield">

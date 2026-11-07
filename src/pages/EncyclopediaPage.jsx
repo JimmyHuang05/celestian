@@ -1,3 +1,6 @@
+import { startPageLoop } from '../page-lifecycle.js'
+import { getSoundManager } from '../sound-manager.js'
+import { pageUrl } from '../page-registry.js'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import supabaseClient from '../lib/supabaseClient'
@@ -6,31 +9,33 @@ import GalaxyVeil from '../components/encyclopedia/GalaxyVeil.jsx'
 import { galaxyTextureMask } from '../components/encyclopedia/galaxyDensity.js'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
 import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
-import GalleryDetail from '../components/encyclopedia/GalleryDetail.jsx'
 import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
-import BackButton from '../components/BackButton.jsx'
+import '../page-actions.css'
 import VersionBadge from '../components/VersionBadge.jsx'
 import ASSETS_BASE from '../constants.js'
 import { openCharacterProfile } from '../profile-navigation.js'
+import useGalaxyArrival from '../components/encyclopedia/useGalaxyArrival.js'
+import { useBackgroundMusic } from '../music-context.js'
+import { openMusicPage } from '../music-navigation.js'
 
 const desktopNodes = [
-  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
-  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: ASSETS_BASE + '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '40%', left: '65%' }, scale: 1.1 },
-  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: ASSETS_BASE + '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '30%', left: '35%' }, scale: 0.9 },
-  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: ASSETS_BASE + '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '76%', left: '72%' }, scale: 0.85 },
-  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: ASSETS_BASE + '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '30%' }, scale: 0.85 },
-  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: ASSETS_BASE + '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '50%', left: '18%' }, scale: 0.75 },
-  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: ASSETS_BASE + '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '50%', left: '80%' }, scale: 0.75 },
+  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
+  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '40%', left: '65%' }, scale: 1.1 },
+  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '30%', left: '35%' }, scale: 0.9 },
+  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '76%', left: '72%' }, scale: 0.85 },
+  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '30%' }, scale: 0.85 },
+  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', destination: '/map/', icon: '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '50%', left: '18%' }, scale: 0.75 },
+  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '50%', left: '80%' }, scale: 0.75 },
 ]
 
 const mobileNodes = [
-  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: ASSETS_BASE + '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '50%', left: '50%' }, scale: 1.1 },
-  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: ASSETS_BASE + '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '32%', left: '25%' }, scale: 0.9 },
-  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: ASSETS_BASE + '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '70%', left: '28%' }, scale: 0.8 },
-  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: ASSETS_BASE + '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '25%', left: '75%' }, scale: 0.75 },
-  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: ASSETS_BASE + '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '75%' }, scale: 0.75 },
-  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', icon: ASSETS_BASE + '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '85%', left: '60%' }, scale: 0.65 },
-  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: ASSETS_BASE + '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '15%', left: '50%' }, scale: 0.65 },
+  { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '50%', left: '50%' }, scale: 1.1 },
+  { id: 'characters', layer: 1, title: '角色', subtitle: '角色', icon: '/images/icons/characters.svg', current: 0, total: 7, alien: 'C H A R A C T E R', pos: { top: '32%', left: '25%' }, scale: 0.9 },
+  { id: 'enemies', layer: 2, title: '敌对物种', subtitle: '敌对物种', icon: '/images/icons/enemies.svg', current: 0, total: 27, alien: 'B E A S T M U T A T I O N', pos: { top: '70%', left: '28%' }, scale: 0.8 },
+  { id: 'relics', layer: 3, title: '圣物', subtitle: '圣物', icon: '/images/icons/relics.svg', current: 0, total: 12, alien: 'A R T I F A C T S', pos: { top: '25%', left: '75%' }, scale: 0.75 },
+  { id: 'factions', layer: 4, title: '势力', subtitle: '势力', icon: '/images/icons/factions.svg', current: 0, total: 25, alien: 'F A C T I O N S', pos: { top: '65%', left: '75%' }, scale: 0.75 },
+  { id: 'gallery', layer: 5, title: '留影', subtitle: '视觉档案', destination: '/map/', icon: '/images/icons/titans.svg', current: 0, total: 11, alien: 'G A L L E R Y', pos: { top: '85%', left: '60%' }, scale: 0.65 },
+  { id: 'terms', layer: 6, title: '专有名词', subtitle: '专有名词', icon: '/images/icons/terms.svg', current: 0, total: 129, alien: 'I N D E X T E R M S', pos: { top: '15%', left: '50%' }, scale: 0.65 },
 ]
 
 const bgColors = {
@@ -38,7 +43,8 @@ const bgColors = {
   gallery: '#050505',
 }
 
-function EncyclopediaPage() {
+function EncyclopediaPage({ onArrivalReady }) {
+  const arrival = useGalaxyArrival(onArrivalReady)
   const navigate = useNavigate()
   const { nodeId } = useParams()
   const [searchParams] = useSearchParams()
@@ -46,6 +52,7 @@ function EncyclopediaPage() {
 
   const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
   const allNodes = isMobile ? mobileNodes : desktopNodes
+  const arrivalOrder = [...allNodes].sort((a, b) => a.scale - b.scale || a.layer - b.layer)
 
   const nodeFromUrl = nodeId ? allNodes.find(n => n.id === nodeId) || null : null
 
@@ -53,15 +60,12 @@ function EncyclopediaPage() {
   const [activeNode, setActiveNode] = useState(nodeFromUrl)
   const [mouseX, setMouseX] = useState(0)
   const [mouseY, setMouseY] = useState(0)
-  const [isPlayingBgm, setIsPlayingBgm] = useState(true)
+  const { encyclopediaAudioRef: bgmAudioRef } = useBackgroundMusic()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
 
   const [panelStyle, setPanelStyle] = useState(null)
 
-  const bgmAudioRef = useRef(null)
-  const hoverAudioRef = useRef(null)
-  const animationFrameRef = useRef(null)
   const targetX = useRef(0)
   const targetY = useRef(0)
   const currentMouseX = useRef(0)
@@ -85,7 +89,6 @@ function EncyclopediaPage() {
   }, [entryId, nodeId, navigate])
 
   useEffect(() => {
-    if (activeNode?.id === 'gallery') return
     const updateParallax = () => {
       if (Number.isFinite(targetX.current)) {
         currentMouseX.current += (targetX.current - currentMouseX.current) * 0.05
@@ -95,62 +98,33 @@ function EncyclopediaPage() {
       }
       setMouseX(currentMouseX.current)
       setMouseY(currentMouseY.current)
-      animationFrameRef.current = requestAnimationFrame(updateParallax)
     }
-    animationFrameRef.current = requestAnimationFrame(updateParallax)
+    const stopParallax = startPageLoop(updateParallax)
     return () => {
-      if (animationFrameRef.current) cancelAnimationFrame(animationFrameRef.current)
+      stopParallax()
     }
   }, [activeNode?.id])
 
   const onMouseMove = useCallback((e) => {
+    if (arrival.phase) return
     const w = window.innerWidth || 1
     const h = window.innerHeight || 1
     targetX.current = e.clientX / w - 0.5
     targetY.current = e.clientY / h - 0.5
-  }, [])
+  }, [arrival.phase])
 
   const onTouchMove = useCallback((e) => {
+    if (arrival.phase) return
     if (e.touches.length > 0) {
       const w = window.innerWidth || 1
       const h = window.innerHeight || 1
       targetX.current = e.touches[0].clientX / w - 0.5
       targetY.current = e.touches[0].clientY / h - 0.5
     }
-  }, [])
+  }, [arrival.phase])
 
   const playHoverSfx = useCallback(() => {
-    if (hoverAudioRef.current && hoverAudioRef.current.src !== '' && !hoverAudioRef.current.src.endsWith(window.location.pathname)) {
-      hoverAudioRef.current.currentTime = 0
-      hoverAudioRef.current.play().catch(() => {})
-    }
-  }, [])
-
-  const toggleBgm = useCallback(() => {
-    setIsPlayingBgm(prev => !prev)
-  }, [])
-
-  useEffect(() => {
-    const audio = bgmAudioRef.current
-    audio.volume = 0.25
-    const startBgm = () => { if (audio.paused && !document.hidden) audio.play().catch(() => {}) }
-    startBgm()
-    document.addEventListener('click', startBgm)
-    document.addEventListener('keydown', startBgm)
-    if (hoverAudioRef.current) hoverAudioRef.current.volume = 0.05
-
-    const handleVisibilityChange = () => {
-      if (document.hidden) audio.pause()
-      else startBgm()
-    }
-    document.addEventListener('visibilitychange', handleVisibilityChange)
-
-    return () => {
-      document.removeEventListener('visibilitychange', handleVisibilityChange)
-      document.removeEventListener('click', startBgm)
-      document.removeEventListener('keydown', startBgm)
-      audio.pause()
-    }
+    getSoundManager().play('hover')
   }, [])
 
   useEffect(() => {
@@ -161,16 +135,28 @@ function EncyclopediaPage() {
         if (error) throw error
         const counts = {}
         data.forEach(row => { counts[row.node_id] = (counts[row.node_id] || 0) + 1 })
-        setNodes(prev => prev.map(node => ({ ...node, current: counts[node.id] || 0 })))
+        setNodes(prev => prev.map(node => ({ ...node, current: node.id === 'factions' ? node.current : counts[node.id] || 0 })))
       } catch (err) {
         console.error('获取节点进度失败:', err)
       }
     }
     fetchNodeCounts()
+    const archiveRequest = new AbortController()
+    fetch('/faction-profile/factions.json', { signal: archiveRequest.signal })
+      .then(response => { if (!response.ok) throw new Error('Archive unavailable'); return response.json() })
+      .then(entries => { if (Array.isArray(entries)) setNodes(prev => prev.map(node => node.id === 'factions' ? { ...node, current: entries.length } : node)) })
+      .catch(() => {})
+    return () => archiveRequest.abort()
   }, [])
 
   useEffect(() => {
     if (nodeFromUrl) {
+      if (nodeFromUrl.id === 'factions') {
+        navigate('/encyclopedia', { replace: true })
+        const target = pageUrl('factions') + (entryId ? `?id=${encodeURIComponent(entryId)}` : '')
+        setTimeout(() => openMusicPage(target), 0)
+        return;
+      }
       if (nodeFromUrl.id === 'characters') {
         const target = `/character-profile.html${window.location.search}`
         navigate('/encyclopedia', { replace: true })
@@ -184,6 +170,14 @@ function EncyclopediaPage() {
   }, [nodeId])
 
   const openDetail = useCallback((node, event) => {
+    if (node.destination) {
+      navigate(node.destination)
+      return
+    }
+    if (node.id === 'factions') {
+      openMusicPage(pageUrl('factions'));
+      return;
+    }
     if (node.id === 'characters') {
       openCharacterProfile('/character-profile.html')
       return
@@ -273,43 +267,35 @@ function EncyclopediaPage() {
 
   const renderDetailComponent = () => {
     if (!activeNode) return null
-    const compType = activeNode.id === 'gallery' ? 'GalleryDetail' : activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
+    const compType = activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
     const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
-    if (compType === 'GalleryDetail') return <GalleryDetail {...commonProps} isPlayingBgm={isPlayingBgm} onToggleBgm={toggleBgm} />
     if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />
     return null
   }
 
   return (
-    <div id="encyclopedia-app">
-      <div inert={Boolean(nodeId)} aria-hidden={Boolean(nodeId)} className="relative w-full h-screen overflow-hidden font-sans select-none bg-gray-900"
+    <div id="encyclopedia-app" data-arrival={arrival.phase || undefined} tabIndex={-1} aria-busy={Boolean(arrival.phase)}>
+      <div inert={Boolean(nodeId)} aria-hidden={Boolean(nodeId)} className="encyclopedia-sky relative w-full h-screen overflow-hidden font-serif select-none bg-gray-900"
         onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
       >
-        <div className="absolute inset-0 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ maskImage: galaxyTextureMask, maskSize: '100% 100%', maskRepeat: 'no-repeat' }} aria-hidden="true" />
-        {activeNode?.id !== 'gallery' && <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} />}
-
-        <div className="absolute top-6 left-6 z-[150]">
-          <BackButton to="/"
-            className="flex items-center gap-2 text-[#d4b58e]/40 hover:text-[#d4b58e]/80 transition-colors text-[10px] font-mono tracking-[0.4em] uppercase cursor-pointer group"
-          >
-            <svg className="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24" strokeWidth="1.5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M10.5 19.5L3 12m0 0l7.5-7.5M3 12h18" />
-            </svg>
-            <span>HOME</span>
-          </BackButton>
+        <div className="encyclopedia-arrival-texture absolute inset-0 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ maskImage: galaxyTextureMask, maskSize: '100% 100%', maskRepeat: 'no-repeat' }} aria-hidden="true" />
+        <div className="encyclopedia-arrival-stars absolute inset-0 pointer-events-none">
+          {activeNode?.id !== 'gallery' && <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} revealRef={arrival.starRevealRef} />}
+        </div>
+        <div className="encyclopedia-arrival-stars absolute inset-0 pointer-events-none z-[1]">
+          {activeNode?.id !== 'gallery' && <GalaxyVeil revealRef={arrival.starRevealRef} />}
         </div>
 
-        <div className="absolute inset-0 z-10">
-          <div className="absolute inset-0 pointer-events-none z-[1]">
-            {activeNode?.id !== 'gallery' && <GalaxyVeil />}
-          </div>
 
+
+        <div inert={Boolean(arrival.phase)} className="encyclopedia-arrival-content absolute inset-0 z-10">
           <div className="absolute inset-0" style={{ zIndex: 20 }}>
             {nodes.map(node => (
               <DataNode
                 key={node.id}
                 node={node}
+                arrivalOrder={arrivalOrder.findIndex(item => item.id === node.id)}
                 mouseX={mouseX}
                 mouseY={mouseY}
                 isMobile={isMobile}
@@ -319,39 +305,15 @@ function EncyclopediaPage() {
             ))}
           </div>
 
-          <div className="absolute top-6 left-8 text-[#d4b58e]/40 font-mono text-[10px] tracking-[0.6em] flex items-center gap-4" style={{ zIndex: 30 }}>
-            <span className="w-12 h-px bg-[#d4b58e]/30" /> D A T A B A N K // G A L A X Y
-          </div>
-
-          <VersionBadge position="bottom-left" />
-
-          <button type="button" aria-label={isPlayingBgm ? '静音背景音乐' : '取消背景音乐静音'} aria-pressed={!isPlayingBgm} className="absolute bottom-6 right-8 flex items-center gap-3 cursor-pointer group hardware-accelerated" style={{ zIndex: 150 }} onClick={toggleBgm}>
-            <div className="text-[#d4b58e]/30 text-[10px] font-mono tracking-widest group-hover:text-[#d4b58e]/80 transition-colors uppercase drop-shadow-md">
-              {isPlayingBgm ? 'BGM : ON' : 'BGM : MUTED'}
-            </div>
-            <div className="w-8 h-8 rounded-full border border-[#d4b58e]/20 flex items-center justify-center group-hover:border-[#d4b58e]/60 group-hover:bg-[#d4b58e]/10 transition-all bg-black/20 backdrop-blur-sm">
-              {isPlayingBgm ? (
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 19V6l12-3v13M9 19c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zm12-3c0 1.105-1.343 2-3 2s-3-.895-3-2 1.343-2 3-2 3 .895 3 2zM9 10l12-3" />
-                </svg>
-              ) : (
-                <svg viewBox="0 0 24 24" className="w-4 h-4 text-[#d4b58e]/50" fill="none" stroke="currentColor" strokeWidth="1.5">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.593 3.322c1.1.128 1.907 1.077 1.907 2.185V21L9 17.25H4.5A2.25 2.25 0 012.25 15V9A2.25 2.25 0 014.5 6.75h3.8l7.039-3.328a2.25 2.25 0 012.254.103z" />
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M20.25 10.5l-3 3m0-3l3 3" />
-                </svg>
-              )}
-            </div>
-          </button>
+          <VersionBadge position="bottom-right" />
         </div>
 
-        <audio ref={bgmAudioRef} autoPlay loop muted={!isPlayingBgm} src="/audio/bgm/encyclopedia.mp3" />
-        <audio ref={hoverAudioRef} src={ASSETS_BASE + "/audio/sfx/hover.mp3"} />
       </div>
 
       {panelStyle && <div style={panelStyle} />}
 
       {nodeId && nodeFromUrl && (
-        <div className={`fixed inset-0 z-[201] transition-opacity duration-200 ${isClosing ? 'opacity-0' : 'opacity-100'}`} style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+        <div className={`fixed inset-0 z-[201] transition-opacity duration-200 ${isClosing ? 'opacity-0' : 'opacity-100'}`} style={{ fontFamily: "var(--font-body)" }}>
           {renderDetailComponent()}
         </div>
       )}

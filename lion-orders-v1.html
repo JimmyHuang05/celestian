@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="theme-color" content="#e7e3da">
+  <title>双狮骑士团纹章 · 逐猎与守誓</title>
+  <link rel="stylesheet" href="/src/fonts/faction-song.css">
+  <style>
+    *{box-sizing:border-box}
+    body{--paper:#e7e3da;--ink:#302f2b;--muted:#777166;--line:#37312828;margin:0;background:var(--paper);color:var(--ink);font-family:'Celestian Faction Song','Songti SC',SimSun,serif;transition:background-color .4s,color .4s}
+    body.dark{--paper:#1b1d1e;--ink:#e4dfd3;--muted:#a19b8e;--line:#dfd4ba26}
+    a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:2px solid var(--muted);outline-offset:6px}
+    .page{max-width:1520px;margin:auto;padding:26px clamp(22px,4.5vw,76px) 20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:19px}
+    .eyebrow{font:10px/1.7 Georgia,serif;letter-spacing:.2em;color:var(--muted);margin:0 0 7px}
+    h1{font-size:19px;font-weight:400;letter-spacing:.2em;margin:0}
+    nav{display:flex;align-items:center;gap:22px;font-size:12px}
+    .theme{border:1px solid var(--line);background:transparent;padding:9px 14px}
+    .board{position:relative;display:grid;grid-template-columns:1fr 1fr;gap:clamp(44px,7vw,115px);padding:24px 0 26px}
+    .board::before{content:'';position:absolute;left:50%;top:12%;bottom:12%;width:1px;background:linear-gradient(transparent,var(--line) 25%,var(--line) 75%,transparent);pointer-events:none}
+    figure{margin:0;min-width:0;text-align:center}
+    .art{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+    .art img{display:block;width:100%;height:clamp(340px,65svh,730px);object-fit:contain}
+    figcaption{padding-top:19px}
+    h2{font-size:clamp(24px,2.3vw,34px);font-weight:400;letter-spacing:.2em;margin:0 0 12px;padding-left:.2em}
+    .meaning{font-size:12px;letter-spacing:.24em;color:var(--muted);margin:0}
+    footer{border-top:1px solid var(--line);padding-top:15px;display:flex;justify-content:space-between;gap:16px;font-size:11px;color:var(--muted);line-height:1.8;letter-spacing:.08em}
+    dialog{width:min(980px,94vw);max-height:94svh;padding:18px 22px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+    dialog::backdrop{background:#111b;backdrop-filter:blur(4px)}
+    .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .dialog-head h2{font-size:20px;margin:0}.dialog-head button{border:0;background:none;font-size:26px}
+    .full{display:block;width:100%;height:76svh;object-fit:contain;margin:10px auto}
+    .download{font-size:12px;border-bottom:1px solid var(--muted);padding-bottom:4px}
+    @media(max-width:660px){.page{padding-top:20px}header{align-items:flex-start}.eyebrow{font-size:8px}h1{font-size:16px}nav{gap:12px;font-size:10px}nav a{display:none}.board{gap:20px;padding:32px 0}.art img{height:clamp(230px,42svh,410px)}h2{font-size:21px;letter-spacing:.08em}.meaning{font-size:10px;letter-spacing:.12em}footer{flex-direction:column;gap:4px}.full{height:69svh}}
+    @media(prefers-reduced-motion:reduce){body{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div><p class="eyebrow">CELESTIAN / ORDER HERALDRY</p><h1>骑士团 · 双狮纹章</h1></div>
+      <nav><button class="theme" type="button" aria-pressed="false">切换深色底</button><a href="/unconventional-affairs.html">非常规事务署 ↗</a></nav>
+    </header>
+    <main class="board" aria-label="两枚平级骑士团纹章">
+      <figure>
+        <button class="art" type="button" data-crest="pursuing-lion-v1" data-name="逐猎之狮" aria-label="放大逐猎之狮纹章">
+          <img src="/lion-orders/crests-v1/pursuing-lion-v1.webp" alt="逐猎之狮：跃起金狮与斜枪、黑色铁十字、银盔及黑白双角盔饰" width="900" height="1125" fetchpriority="high">
+        </button>
+        <figcaption><h2>逐猎之狮</h2><p class="meaning">追猎 · 征伐</p></figcaption>
+      </figure>
+      <figure>
+        <button class="art" type="button" data-crest="oathkeeping-lion-v1" data-name="守誓之狮" aria-label="放大守誓之狮纹章">
+          <img src="/lion-orders/crests-v1/oathkeeping-lion-v1.webp" alt="守誓之狮：端坐金狮与竖剑、黑色铁十字、银盔及黑白双角盔饰" width="900" height="1125" fetchpriority="high">
+        </button>
+        <figcaption><h2>守誓之狮</h2><p class="meaning">守护 · 誓约</p></figcaption>
+      </figure>
+    </main>
+    <footer><span>第三势力 / 双纹章初稿 · 同级并列</span><span>黑铁 · 象牙白 · 旧金　／　点击纹章查看原图</span></footer>
+  </div>
+  <dialog aria-labelledby="crest-title">
+    <div class="dialog-head"><h2 id="crest-title"></h2><button class="close" type="button" aria-label="关闭大图">×</button></div>
+    <img class="full" alt="">
+    <a class="download" download>下载透明 PNG 原图 ↓</a>
+  </dialog>
+  <script type="module">
+    const modal=document.querySelector('dialog');
+    document.querySelector('.theme').addEventListener('click',function(){
+      const dark=document.body.classList.toggle('dark');
+      this.setAttribute('aria-pressed',String(dark));
+      this.textContent=dark?'切换浅色底':'切换深色底';
+      document.querySelector('meta[name="theme-color"]').content=dark?'#1b1d1e':'#e7e3da';
+    });
+    for(const button of document.querySelectorAll('.art'))button.addEventListener('click',()=>{
+      const url=`/lion-orders/crests-v1/${button.dataset.crest}.png`;
+      modal.querySelector('h2').textContent=button.dataset.name;
+      modal.querySelector('img').src=url;
+      modal.querySelector('img').alt=`${button.dataset.name}纹章完整原图`;
+      modal.querySelector('a').href=url;
+      modal.querySelector('a').download=`${button.dataset.crest}.png`;
+      modal.showModal();
+    });
+    modal.querySelector('.close').addEventListener('click',()=>modal.close());
+    modal.addEventListener('click',event=>{
+      if(event.target!==modal)return;
+      const rect=modal.getBoundingClientRect();
+      if(event.clientX<rect.left||event.clientX>rect.right||event.clientY<rect.top||event.clientY>rect.bottom)modal.close();
+    });
+  </script>
+</body>
+</html>

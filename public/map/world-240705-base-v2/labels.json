@@ -1,0 +1,14 @@
+{
+  "source": "WorldMap_240705_\u6587\u5b57\u6807\u8bc6.png",
+  "sourceSha256": "9a492b871b2720a715ec48132e1a0b87fc0a7ff811ee98c6c155a67d12d6d74c",
+  "width": 21600,
+  "height": 10400,
+  "alphaThreshold": 128,
+  "traceScale": 1,
+  "filterSpeckle": 0,
+  "mode": "polygon",
+  "fill": "#937a57",
+  "pathCount": 1423,
+  "bytes": 417852,
+  "note": "Glyph outlines, not editable text. Original positions and rotations retained; surface texture replaced by mean opaque gold."
+}

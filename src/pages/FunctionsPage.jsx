@@ -1,7 +1,8 @@
+import { startPageLoop } from '../page-lifecycle.js'
+import { getSoundManager } from '../sound-manager.js'
+import { readPreference, writePreference } from '../preferences.js'
 import { useState, useEffect, useRef, useCallback, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import supabaseClient from '../lib/supabaseClient'
-import useBgm from '../hooks/useBgm'
 import BackButton from '../components/BackButton.jsx'
 import ASSETS_BASE from '../constants.js'
 
@@ -14,6 +15,8 @@ function FunctionsPage() {
   const [isAiLoading, setIsAiLoading] = useState(false)
   const [aiQuery, setAiQuery] = useState('')
   const [logs, setLogs] = useState([])
+  const [logsStatus, setLogsStatus] = useState('loading')
+  const [logsAttempt, setLogsAttempt] = useState(0)
   const [chatHistory, setChatHistory] = useState([
     { role: 'assistant', content: '欢迎接入「全知之眼」在轨平台，我是逻各斯。\n巴别塔通用计算有限公司承诺：无论您身处何方，我们都将为您提供高速、稳定、不受限制的全球计算和通信链路服务。' }
   ])
@@ -21,8 +24,6 @@ function FunctionsPage() {
   const aiInputRef = useRef(null)
   const threeInitRef = useRef(false)
   const [customLogoPath] = useState('')
-
-  const { isPlaying: isBgmPlaying, toggle: toggleBgm } = useBgm(ASSETS_BASE + '/audio/bgm/functions.mp3', { volume: 0.10 })
 
   const getIcon = (name, cls = '') => `<i data-lucide="${name}" class="${cls}"></i>`
 
@@ -51,12 +52,15 @@ function FunctionsPage() {
 
   const tools = [
     { name: 'Tencent Cloud', role: 'Infrastructure', icon: 'server' },
-    { name: 'Supabase', role: 'Serverless Functions', icon: 'cloud-lightning' },
-    { name: 'Vue 3', role: 'Reactive Architecture', icon: 'zap' },
+    { name: 'Nginx', role: 'HTTPS & Reverse Proxy', icon: 'network' },
+    { name: 'Node.js · Fastify 5', role: 'Application API', icon: 'server' },
+    { name: 'PostgreSQL', role: 'Content Database', icon: 'database' },
+    { name: 'React 19 · React Router 7', role: 'Reactive Architecture & Routing', icon: 'zap' },
+    { name: 'Vite 8', role: 'Build & Development', icon: 'package' },
     { name: 'Tailwind CSS', role: 'Visual Framework', icon: 'layout' },
     { name: 'Three.js', role: '3D Topography Engine', icon: 'diamond' },
     { name: 'Gemini 3', role: 'Collaborative Architect', icon: 'bot' },
-    { name: 'DeepSeek v4', role: 'AI Neural Core', icon: 'brain-circuit' },
+    { name: 'DeepSeek · Supabase Edge Functions', role: 'AI Conversation Integration', icon: 'brain-circuit' },
     { name: 'Suno', role: 'Acoustic Synth Engine', icon: 'headphones' },
     { name: 'Holopix AI', role: 'Visual Synth', icon: 'image-plus' },
     { name: 'Lucide Icons', role: 'Interface Assets', icon: 'shapes' },
@@ -103,7 +107,7 @@ function FunctionsPage() {
       setChatHistory(prev => [...prev, { role: 'assistant', content: data.choices?.[0]?.message?.content || "无信号。" }])
       setDailyUsageCount(prev => {
         const newCount = prev + 1
-        localStorage.setItem('babel_ai_quota', JSON.stringify({ date: getTodayString(), count: newCount }))
+        writePreference('aiQuota', { date: getTodayString(), count: newCount })
         return newCount
       })
     } catch (err) {
@@ -119,9 +123,7 @@ function FunctionsPage() {
 
   const handleStartChat = useCallback(() => {
     setHasStartedChat(true)
-    const audio = new Audio(ASSETS_BASE + '/audio/sfx/uplink.mp3')
-    audio.volume = 0.9
-    audio.play().catch(() => {})
+    getSoundManager().play('uplink')
     setTimeout(() => { if (aiInputRef.current) aiInputRef.current.focus(); scrollToBottom() }, 500)
   }, [])
 
@@ -131,21 +133,28 @@ function FunctionsPage() {
       duration: Math.random() * 15 + 10, delay: Math.random() * -20, drift: (Math.random() - 0.5) * 150
     })))
 
-    const stored = localStorage.getItem('babel_ai_quota')
+    const stored = readPreference('aiQuota')
     if (stored) {
       try {
-        const data = JSON.parse(stored)
+        const data = stored
         setDailyUsageCount(data.date === getTodayString() ? data.count : 0)
       } catch (e) { setDailyUsageCount(0) }
     }
   }, [])
 
   useEffect(() => {
-    if (!supabaseClient) return
-    supabaseClient.from('system_logs').select('code, time, title, desc').order('created_at', { ascending: false }).then(({ data, error }) => {
-      if (!error && data) setLogs(data)
-    })
-  }, [])
+    const controller = new AbortController()
+    setLogsStatus('loading')
+    fetch('/api/system/logs', { signal: controller.signal })
+      .then(response => { if (!response.ok) throw new Error('Logs unavailable'); return response.json() })
+      .then(({ data }) => {
+        if (!Array.isArray(data)) throw new Error('Invalid logs response')
+        setLogs(data)
+        setLogsStatus('ready')
+      })
+      .catch(error => { if (error.name !== 'AbortError') setLogsStatus('error') })
+    return () => controller.abort()
+  }, [logsAttempt])
 
   useEffect(() => {
     const container = document.getElementById('three-canvas-container-fn')
@@ -199,7 +208,6 @@ function FunctionsPage() {
       document.addEventListener('mousemove', mouseHandler)
 
       const animate = () => {
-        requestAnimationFrame(animate)
         try {
           const time = Date.now() * 0.0002
           terrain.rotation.z = time * 0.3
@@ -215,7 +223,7 @@ function FunctionsPage() {
           console.warn('Three.js animate error', e)
         }
       }
-      animate()
+      const stopScene = startPageLoop(animate)
 
       const resize = () => { camera.aspect = window.innerWidth / window.innerHeight; camera.updateProjectionMatrix(); renderer.setSize(window.innerWidth, window.innerHeight) }
       window.addEventListener('resize', resize)
@@ -223,7 +231,11 @@ function FunctionsPage() {
       return () => {
         document.removeEventListener('mousemove', mouseHandler)
         window.removeEventListener('resize', resize)
+        stopScene()
+        geometry.dispose()
+        material.dispose()
         renderer.dispose()
+        threeInitRef.current = false
       }
     } catch (e) {
       console.warn('Three.js 初始化失败，跳过三维场景渲染', e)
@@ -281,16 +293,7 @@ function FunctionsPage() {
             ))}
           </nav>
 
-          <div className="hidden md:flex mt-auto flex-col items-center gap-6 opacity-40 pb-4 text-gray-400">
-            <button onClick={toggleBgm} className="hover:text-[#d4b58e] transition-colors relative group" aria-label="BGM 开关">
-              <span dangerouslySetInnerHTML={{ __html: getIcon(isBgmPlaying ? 'volume-2' : 'volume-x', 'w-5 h-5') }} />
-              <span className="absolute left-10 top-1/2 -translate-y-1/2 bg-black/80 px-2 py-1 text-[10px] font-mono whitespace-nowrap rounded border border-gray-700 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none">
-                BGM: {isBgmPlaying ? 'ON' : 'OFF'}
-              </span>
-            </button>
-            <button onClick={() => window.open('/editor/', '_blank')} className="hover:text-[#d4b58e] transition-colors" aria-label="开发者中心">
-               <span dangerouslySetInnerHTML={{ __html: getIcon('code-2', 'w-5 h-5') }} />
-            </button>
+          <div className="hidden md:flex mt-auto flex-col items-center gap-6 opacity-40 pb-28 text-gray-400">
             <BackButton to="/" className="hover:text-[#d4b58e] transition-colors" aria-label="电源">
               <span dangerouslySetInnerHTML={{ __html: getIcon('power', 'w-5 h-5') }} />
             </BackButton>
@@ -472,6 +475,9 @@ function FunctionsPage() {
                   <div className="flex-1 overflow-y-auto pr-2 md:pr-4 space-y-6 relative pb-10">
                     <div className="absolute left-[11px] top-4 bottom-4 w-[1px] bg-stoneBorder" />
                     {logElements}
+                    {logsStatus === 'loading' && <p role="status" className="pl-10 text-sm text-[#a8a29e]">正在读取日志…</p>}
+                    {logsStatus === 'error' && <div role="alert" className="pl-10 text-sm text-[#a8a29e]">日志暂时无法读取。<button className="ml-3 text-[#d4b58e] underline" onClick={() => setLogsAttempt(value => value + 1)}>重新加载</button></div>}
+                    {logsStatus === 'ready' && !logs.length && <p className="pl-10 text-sm text-[#a8a29e]">暂无监控日志。</p>}
                   </div>
                 </div>
 
@@ -559,9 +565,6 @@ function FunctionsPage() {
                     </div>
                     <div className="mt-8 md:mt-12 pt-6 md:pt-8 border-t border-stoneBorder flex justify-between items-center opacity-60">
                       <span className="font-mono-ef text-[10px] md:text-xs text-[#e7e5e4]">© 2026 BABEL PROJECT</span>
-                      <button className="cursor-pointer hover:text-[#d4b58e] hover:scale-110 transition-all focus:outline-none" aria-label="进入编辑器">
-                        <span dangerouslySetInnerHTML={{ __html: getIcon('qr-code', 'w-5 h-5 md:w-6 md:h-6') }} />
-                      </button>
                     </div>
                   </div>
                 </div>

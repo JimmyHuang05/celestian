@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#080909">
+  <title>占星会 · 群星信仰</title>
+  <style>
+    @font-face{font-family:Celestian;src:url('/src/fonts/identity/noto-serif-sc-400.ttf') format('truetype');font-display:swap}
+    *{box-sizing:border-box}body{margin:0;background:#080909;color:#e9e1d0;font-family:Celestian,'Songti SC',serif}main{max-width:1800px;min-height:100svh;margin:auto;padding:48px 4vw 30px}header{display:flex;justify-content:space-between;gap:30px;align-items:start;margin-bottom:40px}.eyebrow{font:10px Georgia,serif;letter-spacing:.26em;color:#9e9079;margin:0 0 18px}h1{font-size:clamp(26px,3vw,38px);font-weight:400;letter-spacing:.16em;margin:0 0 16px}.intro{margin:0;max-width:660px;font-size:12px;line-height:2;color:#a5a39a}a{color:inherit;text-decoration:none}header a{font-size:11px;color:#b5ab98;white-space:nowrap;padding:8px 0;border-bottom:1px solid #746b594a}.grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:22px}.card{min-width:0;border-top:1px solid #73664b66;padding-top:16px}.number{font:11px Georgia,serif;letter-spacing:.2em;color:#9e9079}.art{display:block;cursor:zoom-in;border:0;width:100%;padding:0;background:#000;margin:18px 0 24px;aspect-ratio:4/5}.art img{display:block;object-fit:contain;width:100%;height:100%}h2{font-size:19px;letter-spacing:.12em;font-weight:400;margin:0 0 11px}.description{font-size:11px;color:#a29e93;line-height:2;min-height:66px;margin:0 0 20px}.download{display:block;border-top:1px solid #665d4e44;padding-top:13px;font-size:10px;letter-spacing:.04em;color:#b6aa93}.download:hover,header a:hover{color:#fff2d9}button:focus-visible,a:focus-visible{outline:1px solid #d8c79f;outline-offset:5px}footer{margin-top:40px;padding-top:19px;border-top:1px solid #665d4e44;display:flex;justify-content:space-between;gap:20px;font-size:10px;line-height:1.8;color:#777a73}dialog{background:#050505;color:#eee5d3;border:1px solid #514b3f;max-width:94vw;width:min(900px,94vw);max-height:94svh;padding:18px}dialog::backdrop{background:#000d;backdrop-filter:blur(5px)}.dialog-head{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:0 4px 14px}.dialog-head h2{margin:0;font-size:16px}.close{background:none;color:inherit;border:1px solid #645a48;padding:7px 13px;cursor:pointer;font-family:inherit;font-size:12px}.large{display:block;width:100%;height:calc(90svh - 100px);object-fit:contain}
+    @media(max-width:1050px){.grid{grid-template-columns:repeat(3,minmax(0,1fr));row-gap:32px}.art{aspect-ratio:1}}@media(max-width:650px){main{padding:30px 6vw}header{display:block;margin-bottom:30px}header a{display:inline-block;margin-top:15px}.grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:30px 18px}.art{aspect-ratio:4/5}h2{font-size:17px}.description{min-height:88px}footer{display:block}footer span{display:block;margin-bottom:8px}}@media(max-width:360px){.grid{grid-template-columns:1fr}.description{min-height:0}}
+  </style>
+</head>
+<body>
+<main>
+  <header><div><p class="eyebrow">CELESTIAN / THE CHURCH OF STARS</p><h1>占星会 · 群星信仰</h1><p class="intro">以群星为圣像，以天文为秘仪。前文明的遗民披上信仰的外衣，守望这个时代尚不能理解的天穹。</p></div><a href="/faction-switcher.html?faction=eternal-astrology">返回势力页面 ↗</a></header>
+  <section class="grid" aria-label="五款占星会徽记" id="gallery"></section>
+  <footer><span>五款图像概念 · 点击画面放大查看</span><span>永恒不灭的占星会</span></footer>
+</main>
+<dialog aria-labelledby="detail-title"><div class="dialog-head"><h2 id="detail-title"></h2><button class="close" type="button">关闭 ×</button></div><img class="large" alt=""></dialog>
+<script type="module">
+  const concepts = [
+    ['群星圣龛','尖拱围合主星，群星依次垂落。像一座向星空敞开的无形圣所。'],
+    ['众曜法环','众星环绕中央的空无，天体运行的规律被保存为教会的神圣法度。'],
+    ['垂星圣幕','弧线与悬垂星光形成层叠圣幕，延续垂弦的轻盈与仪式秩序。'],
+    ['晦冕','以黑暗塑造中央的星，光轮与尖芒共同指向不可言说的神秘。'],
+    ['星谕阶序','断开的几何切面围出空心星象，像一则只有遗民能够读懂的启示。']
+  ];
+  const dialog=document.querySelector('dialog');
+  const detailTitle=document.querySelector('#detail-title');
+  const detailImage=document.querySelector('.large');
+  const gallery=document.querySelector('#gallery');
+  concepts.forEach(([name,description],index)=>{
+    const number=String(index+1).padStart(2,'0');
+    const src=`/eternal-astrology/emblems/sacred-emblem-${number}.png`;
+    const card=document.createElement('article');
+    card.className='card';
+    card.innerHTML=`<span class="number">${number} /</span><button class="art" aria-label="放大${name}"><img src="${src}" alt="${name}徽记" decoding="async"></button><h2>${name}</h2><p class="description">${description}</p><a class="download" href="${src}" download="占星会-${number}-${name}.png">下载原图 ↓</a>`;
+    card.querySelector('button').addEventListener('click',()=>{
+      detailTitle.textContent=`${number} · ${name}`;
+      detailImage.src=src;
+      detailImage.alt=`${name}徽记大图`;
+      dialog.showModal();
+    });
+    gallery.append(card);
+  });
+  document.querySelector('.close').addEventListener('click',()=>dialog.close());
+  dialog.addEventListener('click',event=>{if(event.target===dialog){const box=dialog.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)dialog.close();}});
+</script>
+</body>
+</html>

@@ -1,0 +1,4 @@
+Runtime and adapted Aka model from shinshin86/aituber-onair
+Commit: d8236762cc45d8909164321b9a7f80687cec827d
+Path: packages/core/examples/react-inochi2d-app/public/inochi2d
+Original model: seagetch, CC BY 4.0

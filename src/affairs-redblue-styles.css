@@ -1,0 +1,3 @@
+@import './affairs-palimpsest-five.css';
+main{grid-template-columns:repeat(2,minmax(0,1fr));max-width:1600px;margin:auto}
+@media(max-width:700px){main{grid-template-columns:1fr}}

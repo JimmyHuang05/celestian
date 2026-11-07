@@ -1,5 +1,3 @@
-@import './fonts/yishan.css';
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -13,14 +11,10 @@
     animation: fastFadeIn 1s ease-out forwards;
 }
 
+/* Seal titles render directly; their visibility must not depend on visiting
+   the retired home page to add a yishan-loaded class. */
 .font-yishan {
-    opacity: 0;
-    transform: translateY(10px);
-    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
-}
-.yishan-loaded .font-yishan {
-    opacity: 1;
-    transform: translateY(0);
+    font-family: var(--font-decorative);
 }
 
 body {
@@ -33,7 +27,7 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-family: "BIZ UDMincho", serif;
+    font-family: var(--font-body);
     font-weight: normal;
 }
 
@@ -81,7 +75,8 @@ body {
     @apply scale-[1.04] shadow-[0_20px_40px_rgba(212,181,142,0.3)];
     z-index: 20;
 }
-.group.is-active .hover-text-gold-stroke {
+.group.is-active .hover-text-gold-stroke,
+.group:focus-visible .hover-text-gold-stroke {
     color: #111111 !important;
     -webkit-text-stroke: 0;
     text-shadow: -1.5px -1.5px 0 #d4b58e, 1.5px -1.5px 0 #d4b58e, -1.5px 1.5px 0 #d4b58e, 1.5px 1.5px 0 #d4b58e, 0px -1.5px 0 #d4b58e, 0px 1.5px 0 #d4b58e, -1.5px 0px 0 #d4b58e, 1.5px 0px 0 #d4b58e !important;
@@ -198,7 +193,7 @@ body {
 #encyclopedia-app .holy-text > p:first-of-type::first-letter {
     float: left; font-size: 4rem; line-height: 0.8;
     padding-top: 0.2rem; padding-right: 0.6rem; color: #d4b58e;
-    font-family: 'Cinzel', serif; font-weight: 500; text-shadow: 0 0 20px rgba(212, 181, 142, 0.4);
+    font-family: var(--font-display); font-weight: 500; text-shadow: 0 0 20px rgba(212, 181, 142, 0.4);
 }
 
 #encyclopedia-app .has-drop-cap {
@@ -228,7 +223,7 @@ body {
 #encyclopedia-app .slide-up-leave-to { opacity: 0; transform: translateY(20px); }
 
 /* ================= 地图页面样式 ================= */
-#map-app * {
+#map-app .leaflet-container, #map-app .leaflet-container * {
     -webkit-touch-callout: none;
     -webkit-user-select: none;
     -moz-user-select: none;
@@ -244,13 +239,14 @@ body {
 }
 
 #map-app {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    --font-ui: var(--font-body);
+    font-family: var(--font-body);
     background-color: #050505;
     color: #e7e5e4;
     overflow: hidden;
 }
 
-#map-app .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+#map-app .font-serif-sc { font-family: var(--font-body); }
 #map-app ::-webkit-scrollbar { width: 5px; height: 5px; }
 #map-app ::-webkit-scrollbar-track { background: transparent; }
 #map-app ::-webkit-scrollbar-thumb { background: #d4b58e; border-radius: 10px; }
@@ -268,10 +264,7 @@ body {
     will-change: transform; transform: translateZ(0); backface-visibility: hidden;
 }
 
-#map-app .geo-pin-map { display: flex; justify-content: center; align-items: center; }
-#map-app .geo-pin-map > div { transition: transform 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94); will-change: transform; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.8)); }
-#map-app .geo-pin-map:hover > div { transform: scale(1.15) translateY(-5px); filter: drop-shadow(0 8px 10px rgba(0,0,0,0.9)); }
-#map-app .geo-pin-map-active > div { transform: scale(1.3) translateY(-8px) !important; filter: drop-shadow(0 0 15px rgba(212, 181, 142, 0.8)) !important; }
+/* Marker feedback is scoped with the current map UI in pages/map.css. */
 
 #map-app .map-regions-svg-layer { pointer-events: none; }
 #map-app .map-regions-svg-layer path, #map-app .map-regions-svg-layer polygon { pointer-events: auto; }
@@ -280,9 +273,9 @@ body {
 #map-app .custom-dropdown-scroll::-webkit-scrollbar-thumb { background: #44403c; border-radius: 10px; }
 
 /* ================= Functions 页面样式 ================= */
-#functions-app { background-color: #1c1917; color: #e7e5e4; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; overflow: hidden; -webkit-user-select: none; user-select: none; }
-#functions-app .font-mono-ef { font-family: 'JetBrains Mono', monospace; }
-#functions-app .font-serif-sc { font-family: 'Noto Serif SC', serif; }
+#functions-app { background-color: #1c1917; color: #e7e5e4; font-family: var(--font-ui); overflow: hidden; -webkit-user-select: none; user-select: none; }
+#functions-app .font-mono-ef { font-family: var(--font-mono); }
+#functions-app .font-serif-sc { font-family: var(--font-body); }
 #functions-app .italic, #functions-app em, #functions-app i, #functions-app cite { font-style: normal !important; }
 #functions-app .bg-overlay-fn { position: fixed; inset: 0; background: linear-gradient(to bottom, rgba(28, 25, 23, 0.3) 0%, rgba(28, 25, 23, 0.9) 100%); z-index: 1; pointer-events: none; }
 #functions-app .ambient-glow-fn { position: fixed; inset: 0; background: radial-gradient(circle at 35% 50%, rgba(212, 181, 142, 0.05) 0%, transparent 60%); z-index: 2; pointer-events: none; }
@@ -308,9 +301,9 @@ body {
 #functions-app * { -ms-overflow-style: none; scrollbar-width: none; }
 
 /* ================= Badge 页面样式 ================= */
-#badge-app { font-family: 'Noto Serif SC', serif; background-color: #050505; color: #e7e5e4; overflow: hidden; }
-#badge-app .font-serif-sc { font-family: 'Noto Serif SC', serif; }
-#badge-app .signature-font { font-family: 'Mrs Saint Delafield', cursive; }
+#badge-app { font-family: var(--font-body); background-color: #050505; color: #e7e5e4; overflow: hidden; }
+#badge-app .font-serif-sc { font-family: var(--font-body); }
+#badge-app .signature-font { font-family: var(--font-signature); }
 #badge-app .dynamic-radar { position: absolute; inset: 0; overflow: hidden; pointer-events: none; z-index: 0; display: flex; align-items: center; justify-content: center; }
 #badge-app .radar-circle { position: absolute; border: 1px solid rgba(212, 181, 142, 0.15); border-radius: 50%; opacity: 0; animation: radarExpand 10s cubic-bezier(0.1, 0.5, 0.9, 0.5) infinite; box-shadow: inset 0 0 40px rgba(212, 181, 142, 0.05); }
 #badge-app .radar-circle:nth-child(1) { animation-delay: 0s; }

@@ -12,7 +12,7 @@
 .sector-leader{stroke:#a68e60;stroke-width:.7;opacity:.35}
 .sector-pin{fill:#ba9e66;opacity:.6}
 .sector-name{fill:#bdb6a7;font-size:clamp(10px,.86vw,16px);letter-spacing:.1em;paint-order:stroke;stroke:#0c1524;stroke-width:4px;stroke-linejoin:round}
-.sector-number{fill:#928062;font:9px Georgia,serif;letter-spacing:.22em;paint-order:stroke;stroke:#0c1524;stroke-width:2px}
+.sector-number{fill:#928062;font:9px var(--font-classic);letter-spacing:.22em;paint-order:stroke;stroke:#0c1524;stroke-width:2px}
 .sector-operator.active .sector-portrait{filter:saturate(var(--art-saturation)) brightness(var(--art-brightness)) contrast(var(--art-contrast))}
 .sector-operator.active .sector-edge{stroke:#d4bd8d;stroke-width:1.4;opacity:1}
 .sector-operator.active .sector-inlay{opacity:.65}

@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>非常规事务署 · 三版静态宣传屏</title>
+  <link rel="stylesheet" href="/src/affairs-poster-study.css">
+</head>
+<body>
+  <header class="study-bar">
+    <p class="study-name">非常规事务署<span>静态宣传屏</span></p>
+    <nav class="study-versions" aria-label="选择设计版本">
+      <a href="#fog" data-version="fog" aria-current="page"><span>01</span> 雾都</a>
+      <a href="#palimpsest" data-version="palimpsest"><span>02</span> 旧画</a>
+      <a href="#boundary" data-version="boundary"><span>03</span> 灯火之外</a>
+    </nav>
+    <div class="study-actions">
+      <a href="#compare" class="study-compare">三版对照</a>
+      <a href="/affairs-poster-fog.html" id="pure-link" target="_blank" rel="noopener">打开纯净版 <span aria-hidden="true">↗</span></a>
+    </div>
+  </header>
+  <main class="study-stage">
+    <div id="single-view" class="single-view">
+      <iframe id="poster-frame" src="/affairs-poster-fog.html" title="雾中的隐秘王都 · 静态宣传屏"></iframe>
+    </div>
+    <div id="compare-view" class="compare-view" hidden>
+      <a class="comparison" href="#fog">
+        <div class="comparison__art"><iframe data-src="/affairs-poster-fog.html" title="雾中的隐秘王都缩略预览" tabindex="-1"></iframe></div>
+        <span class="comparison__caption"><span>01</span> 雾中的隐秘王都 <span aria-hidden="true">↗</span></span>
+      </a>
+      <a class="comparison" href="#palimpsest">
+        <div class="comparison__art"><iframe data-src="/affairs-poster-palimpsest.html" title="被改写的旧画缩略预览" tabindex="-1"></iframe></div>
+        <span class="comparison__caption"><span>02</span> 被改写的旧画 <span aria-hidden="true">↗</span></span>
+      </a>
+      <a class="comparison" href="#boundary">
+        <div class="comparison__art"><iframe data-src="/affairs-poster-boundary.html" title="灯火之外缩略预览" tabindex="-1"></iframe></div>
+        <span class="comparison__caption"><span>03</span> 灯火之外 <span aria-hidden="true">↗</span></span>
+      </a>
+    </div>
+  </main>
+  <script type="module" src="/src/affairs-poster-study.js"></script>
+</body>
+</html>
+

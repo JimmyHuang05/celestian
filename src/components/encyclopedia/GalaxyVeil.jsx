@@ -1,9 +1,10 @@
 import { useEffect, useRef } from 'react'
 import { galaxyDensity } from './galaxyDensity.js'
+import { STAR_REVEAL_DURATION, starArrivalOpacity } from './starArrival.js'
 import './galaxy-canvas.css'
 
 // Transparent, stationary star dust; no continuous light-colored cloud overlay.
-export default function GalaxyVeil() {
+export default function GalaxyVeil({ revealRef }) {
   const ref = useRef(null)
   useEffect(() => {
     const canvas = ref.current
@@ -18,23 +19,35 @@ export default function GalaxyVeil() {
       dust.push({ x, y, radius: .15 + random() * .3, alpha: .1 + random() * .22,
         color: random() > .65 ? '212,181,142' : '199,204,215' })
     }
-    const draw = () => {
+    const draw = (time = performance.now()) => {
       const width = canvas.clientWidth, height = canvas.clientHeight
       const ratio = Math.min(devicePixelRatio || 1, 2)
-      canvas.width = width * ratio
-      canvas.height = height * ratio
+      if (canvas.width !== Math.round(width * ratio) || canvas.height !== Math.round(height * ratio)) {
+        canvas.width = Math.round(width * ratio)
+        canvas.height = Math.round(height * ratio)
+      }
       ctx.setTransform(ratio, 0, 0, ratio, 0, 0)
       ctx.clearRect(0, 0, width, height)
-      dust.forEach(star => {
-        ctx.fillStyle = `rgba(${star.color},${star.alpha})`
+      dust.forEach((star, index) => {
+        const alpha = star.alpha * starArrivalOpacity(index + 450, time, revealRef?.current)
+        if (alpha <= 0) return
+        ctx.fillStyle = `rgba(${star.color},${alpha})`
         ctx.beginPath()
         ctx.arc(star.x * width, star.y * height, star.radius, 0, Math.PI * 2)
         ctx.fill()
       })
     }
-    const observer = new ResizeObserver(draw)
+    const observer = new ResizeObserver(() => draw())
     observer.observe(canvas); draw()
-    return () => observer.disconnect()
-  }, [])
+    let frame
+    const animate = time => {
+      draw(time)
+      if (revealRef?.current != null && time < revealRef.current + STAR_REVEAL_DURATION) {
+        frame = requestAnimationFrame(animate)
+      }
+    }
+    if (revealRef?.current != null) frame = requestAnimationFrame(animate)
+    return () => { observer.disconnect(); cancelAnimationFrame(frame) }
+  }, [revealRef])
   return <canvas ref={ref} data-galaxy-veil className="celestian-galaxy-dust" aria-hidden="true" />
 }

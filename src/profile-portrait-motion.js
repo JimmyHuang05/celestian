@@ -1,3 +1,4 @@
+import { pageIsActive, subscribePageActivity } from './page-lifecycle.js'
 import './profile-portrait-motion.css'
 
 const factories={
@@ -44,13 +45,13 @@ export function mountPortraitMotion(portrait){
     active.renderer.resize()
   }
   function tick(now){
-    if(disposed||!active?.renderer||active.failed||document.hidden||reduced.matches||inspectionPaused){stop();return}
+    if(disposed||!active?.renderer||active.failed||!pageIsActive()||reduced.matches||inspectionPaused){stop();return}
     raf=requestAnimationFrame(tick)
     if(last&&now-last<1000/60)return
     time+=last?Math.min((now-last)/1000,.05):0
     last=now;active.renderer.render(time);frames++
   }
-  function start(){stop();if(active&&!document.hidden&&!reduced.matches&&!inspectionPaused)raf=requestAnimationFrame(tick)}
+  function start(){stop();if(active&&!!pageIsActive()&&!reduced.matches&&!inspectionPaused)raf=requestAnimationFrame(tick)}
   function load(character){
     const previous=cache.get(character.id)
     if(previous?.failed){
@@ -101,14 +102,14 @@ export function mountPortraitMotion(portrait){
   const observer=new ResizeObserver(layout)
   observer.observe(portrait);observer.observe(host)
   function onPreference(){if(entry)void select(entry)}
-  function onVisibility(){if(document.hidden)stop();else start()}
+  function onVisibility(){if(!pageIsActive())stop();else start()}
   reduced.addEventListener('change',onPreference)
-  document.addEventListener('visibilitychange',onVisibility)
+  const stopActivity=subscribePageActivity(onVisibility)
   function destroy(){
     if(disposed)return
     disposed=true;++version;stop();observer.disconnect()
     reduced.removeEventListener('change',onPreference)
-    document.removeEventListener('visibilitychange',onVisibility)
+    stopActivity()
     portrait.classList.remove('has-motion')
     status.remove();delete host.dataset.portraitState;host.removeAttribute('aria-busy')
     cache.forEach(item=>{item.renderer?.destroy();item.canvas.getContext('webgl')?.getExtension('WEBGL_lose_context')?.loseContext();item.canvas.remove()})

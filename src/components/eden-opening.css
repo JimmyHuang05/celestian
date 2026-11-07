@@ -1,0 +1,33 @@
+.eden-opening{position:fixed;inset:0;z-index:1100;width:100%;height:100%;border:0;padding:0;overflow:hidden;background:#173e45;color:#fff9e9;cursor:pointer;text-align:center;isolation:isolate;opacity:1;}
+.eden-opening__scene{position:absolute;inset:0;container-type:size;pointer-events:none;animation:eden-arrive 2.5s ease-out both}
+.eden-opening__rays{position:absolute;inset:0;width:100%;height:100%;filter:blur(1px);}
+.eden-opening__art{position:relative;display:block;width:min(90vw,159.915vh);height:auto;max-height:90vh;object-fit:contain;mask-image:linear-gradient(to right,transparent,rgba(0,0,0,.2) .7%,rgba(0,0,0,.8) 2.3%,#000 3%,#000 97%,rgba(0,0,0,.8) 97.7%,rgba(0,0,0,.2) 99.3%,transparent),linear-gradient(to bottom,transparent,rgba(0,0,0,.2) .7%,rgba(0,0,0,.8) 2.3%,#000 3%,#000 97%,rgba(0,0,0,.8) 97.7%,rgba(0,0,0,.2) 99.3%,transparent);mask-composite:intersect;}
+.eden-opening__art--framed{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:min(97cqw,172.353cqh);max-width:97%;max-height:97%;aspect-ratio:1672 / 941;mask-image:none;}
+.eden-opening{background:#191e2d}
+.eden-opening__veil{position:absolute;inset:0;background:linear-gradient(180deg,transparent 30%,rgba(12,31,35,.08) 45%,rgba(8,24,29,.38) 78%,rgba(7,22,27,.65));}
+.eden-opening__identity{position:absolute;left:0;right:0;top:46%;display:flex;align-items:center;flex-direction:column;text-shadow:0 3px 24px #0c2929,0 1px 4px #153a3b;}
+.eden-opening__logo{display:block;width:min(54vw,783px);height:auto;margin-top:max(-3.5vw,-51px);margin-bottom:max(-2vw,-29px);object-fit:contain;}
+.eden-opening__subtitle{margin-top:calc(clamp(-10px,-.7vw,-6px) - 32px);padding-left:.4em;font-family:'峄山碑篆体',serif;font-size:clamp(20px,2.4vw,34px);font-weight:400;line-height:1.5;letter-spacing:.4em;}
+.eden-opening__title{font-family:'Noto Serif SC','Songti SC',SimSun,serif;font-weight:500;font-size:clamp(38px,5.2vw,88px);letter-spacing:.16em;padding-left:.16em;line-height:1.4;}
+.eden-opening__english{font-family:Cinzel,Georgia,serif;font-size:clamp(11px,1vw,17px);letter-spacing:.6em;padding-left:.6em;margin-top:8px;}
+.eden-opening__start{position:absolute;bottom:13%;left:0;right:0;display:flex;align-items:center;justify-content:center;gap:22px;font-family:'Noto Serif SC',serif;font-size:14px;letter-spacing:.3em;animation:eden-prompt 3s ease-in-out infinite;}
+.eden-opening__start>span{height:1px;width:56px;background:linear-gradient(90deg,transparent,#f5e5c4);}.eden-opening__start>span:last-child{transform:rotate(180deg)}
+.eden-opening__footer{position:absolute;bottom:28px;left:0;right:0;font:9px Georgia,serif;letter-spacing:.5em;opacity:.65;}
+.eden-opening:focus-visible{outline:2px solid #f3dfb1;outline-offset:-8px}
+@keyframes eden-arrive{from{opacity:0}to{opacity:1}}
+@keyframes eden-prompt{50%{opacity:.5}}
+@media(max-width:600px){.eden-opening__identity{top:49%}.eden-opening__title{font-size:clamp(30px,8vw,48px);letter-spacing:.08em}.eden-opening__start{bottom:16%;font-size:12px;gap:12px}.eden-opening__start>span{width:28px}}
+@media(prefers-reduced-motion:reduce){.eden-opening__scene,.eden-opening__start{animation:none}.eden-opening{transition:none}}
+
+.eden-opening.is-entering{background:transparent;cursor:default;}
+.eden-opening.is-entering>.eden-opening__scene,
+.eden-opening.is-entering>.eden-opening__veil,
+.eden-opening.is-entering>.eden-opening__identity,
+.eden-opening.is-entering>.eden-opening__start,
+.eden-opening.is-entering>.eden-opening__footer{animation:eden-hide-opening 1ms linear 1.7s both;}
+.eden-opening__curtain{position:absolute;inset:0;background:#000;pointer-events:none;clip-path:circle(var(--sun-radius,9vw) at var(--sun-x,50%) var(--sun-y,30%));animation:eden-eclipse 1.7s cubic-bezier(.55,.02,.32,1) forwards,eden-curtain-reveal 2.1s ease-in-out 4.8s forwards;}
+@keyframes eden-eclipse{to{clip-path:circle(var(--cover-radius,150vmax) at var(--sun-x,50%) var(--sun-y,30%));}}
+@keyframes eden-hide-opening{from{opacity:1}to{opacity:0}}
+@keyframes eden-curtain-reveal{from{opacity:1}to{opacity:0}}
+.eden-opening.is-reduced{animation:eden-curtain-reveal .3s ease forwards;}
+.eden-opening.is-reduced>.eden-opening__curtain{display:none;}

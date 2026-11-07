@@ -1,5 +1,5 @@
-.roster-astrolabe .dial-roman{font:8px Georgia,serif;letter-spacing:2px;fill:#bda678;stroke:none;opacity:.75}
-.roster-astrolabe .dial-degree{font:5px Georgia,serif;letter-spacing:1px;fill:#b29b6f;stroke:none;opacity:.45}
+.roster-astrolabe .dial-roman{font:8px var(--font-classic);letter-spacing:2px;fill:#bda678;stroke:none;opacity:.75}
+.roster-astrolabe .dial-degree{font:5px var(--font-classic);letter-spacing:1px;fill:#b29b6f;stroke:none;opacity:.45}
 .roster-astrolabe .dial-clockwork,.roster-astrolabe .dial-chapters,.roster-astrolabe .dial-filigree,.roster-astrolabe .dial-sky,.roster-astrolabe .dial-comet{transform-box:view-box;transform-origin:500px 500px}
 .dial-clockwork{animation:dial-turn 260s linear infinite}
 .dial-chapters{animation:dial-turn 340s linear infinite reverse}

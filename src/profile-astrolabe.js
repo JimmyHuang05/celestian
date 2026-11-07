@@ -1,3 +1,4 @@
+import { pageMotionAllowed, subscribePageActivity } from './page-lifecycle.js'
 import './profile-astrolabe.css'
 
 const polar=(radius,angle)=>{
@@ -121,8 +122,8 @@ export function mountRosterAstrolabe(host){
   </svg>`
 
   const rotor=host.querySelector('[data-dial-rotor]')
-  const pause=()=>host.toggleAttribute('data-paused',document.hidden)
-  document.addEventListener('visibilitychange',pause)
+  const pause=()=>host.toggleAttribute('data-paused',!pageMotionAllowed())
+  const stopActivity=subscribePageActivity(pause)
   pause()
   return {
     rotate:angle=>rotor.setAttribute('transform',`rotate(${angle} 500 500)`),
@@ -135,6 +136,6 @@ export function mountRosterAstrolabe(host){
         <path d="M${point(464,angle)}L${point(477,angle)}" stroke-width=".8"/>${diamond(483,angle,3.5)}
       </g>`).join('')
     },
-    destroy:()=>document.removeEventListener('visibilitychange',pause)
+    destroy:stopActivity
   }
 }

@@ -3,6 +3,8 @@ import react, { reactCompilerPreset } from '@vitejs/plugin-react'
 import babel from '@rolldown/plugin-babel'
 import { execSync } from 'child_process'
 import oldPreview from './scripts/old-preview.js'
+import devNavigation from './scripts/dev-navigation.js'
+import retiredEditor from './scripts/retired-editor.js'
 
 function getGitCommit() {
   try {
@@ -29,6 +31,18 @@ function getBuildDate() {
 // The public gallery is served by the same API used in production.
 // Restrict the development proxy to this read-only endpoint.
 const galleryProxy = {
+  '/api/system/logs': {
+    target: 'https://celestian.jimmyhuang.cn',
+    changeOrigin: true,
+    secure: true,
+    bypass(req, res) {
+      if (!['GET', 'HEAD'].includes(req.method)) {
+        res.statusCode = 405
+        res.end('Method not allowed')
+        return false
+      }
+    },
+  },
   '/api/entries/node/gallery': {
     target: 'https://celestian.jimmyhuang.cn',
     changeOrigin: true,
@@ -46,7 +60,13 @@ const galleryProxy = {
 export default defineConfig({
   server: { proxy: galleryProxy },
   preview: { proxy: galleryProxy },
-  build: { rollupOptions: { input: { main: 'index.html', characters: 'character-profile.html' } } },
+  build: { rollupOptions: { input: {
+    main: 'index.html',
+    characters: 'character-profile.html',
+    astrology: 'faction-profile.html',
+    affairs: 'unconventional-affairs.html',
+    imperial: 'imperial-knights.html',
+  } } },
   define: {
     __BUILD_INFO__: JSON.stringify({
       commit: getGitCommit(),
@@ -56,6 +76,8 @@ export default defineConfig({
     }),
   },
   plugins: [
+    retiredEditor(),
+    devNavigation(),
     oldPreview(),
     react(),
     babel({ presets: [reactCompilerPreset()] })

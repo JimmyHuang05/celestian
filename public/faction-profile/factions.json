@@ -1,0 +1,77 @@
+[
+  {
+    "id": "eternal-astrology",
+    "name": "永恒不灭的占星会",
+    "affiliation": "独立势力",
+    "subtitle": "愿群星不曾听见",
+    "emblem": "/faction-profile/emblems/eternal-astrology-celestial-wheel-v1.webp",
+    "music": "eternal-astrology",
+    "blocks": [
+      { "type": "key-value", "key": "归属", "value": "独立势力" },
+      { "type": "paragraph", "content": "永恒不灭的占星会是一个年代不详的古老结社，以观测星象、编订历书和保存旧籍为人所知。关于它的来历，留存的记述很少。会中传抄着四幅旧画，附有一个无名之国的故事。" },
+      { "type": "heading", "content": "长昼之庭" },
+      { "type": "image", "url": "/assets/astrology-v2/01-garden-640.webp", "caption": "长昼之庭" },
+      { "type": "paragraph", "content": "从前有一个国家，河水从果园和麦田间流过。粮仓年年装不下，仓门便不落锁。人们取走自己需要的，老了、病了，也照常去取。果子熟时，低处的枝条留给孩子，高处的由大人搭梯去摘。" },
+      { "type": "paragraph", "content": "每天收工，提灯的人都在桥边等着。等最后一个背着篮子的人走过，他才跟着回城。那时，教堂里常讲，地上的粮食与天上的星星，都是赐给这个国家的恩典。" },
+      { "type": "heading", "content": "天幕之罅" },
+      { "type": "image", "url": "/assets/astrology-v2/02-riven-sky-640.webp", "caption": "天幕之罅" },
+      { "type": "paragraph", "content": "有一天，天上裂开了一道口子。星星仍挂在两旁，连着它们的金线却断了。下面的桥还好好的，河水也没有改道。人们走上石阶，提起灯，想看清那里面是什么。" },
+      { "type": "paragraph", "content": "教士们说，天不会无缘无故降下灾祸，要众人各自交代过错。一个守园人迟迟没有低头。他问，倘若地上找不到罪人，这道口子还会合上吗？书记记下他的话，叫他留下，旁的人可以回去了。" },
+      { "type": "heading", "content": "群星坠野" },
+      { "type": "image", "url": "/assets/astrology-v2/03-falling-stars-640.webp", "caption": "群星坠野" },
+      { "type": "paragraph", "content": "后来，星星带着火落进田野。田地从中间裂开，河水冲上了桥，城里的钟楼也倒了。那些落下的石头裂开以后，里面还有东西走出来。人们把供物放在路上，它们踩过去，继续往城里走。" },
+      { "type": "paragraph", "content": "各城的人赶来守桥，把断了的兵器接好，再回到原来的位置。桥终于塌了，众人退进城，城也没有守住。提灯的人走在逃难的队伍前面。守园人和审问过他的教士，合抬着一个走不动的人，跟着灯走过烧黑的田野。" },
+      { "type": "heading", "content": "渡夜之舟" },
+      { "type": "image", "url": "/assets/astrology-v2/04-night-voyage-640.webp", "caption": "渡夜之舟" },
+      { "type": "paragraph", "content": "各城送来木料，接着送来工匠和粮食。教堂的门、城门的横梁、果园里的长梯，一件件拆开，钉进了同一条船。" },
+      { "type": "paragraph", "content": "船驶入深夜。故土渐渐沉到船下，河流、城墙和崩裂的田地缩成了一块，慢慢没入黑暗。" },
+      { "type": "paragraph", "content": "守园人带上了一株从火里救下的小树，放在提灯人的脚边。每天分水，树也分得一小杯。掌舵的人抬起头，重新辨认天上的星星。" }
+    ]
+  },
+  {
+    "id": "unconventional-affairs",
+    "name": "非常规事务署",
+    "affiliation": "奥兰尼亚",
+    "subtitle": "吾等守护界限",
+    "emblem": "/unconventional-affairs/delivery-v2/raven-red-navy-480.webp",
+    "music": "unconventional-affairs",
+    "blocks": [
+      { "type": "key-value", "key": "归属", "value": "奥兰尼亚" },
+      { "type": "key-value", "key": "铭言", "value": "SERVAMUS LIMEN · 吾等守护界限" },
+      { "type": "heading", "content": "收容管理处" },
+      { "type": "image", "url": "/unconventional-affairs/delivery-v2/red-key-seal-v1-240.webp", "caption": "Office of Containment" },
+      { "type": "heading", "content": "调查处" },
+      { "type": "image", "url": "/unconventional-affairs/delivery-v2/blue-arcane-lantern-v1-240.webp", "caption": "Office of Investigations" }
+    ]
+  },
+  {
+    "id": "imperial-knights",
+    "name": "五军同盟",
+    "affiliation": "霍亨泰因帝国",
+    "subtitle": "荣耀归于霍亨泰因",
+    "emblem": "/imperial-knights/delivery-v2/imperial-damask-640.webp",
+    "emblemLayout": "banner",
+    "emblemAlt": "五军同盟双头鹰旗：黑金旗面、皇冠、双头金鹰与铁十字",
+    "banners": [
+      { "src": "/imperial-knights/delivery-v2/lion-damask-640.webp", "alt": "瑞德皇家王冠骑士团战旗" },
+      { "src": "/imperial-knights/delivery-v2/bear-selected-640.webp", "alt": "霍恩瓦赫特家族骑士团战旗" },
+      { "src": "/imperial-knights/delivery-v2/imperial-damask-640.webp", "alt": "帝国十字骑士团双头鹰旗" },
+      { "src": "/imperial-knights/delivery-v2/lynx-selected-640.webp", "alt": "银猞猁骑士团战旗" },
+      { "src": "/imperial-knights/delivery-v2/wolf-selected-640.webp", "alt": "北境骑士团战旗" }
+    ],
+    "music": "imperial-knights",
+    "blocks": [
+      { "type": "key-value", "key": "归属", "value": "霍亨泰因帝国" },
+      { "type": "heading", "content": "瑞德皇家王冠骑士团" },
+      { "type": "paragraph", "content": "追猎 · 特战 · 精锐" },
+      { "type": "heading", "content": "霍恩瓦赫特家族骑士团" },
+      { "type": "paragraph", "content": "国土防卫 · 山地作战" },
+      { "type": "heading", "content": "帝国十字骑士团" },
+      { "type": "paragraph", "content": "拱卫皇帝 · 中央禁军" },
+      { "type": "heading", "content": "银猞猁骑士团" },
+      { "type": "paragraph", "content": "侦察 · 轻骑 · 快反" },
+      { "type": "heading", "content": "北境骑士团" },
+      { "type": "paragraph", "content": "远征 · 极地 · 高原" }
+    ]
+  }
+]

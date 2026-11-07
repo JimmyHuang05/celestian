@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0a101b">
+  <meta name="description" content="Celestian 势力详情页 · 五种设计理念的本地概念预览。">
+  <title>势力 · 国家与组织 | Celestian</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cpath fill='%23c6ad7c' d='M20 2 24 16 38 20 24 24 20 38 16 24 2 20 16 16Z'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/src/faction-concepts-v2.css">
+</head>
+<body>
+  <a href="#stage" class="skip-link">跳至方案内容</a>
+  <header class="studio" aria-label="势力设计预览控制栏">
+    <a href="/faction-concepts.html" class="studio-brand"><span aria-hidden="true">✧</span><span>势力 <small>第二轮</small></span></a>
+    <nav class="design-tabs" aria-label="选择设计方案">
+      <button type="button" data-design="1" aria-pressed="true"><small>01</small> 同源</button>
+      <button type="button" data-design="2" aria-pressed="false"><small>02</small> 环心</button>
+      <button type="button" data-design="3" aria-pressed="false"><small>03</small> 铭文</button>
+      <button type="button" data-design="4" aria-pressed="false"><small>04</small> 循弧</button>
+      <button type="button" data-design="5" aria-pressed="false"><small>05</small> 余晖</button>
+    </nav>
+    <div class="studio-tools">
+      <select id="country-select" aria-label="国家主题"><option value="indigo">阿斯特拉 · 靛蓝</option><option value="verdant">维瑞迪安 · 苍绿</option><option value="garnet">奥瑞恩 · 绛红</option><option value="independent">无国家 · 星空</option></select>
+      <button type="button" id="width-toggle" aria-pressed="false">窄屏</button>
+      <button type="button" id="clean-toggle" aria-pressed="false">纯净预览</button>
+    </div>
+  </header>
+  <section class="design-note" aria-label="当前方案理念"><p><span id="concept-label">非对称构图</span><strong id="concept-name">同源</strong><span id="concept-description">以一片国家色容纳名称、徽记与正文。</span></p><small>国家、势力及配色均为示例设定</small></section>
+  <div class="preview-ground"><main id="stage" tabindex="-1" aria-label="势力详情页预览"></main></div>
+  <button type="button" class="restore-studio" hidden>↙ 返回方案切换</button>
+  <dialog id="detail-dialog" aria-labelledby="detail-title"><button type="button" class="dialog-close" aria-label="关闭展示">×</button><h2 id="detail-title">势力徽记</h2><div id="detail-art"></div><p id="detail-caption"></p><small>设计示例 · 非正式设定</small></dialog>
+  <p id="announcement" class="sr-only" aria-live="polite"></p>
+  <script type="module" src="/src/faction-concepts-v2.js"></script>
+</body>
+</html>

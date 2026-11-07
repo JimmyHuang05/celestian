@@ -1,0 +1,73 @@
+.eden-hall{
+  --architecture-opacity:.55;--chart-opacity:.7;
+  position:fixed;inset:0;z-index:0;overflow:hidden;pointer-events:none;isolation:isolate;
+  background:#191e2d;
+}
+.eden-hall > .eden-opening__scene{animation:none;}
+.eden-hall__architecture{
+  position:absolute;inset:0;background:url('/images/eden/black-sun-ruins.webp') center / cover no-repeat;
+  filter:saturate(.28) sepia(.24) brightness(.72);opacity:var(--architecture-opacity);
+  mask-image:linear-gradient(90deg,#000 0%,rgba(0,0,0,.85) 6%,rgba(0,0,0,.3) 16%,transparent 29%,transparent 71%,rgba(0,0,0,.3) 84%,rgba(0,0,0,.85) 94%,#000 100%);
+}
+.eden-hall__atmosphere{
+  position:absolute;inset:0;
+  background:radial-gradient(ellipse at 50% 50%,transparent 30%,rgba(9,9,10,.3) 100%),linear-gradient(0deg,rgba(8,9,10,.86),transparent 28%,transparent 75%,rgba(8,9,10,.4));
+}
+.eden-hall__chart{position:absolute;left:50%;top:50%;width:min(96vw,96vh);aspect-ratio:1;color:#b49b6c;transform:translate(-50%,-50%);opacity:var(--chart-opacity);}
+.eden-hall__chart svg{display:block;width:100%;height:100%;overflow:visible;filter:sepia(.3) saturate(.7);}
+.eden-hall[data-phase="opening"] .dial-animated,.eden-hall[data-phase="entering"] .dial-animated{animation-play-state:paused;}
+.eden-hall__paper{position:absolute;inset:0;opacity:.035;background-image:url('data:image/svg+xml,%3Csvg viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="n"%3E%3CfeTurbulence type="fractalNoise" baseFrequency=".85" numOctaves="2" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" opacity=".6" filter="url(%23n)"/%3E%3C/svg%3E');}
+.eden-hall__edge{position:absolute;top:6%;bottom:6%;width:1px;background:linear-gradient(transparent,#c2a16b55 18%,#c2a16b22 50%,#c2a16b55 82%,transparent);}
+.eden-hall__edge--left{left:26px}.eden-hall__edge--right{right:26px}
+.eden-hall__edge::before,.eden-hall__edge::after{content:'';position:absolute;left:-3px;width:7px;height:7px;border:1px solid #c2a16b66;transform:rotate(45deg);}
+.eden-hall__edge::before{top:18%}.eden-hall__edge::after{bottom:18%}
+.eden-hall[data-phase="opening"]>*:not(.eden-stars),.eden-hall[data-phase="entering"]>*:not(.eden-stars){visibility:hidden;}
+.eden-hall[data-phase="revealing"] .eden-hall__architecture{animation:eden-hall-architecture 2s ease-out both;}
+.eden-hall[data-phase="revealing"] .eden-hall__chart{animation:eden-hall-chart 2s ease-out both;}
+@keyframes eden-hall-architecture{from{opacity:0}to{opacity:var(--architecture-opacity)}}
+@keyframes eden-hall-chart{from{opacity:0}to{opacity:var(--chart-opacity)}}
+
+#app-container.eden-home[data-phase="opening"],#app-container.eden-home[data-phase="entering"]{opacity:0;pointer-events:none;}
+#app-container.eden-home[data-phase="revealing"]{animation:eden-hall-cards 1.6s ease-out .25s both;}
+@keyframes eden-hall-cards{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:translateY(0)}}
+.eden-home #hero-card-placeholder{display:none;}
+@media(min-width:1024px){.eden-home #other-cards{gap:clamp(36px,4vw,72px);}}
+.eden-home .tarot-card{border-color:rgba(183,166,125,.32);background:#0b1322;box-shadow:0 16px 42px #0006,0 0 30px #263b5c18;}
+.eden-home .tarot-card>.bg-stoneBg\/70{background:rgba(8,15,27,.67);}
+.eden-home .tarot-card>.vignette-overlay{background:radial-gradient(ellipse,transparent 30%,rgba(5,10,20,.8) 115%);}
+.eden-home .tarot-card:hover,.eden-home .tarot-card.is-active{border-color:#d4b58e99;box-shadow:0 20px 45px #0008,0 0 30px #9daec022;}
+.eden-hall__chart .dial-rim,
+.eden-hall__chart [data-dial-rotor],
+.eden-hall__chart .dial-sky,
+.eden-hall__chart .dial-filigree,
+.eden-hall__chart .dial-heart{transition:filter 1.1s ease,color 1.1s ease;}
+.eden-hall__chart [data-dial-rotor]{transform-origin:500px 500px;transition:transform 1.8s ease,filter 1.1s ease;}
+.eden-hall__chart .dial-constellation>path{transition:opacity 1.1s ease,stroke-width 1.1s ease;}
+.eden-hall[data-resonance="archive"] .dial-rim,
+.eden-hall[data-resonance="archive"] [data-dial-rotor]{filter:brightness(2.1) drop-shadow(0 0 2px #d7b97560);}
+.eden-hall[data-resonance="archive"] [data-dial-rotor]{transform:rotate(9deg);}
+.eden-hall[data-resonance="voyage"] .dial-sky{filter:brightness(2.7) drop-shadow(0 0 3px #d7b97560);}
+.eden-hall[data-resonance="voyage"] .dial-constellation>path{opacity:.8;stroke-width:1;}
+.eden-hall[data-resonance="voyage"] .dial-constellation{transition-delay:100ms;}
+.eden-hall[data-resonance="voyage"] .dial-star{animation:eden-navigation-star 1s ease-out var(--signal-delay,0ms) both;}
+.eden-hall[data-resonance="voyage"] .dial-comet:not(.dial-comet-inner){animation:eden-navigation-comet 2.8s ease-in-out both;}
+.eden-hall[data-resonance="answer"] .dial-filigree,
+.eden-hall[data-resonance="answer"] .dial-heart{filter:brightness(2.5) drop-shadow(0 0 4px #d7b97570);color:#e2c68c;}
+.eden-dial-echo{pointer-events:none;fill:none;stroke:#d5b87d;stroke-width:1;}
+.eden-dial-echo circle{opacity:0;transform-origin:500px 500px;}
+.eden-hall[data-resonance="answer"] .eden-dial-echo circle{animation:eden-answer-echo 2.5s ease-out both;}
+.eden-hall[data-resonance="answer"] .eden-dial-echo circle+circle{animation-delay:.35s;stroke-width:.5;}
+@keyframes eden-navigation-star{from{opacity:.3}to{opacity:1}}
+@keyframes eden-navigation-comet{0%{opacity:0;transform:rotate(-80deg)}15%{opacity:1}80%{opacity:.7}100%{opacity:0;transform:rotate(100deg)}}
+@keyframes eden-answer-echo{0%{opacity:0;transform:scale(.42)}18%{opacity:.65}100%{opacity:0;transform:scale(1.2)}}
+@media(max-width:1023px){
+  .eden-hall{--architecture-opacity:.4;--chart-opacity:.5;}
+  .eden-hall__architecture{background-size:auto 100%;mask-image:linear-gradient(90deg,#000,transparent 25%,transparent 75%,#000);}
+  .eden-hall__chart{width:min(140vw,96vh);}
+  .eden-hall__edge--left{left:12px}.eden-hall__edge--right{right:12px}
+}
+@media(prefers-reduced-motion:reduce){
+  .eden-hall__chart [data-dial-rotor]{transform:none!important;transition:filter .2s;}
+  .eden-hall__chart .eden-dial-echo{display:none;}
+  .eden-hall[data-phase="revealing"] .eden-hall__architecture,.eden-hall[data-phase="revealing"] .eden-hall__chart,#app-container.eden-home[data-phase="revealing"]{animation:none;}
+}

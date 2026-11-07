@@ -1,0 +1,92 @@
+/* Scoped to the persistent player: page styles and iframe contents cannot restyle it. */
+.celestian-player {
+  --disc:76px;
+  --sleeve:60px;
+  --play-size:34px;
+  --accent:#b8a17b;
+  position:fixed;
+  left:max(24px,env(safe-area-inset-left));
+  bottom:max(24px,env(safe-area-inset-bottom));
+  z-index:2147483646;
+  width:min(332px,calc(100vw - 48px));
+  height:var(--disc);
+  isolation:isolate;
+  pointer-events:none;
+  color:#d7d0c1;
+  font-family:var(--font-body);
+  font-weight:400;
+  text-align:left;
+  user-select:none;
+  -webkit-tap-highlight-color:transparent;
+}
+.celestian-player,.celestian-player * {box-sizing:border-box}
+.celestian-player button {appearance:none;margin:0;padding:0;display:flex;align-items:center;justify-content:center;line-height:0;cursor:pointer;touch-action:manipulation}
+.celestian-player button:focus-visible,.celestian-player input:focus-visible {outline:1px solid #d1bc97;outline-offset:5px}
+.celestian-player__disc {
+  position:absolute;z-index:2;inset:0 auto auto 0;
+  width:var(--disc);height:var(--disc);padding:5px!important;
+  border:1px solid #ab93645c;border-radius:50%;background:#101212;
+  box-shadow:0 7px 17px #0005,0 0 0 2px #111313;
+  pointer-events:auto;transition:filter .2s;
+}
+.celestian-player__disc:hover {filter:brightness(1.12)}
+.celestian-player__record {
+  position:relative;display:block;width:100%;height:100%;border-radius:50%;
+  background:conic-gradient(from 15deg,#dad4c600 0deg,#dad4c61c 35deg,#dad4c600 65deg,#dad4c600 175deg,#d0cab81b 220deg,#dad4c600 260deg),repeating-radial-gradient(circle,#111313 0 1.5px,#272929 1.6px 2px,#111313 2.5px 3.5px);
+  animation:celestian-record-turn 18s linear infinite;animation-play-state:paused;
+}
+.celestian-player[data-playing=true] .celestian-player__record {animation-play-state:running}
+.celestian-player__record:before {content:'';position:absolute;inset:22%;border:1px solid #ab936419;border-radius:50%}
+.celestian-player__orbit {position:absolute;inset:-4px;border:1px solid #b49b693d;border-left-color:transparent;border-bottom-color:transparent;border-radius:50%;transform:rotate(-24deg);pointer-events:none}
+.celestian-player__orbit:before {content:'';position:absolute;width:2px;height:2px;top:14%;right:14%;border-radius:50%;background:#c8b18a}
+.celestian-player__label {position:absolute;inset:21%;display:grid;place-items:center;overflow:hidden;border-radius:50%;color:#c5b18a;background:radial-gradient(circle at 35% 25%,#534b39,#302e27);box-shadow:0 0 0 2px #111313,0 0 0 3px #b49b6940}
+.celestian-player__label:after {content:'';position:absolute;z-index:2;inset:0;border:1px solid #ccb99466;border-radius:50%;pointer-events:none}
+.celestian-player__label svg {display:block;width:45%;height:45%;stroke:currentColor;stroke-width:1;fill:none}
+.celestian-player__cover {position:absolute;inset:0;display:block;width:100%;height:100%;object-fit:cover;border-radius:50%;opacity:0;transition:opacity .24s;pointer-events:none}
+.celestian-player__cover.is-ready {opacity:1}
+.celestian-player__spindle {position:absolute;z-index:3;width:3px;height:3px;left:calc(50% - 1.5px);top:calc(50% - 1.5px);border:1px solid #bda5788c;border-radius:50%;background:#1b1b18}
+.celestian-player__panel {
+  position:absolute;left:calc(var(--disc) / 2);right:0;top:50%;height:var(--sleeve);transform:translateY(-50%);
+  border:1px solid #bba68138;border-radius:0 calc(var(--sleeve) / 2) calc(var(--sleeve) / 2) 0;
+  background:linear-gradient(115deg,#161819,#1b1d1d 80%,#202120);
+  box-shadow:inset 0 1px #fff4df04,0 7px 16px #0003;
+  clip-path:inset(-20px 100% -25px 0);opacity:0;
+  transition:clip-path .4s cubic-bezier(.22,.7,.2,1),opacity .2s;
+}
+/* Account for the sleeve's 1px border so the button and end cap share a center. */
+.celestian-player__content {position:absolute;inset:0 calc((var(--sleeve) - var(--play-size)) / 2 - 1px) 0 calc(var(--disc) / 2 + 14px);display:grid;grid-template-columns:minmax(0,1fr) var(--play-size);gap:12px;align-items:center;opacity:0;transform:translateX(-8px);transition:opacity .18s,transform .3s}
+.celestian-player__information {display:grid;grid-template-rows:18px 14px 12px;align-content:center;min-width:0}
+.celestian-player__title {display:block;font:400 13px/18px var(--font-body);letter-spacing:.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#d7d0c1}
+.celestian-player__subtitle {display:block;font:400 10px/14px var(--font-body);letter-spacing:.035em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#a29b8e}
+.celestian-player .celestian-player__play {position:relative;width:var(--play-size);height:var(--play-size);flex:none;border:0;border-radius:50%;color:#c8b38c;background:transparent;transition:color .2s,background .2s}
+.celestian-player__play:hover {background:#c4ae800d!important;color:#f0dbb1!important}
+.celestian-player__play:disabled {opacity:.35;cursor:default}
+.celestian-player__play svg {display:block;flex:none;width:18px;height:18px;fill:currentColor;stroke:none}
+.celestian-player__seek {appearance:none;-webkit-appearance:none;display:block;width:100%;min-width:0;height:12px;padding:0;margin:0;border:0;border-radius:0;box-shadow:none;background:transparent;cursor:pointer;touch-action:pan-y;--progress:0%}
+.celestian-player__seek:disabled {cursor:default}
+.celestian-player__seek::-webkit-slider-runnable-track {height:1px;background:linear-gradient(90deg,var(--accent) var(--progress),#b8a17b2b var(--progress))}
+.celestian-player__seek::-webkit-slider-thumb {appearance:none;-webkit-appearance:none;width:4px;height:4px;border:0;border-radius:50%;margin-top:-1.5px;background:#d1bc97;box-shadow:0 0 0 3px #c2ac8010;opacity:0;transition:opacity .15s}
+.celestian-player__seek:hover::-webkit-slider-thumb,.celestian-player__seek:focus-visible::-webkit-slider-thumb {opacity:1}
+.celestian-player__seek:disabled::-webkit-slider-thumb {opacity:0}
+.celestian-player__seek::-moz-range-track {height:1px;background:#b8a17b2b}
+.celestian-player__seek::-moz-range-progress {height:1px;background:var(--accent)}
+.celestian-player__seek::-moz-range-thumb {width:4px;height:4px;border:0;border-radius:50%;background:#d1bc97}
+.celestian-player[data-open=true] {pointer-events:auto}
+.celestian-player[data-open=true] .celestian-player__panel {clip-path:inset(-20px -20px -25px 0);opacity:1}
+.celestian-player[data-open=true] .celestian-player__content {opacity:1;transform:translateX(0);transition-delay:.08s}
+@keyframes celestian-record-turn {to{transform:rotate(360deg)}}
+@media(max-width:650px) {
+  .celestian-player {--disc:68px;--sleeve:58px;left:max(16px,env(safe-area-inset-left));bottom:max(18px,env(safe-area-inset-bottom));width:min(332px,calc(100vw - 32px))}
+  .celestian-player__content {left:calc(var(--disc) / 2 + 12px);gap:10px}
+  .celestian-player[data-page=eternal-astrology],.celestian-player[data-page=unconventional-affairs],.celestian-player[data-page=imperial-knights] {bottom:calc(142px + env(safe-area-inset-bottom))}
+}
+@media(max-width:767px) {
+  .celestian-player[data-page=functions] {bottom:calc(82px + env(safe-area-inset-bottom))}
+}
+@media(pointer:coarse) {
+  .celestian-player__seek {height:22px;transform:translateY(-5px)}
+  .celestian-player__play:before {content:'';position:absolute;width:44px;height:44px}
+}
+@media(prefers-reduced-motion:reduce) {
+  .celestian-player * {animation:none!important;transition:none!important}
+}

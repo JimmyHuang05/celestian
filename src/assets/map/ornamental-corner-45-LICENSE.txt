@@ -1,0 +1,6 @@
+Source: Craftsmanspace — Collection of ornamental corners
+https://www.craftsmanspace.com/free-patterns/collection-of-ornamental-corners.html
+License: CC BY-SA, as listed by source.
+Design 45 (row 6, column 5).
+Adaptation: 181 original CAD path segments joined into 20 closed vector contours;
+reflected to the upper-left orientation, scaled, recolored, and mirrored to four corners.

@@ -92,7 +92,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
   }, [])
 
   return (
-    <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ fontFamily: "-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, 'Noto Serif SC', sans-serif" }}>
+    <div className="w-full h-screen bg-gray-900 bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ fontFamily: "var(--font-body)" }}>
       <div className="relative w-full h-full flex items-center justify-center">
         <div className={`relative flex flex-col z-10 overflow-hidden bg-[#070709] ${isMobile ? 'w-full h-full rounded-none' : 'w-11/12 md:w-10/12 max-w-5xl h-[80vh] md:h-[75vh] rounded-xl border border-white/5 md:border-gold/10 backdrop-blur-3xl'}`}>
         
@@ -165,7 +165,7 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
                       {character.name && character.name.split('\\n').map((line, idx) => (
                         <h1 key={'aeon-title-' + idx}
                           className="text-5xl md:text-7xl font-black text-gray-100 tracking-[0.2em] pl-[0.2em] text-center drop-shadow-[0_0_30px_rgba(255,255,255,0.1)] max-w-full"
-                          style={{ fontFamily: "'Noto Serif SC', serif", lineHeight: 1.2 }}
+                          style={{ fontFamily: "var(--font-body)", lineHeight: 1.2 }}
                           dangerouslySetInnerHTML={{ __html: line }} />
                       ))}
                     </div>

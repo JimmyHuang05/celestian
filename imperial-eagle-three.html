@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#e7e3da">
+  <title>帝国骑士团 · 双鹰战旗三案</title>
+  <link rel="stylesheet" href="/src/fonts/faction-song.css">
+  <style>
+    *{box-sizing:border-box}
+    body{--paper:#e7e3da;--ink:#302f2b;--muted:#777166;--line:#37312828;margin:0;background:var(--paper);color:var(--ink);font-family:'Celestian Faction Song','Songti SC',SimSun,serif;transition:background-color .3s,color .3s}
+    body.dark{--paper:#202225;--ink:#e9e2d4;--muted:#aaa293;--line:#dfd4ba29}
+    a{color:inherit;text-decoration:none}button{font:inherit;color:inherit;cursor:pointer}
+    button:focus-visible,a:focus-visible{outline:2px solid var(--muted);outline-offset:5px}
+    .page{max-width:1640px;margin:auto;padding:25px clamp(20px,4vw,64px) 20px}
+    header{display:flex;align-items:center;justify-content:space-between;gap:20px;border-bottom:1px solid var(--line);padding-bottom:18px}
+    .eyebrow{font:10px/1.7 Georgia,serif;letter-spacing:.18em;color:var(--muted);margin:0 0 7px}
+    h1{font-size:20px;font-weight:400;letter-spacing:.16em;margin:0}
+    nav{display:flex;align-items:center;gap:20px;font-size:12px}
+    .theme{border:1px solid var(--line);background:transparent;padding:9px 14px}
+    .board{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(20px,5vw,80px);padding:24px 0 25px}
+    figure{margin:0;min-width:0;text-align:center}
+    .art{display:block;width:100%;padding:0;border:0;background:none;cursor:zoom-in}
+    .art img{display:block;width:100%;height:clamp(420px,70svh,850px);object-fit:contain}
+    figcaption{padding-top:18px}
+    h2{font-size:clamp(18px,1.6vw,25px);font-weight:400;letter-spacing:.13em;margin:0 0 10px}
+    .meaning{font-size:12px;line-height:1.8;letter-spacing:.08em;color:var(--muted);margin:0}
+    footer{border-top:1px solid var(--line);padding-top:14px;display:flex;justify-content:space-between;gap:16px;font-size:11px;color:var(--muted);line-height:1.8;letter-spacing:.06em}
+    dialog{width:min(1020px,94vw);max-height:94svh;padding:18px 22px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}
+    dialog::backdrop{background:#111b;backdrop-filter:blur(4px)}
+    .dialog-head{display:flex;align-items:center;justify-content:space-between;gap:20px}
+    .dialog-head h2{font-size:18px;margin:0}.close{border:0;background:none;font-size:26px}
+    .full{display:block;width:100%;height:75svh;object-fit:contain;margin:10px auto}
+    .download{font-size:12px;border-bottom:1px solid var(--muted);padding-bottom:4px}
+    @media(max-width:660px){header{align-items:flex-start}h1{font-size:16px}.eyebrow{font-size:8px}nav a{display:none}.theme{font-size:11px;white-space:nowrap;padding:8px}.board{grid-template-columns:1fr;gap:35px}.art img{height:70svh}footer{flex-direction:column;gap:4px}.full{height:70svh}}
+    @media(prefers-reduced-motion:reduce){body{transition:none}}
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header>
+      <div><p class="eyebrow">CELESTIAN / IMPERIAL KNIGHTS</p><h1>帝国骑士团 · 双鹰战旗三案</h1></div>
+      <nav><button class="theme" type="button" aria-pressed="false">切换深色底</button><a href="/lion-orders.html">逐猎之狮 ↗</a></nav>
+    </header>
+    <main class="board" aria-label="三版帝国双头鹰战旗对比">
+      <figure>
+        <button class="art" type="button" data-id="01-ivory-imperial" data-name="Ⅰ · 帝国礼仪旗" aria-label="放大查看帝国礼仪旗"><img src="/imperial-knights/eagle-banners-v1/01-ivory-imperial.webp" width="810" height="1920" alt="象牙白旗面、黑色铁十字，金盾上冠冕双头黑鹰" fetchpriority="high"></button>
+        <figcaption><h2>Ⅰ · 帝国礼仪旗</h2><p class="meaning">象牙白绸缎 · 黑十字 · 金盾双鹰</p></figcaption>
+      </figure>
+      <figure>
+        <button class="art" type="button" data-id="02-black-gold-sovereign" data-name="Ⅱ · 双鹰御旗" aria-label="放大查看双鹰御旗"><img src="/imperial-knights/eagle-banners-v1/02-black-gold-sovereign.webp" width="810" height="1920" alt="黑色绸缎战旗上展开的双头金鹰，银盾铁十字与金色勋链" fetchpriority="high"></button>
+        <figcaption><h2>Ⅱ · 双鹰御旗</h2><p class="meaning">黑缎金绣 · 展翼双鹰 · 银盾勋链</p></figcaption>
+      </figure>
+      <figure>
+        <button class="art" type="button" data-id="03-ivory-crimson-coronation" data-name="Ⅲ · 加冕仪仗旗" aria-label="放大查看加冕仪仗旗"><img src="/imperial-knights/eagle-banners-v1/03-ivory-crimson-coronation.webp" width="810" height="1920" alt="赤金织锦边包围白色提花旗面，冠冕双头黑鹰佩银盾铁十字" fetchpriority="high"></button>
+        <figcaption><h2>Ⅲ · 加冕仪仗旗</h2><p class="meaning">赤金织锦 · 白底黑鹰 · 加冕冠冕</p></figcaption>
+      </figure>
+    </main>
+    <footer><span>双头鹰 · 铁十字 · 帝国冠冕</span><span>点击战旗放大查看　／　透明原图可下载</span></footer>
+  </div>
+  <dialog aria-labelledby="banner-title">
+    <div class="dialog-head"><h2 id="banner-title"></h2><button class="close" type="button" aria-label="关闭大图">×</button></div>
+    <img class="full" alt="">
+    <a class="download" download>下载透明 PNG 原图 ↓</a>
+  </dialog>
+  <script type="module">
+    const modal = document.querySelector('dialog');
+    let opener;
+    document.querySelector('.theme').addEventListener('click', function () {
+      const dark = document.body.classList.toggle('dark');
+      this.setAttribute('aria-pressed', String(dark));
+      this.textContent = dark ? '切换浅色底' : '切换深色底';
+      document.querySelector('meta[name="theme-color"]').content = dark ? '#202225' : '#e7e3da';
+    });
+    for (const button of document.querySelectorAll('.art')) button.addEventListener('click', () => {
+      opener = button;
+      const url = `/imperial-knights/eagle-banners-v1/${button.dataset.id}.png`;
+      modal.querySelector('h2').textContent = button.dataset.name;
+      modal.querySelector('img').src = url;
+      modal.querySelector('img').alt = `${button.dataset.name}完整原图`;
+      modal.querySelector('a').href = url;
+      modal.querySelector('a').download = `${button.dataset.id}.png`;
+      modal.showModal();
+    });
+    modal.querySelector('.close').addEventListener('click', () => modal.close());
+    modal.addEventListener('close', () => opener?.focus());
+    modal.addEventListener('click', event => {
+      if (event.target !== modal) return;
+      const rect = modal.getBoundingClientRect();
+      if (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom) modal.close();
+    });
+  </script>
+</body>
+</html>

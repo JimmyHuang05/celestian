@@ -1,0 +1,23 @@
+.encyclopedia-transition{position:fixed;inset:0;z-index:2000;overflow:hidden;cursor:wait;touch-action:none;}
+.encyclopedia-transition__surface{position:absolute;inset:0;background:#000;will-change:clip-path;}
+.encyclopedia-transition__card{position:absolute;transform-origin:center;will-change:transform,filter,opacity;pointer-events:none;}
+.encyclopedia-transition__card .eden-portal{pointer-events:none;}
+
+/* Stars belong to the destination page and remain mounted through the reveal. */
+#encyclopedia-app .encyclopedia-sky{transition:background-color 800ms ease-in-out;}
+#encyclopedia-app:is([data-arrival="black"],[data-arrival="stars"]) .encyclopedia-sky{background-color:#000;}
+.encyclopedia-arrival-content{opacity:1;transition:opacity 1200ms ease;}
+.encyclopedia-arrival-texture{opacity:1;transition:opacity 800ms ease-in-out;}
+.encyclopedia-arrival-stars{opacity:1;}
+#encyclopedia-app:is([data-arrival="black"],[data-arrival="stars"],[data-arrival="sky"]) .encyclopedia-arrival-content,
+#encyclopedia-app[data-arrival="black"] .encyclopedia-arrival-texture,
+#encyclopedia-app[data-arrival="stars"] .encyclopedia-arrival-texture,
+#encyclopedia-app[data-arrival="black"] .encyclopedia-arrival-stars{opacity:0;pointer-events:none;}
+#encyclopedia-app[data-arrival] .celestian-starfield-ripples{visibility:hidden;}
+#encyclopedia-app:is([data-arrival="black"],[data-arrival="stars"],[data-arrival="sky"]) .encyclopedia-node-entrance{transform:scale(.65);opacity:0;}
+#encyclopedia-app[data-arrival="revealing"] .encyclopedia-node-entrance{animation:encyclopedia-node-arrive 720ms cubic-bezier(.2,.7,.2,1) var(--arrival-delay,0ms) both;}
+@keyframes encyclopedia-node-arrive{from{transform:scale(.65);opacity:0;}to{transform:scale(1);opacity:1;}}
+@media(prefers-reduced-motion:reduce){
+  #encyclopedia-app[data-arrival] .encyclopedia-node-entrance{animation:none;transform:none;opacity:1;}
+  #encyclopedia-app .encyclopedia-sky,.encyclopedia-arrival-content,.encyclopedia-arrival-texture,.encyclopedia-arrival-stars{transition:none;}
+}

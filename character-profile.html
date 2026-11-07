@@ -2,13 +2,18 @@
 <html lang="zh-CN">
 <head>
   <meta charset="utf-8">
+  <!-- shared-font-preload:start -->
+  <link rel="preload" href="/fonts/v1/song-critical-d63e1a85af8bcdb4.woff2" as="font" type="font/woff2" crossorigin fetchpriority="high">
+  <link rel="stylesheet" href="/src/fonts/index.css">
+  <!-- shared-font-preload:end -->
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <meta name="theme-color" content="#101827">
   <title>众生录 · 人物档案</title>
+  <link rel="stylesheet" href="/src/page-actions.css">
 </head>
 <body>
 <main class="profile" aria-label="众生录角色档案">
-  <a class="profile-back" href="/encyclopedia" aria-label="返回百科">← 返回百科</a>
+  <a class="page-action page-action--close" href="/encyclopedia" aria-label="关闭并返回百科" title="关闭并返回百科"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></a>
   <div class="world profile-galaxy" id="profile-galaxy" aria-hidden="true"></div>
   <div class="roster-astrolabe" aria-hidden="true"></div>
   <nav class="roster" aria-label="选择角色"></nav>

@@ -1,5 +1,6 @@
+import { pageIsActive, subscribePageActivity } from './page-lifecycle.js';
 import {applyScenePalette} from './gallery-palette.js';
-export function mountGallery(root,scenes,{initialId,onClose,onSceneChange,onToggleMusic,music=false}){
+export function mountGallery(root,scenes,{initialId,onClose,onSceneChange}){
 const events=new AbortController(),signal=events.signal;
 root.innerHTML="  <main id=\"stage\" tabindex=\"-1\" aria-label=\"留影\"><div class=\"loading\">正在展开留影…</div></main>\n  <dialog id=\"reader\" class=\"reader-dialog\" aria-labelledby=\"reader-title\">\n    <div class=\"reader-landscape\" aria-hidden=\"true\"><img alt=\"\" /><div class=\"reader-wash\"></div></div>\n    <header class=\"reader-masthead\"><span>CELESTIAN <i>/</i> CHRONICLES</span><span class=\"reader-edition\"></span></header>\n    <button data-action=\"close\" class=\"reader-close\" aria-label=\"关闭详情\"><span>返回风景</span><svg viewBox=\"0 0 24 24\" fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.2\" aria-hidden=\"true\"><path d=\"m6 6 12 12M18 6 6 18\" /></svg></button>\n    <div class=\"reader-layout\">\n      <header class=\"reader-scene\">\n        <span class=\"reader-english\"></span>\n        <h2 id=\"reader-title\" tabindex=\"-1\"></h2>\n        <p class=\"reader-subtitle\"></p>\n        <div class=\"reader-place\"><span>地点</span><p></p></div>\n      </header>\n      <section class=\"reader-story\" tabindex=\"0\" aria-label=\"完整纪事\">\n        <div class=\"reader-story-heading\"><span>场景纪事</span><i></i><small>CHRONICLE</small></div>\n        <div class=\"reader-copy prose\"></div>\n        <footer class=\"reader-colophon\"><span></span><small>CELESTIAN · 留影</small><span></span></footer>\n      </section>\n    </div>\n  </dialog>\n  <dialog id=\"viewer\" class=\"viewer-dialog\" aria-label=\"完整插图\">\n    <button data-action=\"close\" class=\"round-button viewer-close\" aria-label=\"关闭完整插图\">×</button><img alt=\"\" /><p>完整插图 <span>ESC 关闭</span></p>\n  </dialog>\n  <dialog id=\"overview\" class=\"overview-dialog\" aria-labelledby=\"overview-title\"><header><div><span class=\"eyebrow\">CELESTIAN / ARCHIVE</span><h2 id=\"overview-title\">留影目录</h2></div><button data-action=\"close\" class=\"round-button\" aria-label=\"关闭留影目录\">×</button></header><div class=\"gallery-index-grid\"></div></dialog>\n  <p id=\"announcement\" class=\"sr-only\" aria-live=\"polite\"></p>\n";
 const $ = (selector, parent = root) => parent.querySelector(selector);
@@ -20,7 +21,7 @@ let destroyed=false;
 let sceneRequest=0, requestedScene=null, sceneTransition;
 function schedulePhotos() {
   clearTimeout(photoTimer);
-  if (destroyed || concept !== 9 || !scene() || scene().images.length < 2 || document.hidden || root.querySelector('dialog[open]')) return;
+  if (destroyed || concept !== 9 || !scene() || scene().images.length < 2 || !pageIsActive() || root.querySelector('dialog[open]')) return;
   photoTimer=setTimeout(()=>changePhoto((photo+1)%scene().images.length,true),10000);
 }
 const stage = $('#stage');
@@ -33,7 +34,7 @@ const readButton = (label = '阅读完整纪事') => '<button class="text-button
 const navigation = () => '<div class="scene-navigation"><button class="gallery-index-button" data-action="index" aria-label="打开全部留影">▦ <span>留影目录</span></button><span class="counter">'+position()+'</span><button class="round-button" data-action="previous" aria-label="上一处留影">'+icon('left')+'</button><button class="round-button" data-action="next" aria-label="下一处留影">'+icon('right')+'</button></div>';
 const picture = (extra = '') => '<figure class="scene-figure '+extra+'"><div class="picture"><img src="'+escapeHTML(scene().images[photo])+'" alt="'+e('name')+'的场景插图" fetchpriority="high" draggable="false"/><button class="expand-image" data-action="image" aria-label="查看完整插图" title="查看完整插图">'+icon('expand')+'</button></div></figure>';
 const photoSwitch = () => '<div class="photo-switch" aria-label="场景视角">'+scene().images.map((_,i)=>'<button data-photo="'+i+'" aria-pressed="'+(i===photo)+'" aria-label="切换到视角'+(i+1)+'"><span></span><small>'+num(i+1)+'</small></button>').join('')+'</div>';
-const header=label=>'<header class="fusion-header"><span class="wordmark">CELESTIAN <i>/</i> '+label+'</span><div class="gallery-header-tools"><button data-action="music"></button><button class="round-button" data-action="return" aria-label="返回百科" title="返回百科">×</button></div></header>';
+const header=()=>'<header class="fusion-header"><div class="gallery-header-tools"><button class="page-action page-action--close" data-action="return" aria-label="关闭并返回百科" title="关闭并返回百科"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18"/></svg></button></div></header>';
 const footer=()=>'<footer class="fusion-footer">'+locator()+navigation()+'</footer>';
 const template = () => '<section class="concept fusion marginalia">'+header('ANNOTATED LANDSCAPE')+'<div class="margin-world">'+picture('margin-image')+'<div class="margin-shade" aria-hidden="true"></div><header class="title-block margin-title"><span class="eyebrow">'+e('english')+'</span><h1>'+e('name')+'</h1></header><article class="margin-story"><p class="subtitle">'+e('subtitle')+'</p><div class="note-steps" aria-label="选择纪事段落">'+scene().paragraphs.map((_,i)=>'<button data-note="'+i+'" aria-label="纪事第'+(i+1)+'段" aria-pressed="'+(i===0)+'">'+num(i+1)+'</button>').join('')+'</div><p id="note-copy" class="prose" aria-live="polite">'+escapeHTML(scene().paragraphs[0]||'')+'</p>'+readButton('展开全部纪事')+'</article><div class="margin-view">'+photoSwitch()+'</div></div>'+footer()+'</section>';
 function render({focus=false}={}) {
@@ -41,7 +42,6 @@ function render({focus=false}={}) {
   const s=scene();
   stage.innerHTML=template();
   if (concept === 9) applyScenePalette(stage.querySelector('.marginalia'));
-  updateMusic();
   stage.style.setProperty('--scene-image', 'url("'+s.images[photo]+'")');
   onSceneChange(s.id);
   root.parentElement.scrollTo({top:0,behavior:'instant'});
@@ -65,7 +65,7 @@ async function changePhoto(next, automatic=false) {
     await incoming.decode();
     await photoTransition;
     if(request!==photoRequest || !section.isConnected || next===photo)return;
-    if(automatic && (document.hidden || root.querySelector('dialog[open]')))return;
+    if(automatic && (!pageIsActive() || root.querySelector('dialog[open]')))return;
     const old=section.querySelector('.picture img');
     incoming.className='photo-incoming';
     old.after(incoming);
@@ -156,10 +156,10 @@ root.querySelectorAll('dialog').forEach(d=>{
   });
   d.addEventListener('click',event=>{if(event.target===d && d.id!=='viewer') {const r=d.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)d.close();}});
 });
-document.addEventListener('visibilitychange',()=>{
+const stopActivity=subscribePageActivity(()=>{
   photoRequest++;
   schedulePhotos();
-},{signal});
+});
 root.addEventListener('click',event=>{
   const button=event.target.closest('button');
   if(!button)return;
@@ -178,7 +178,6 @@ root.addEventListener('click',event=>{
     case 'image':openDialog('viewer');break;
     case 'index':openDialog('overview');break;
     case 'return':onClose();break;
-    case 'music':onToggleMusic?.();break;
     case 'close':button.closest('dialog').close();break;
 
   }
@@ -189,11 +188,9 @@ document.addEventListener('keydown',event=>{
   if(event.key==='ArrowRight'||event.key==='ArrowLeft'){event.preventDefault();nextScene(event.key==='ArrowRight'?1:-1);}
 },{signal});
   $('.gallery-index-grid').innerHTML=scenes.map((s,i)=>'<button data-scene="'+i+'"><img src="'+escapeHTML(s.images[0]||'')+'" alt="" loading="lazy"><span><small>'+num(i+1)+'</small> '+escapeHTML(s.name)+'</span></button>').join('');
-  function updateMusic(){const b=$('[data-action="music"]');if(b){b.textContent='音乐 · '+(music?'开':'关');b.setAttribute('aria-label',music?'静音背景音乐':'开启背景音乐');}}
   render();
   return {
     select(id){const next=scenes.findIndex(s=>s.id===id);if(next>=0&&next!==index&&next!==requestedScene)changeScene(next);},
-    setMusic(value){music=value;updateMusic();},
-    destroy(){destroyed=true;sceneRequest++;photoRequest++;clearTimeout(photoTimer);events.abort();sceneTransition?.skipTransition();root.querySelectorAll('dialog[open]').forEach(d=>d.close());root.replaceChildren();}
+    destroy(){stopActivity();destroyed=true;sceneRequest++;photoRequest++;clearTimeout(photoTimer);events.abort();sceneTransition?.skipTransition();root.querySelectorAll('dialog[open]').forEach(d=>d.close());root.replaceChildren();}
   };
 }

@@ -1,0 +1,42 @@
+/* Shared placement and catalog behavior, with faction-specific ornament. */
+.faction-navigation[data-theme=imperial-knights]{font-family:var(--font-body)}
+.faction-navigation[data-theme=imperial-knights] .faction-navigation__body:before{content:'';position:absolute;z-index:-1;inset:-12px -28px -22px;pointer-events:none;background:radial-gradient(ellipse,#151813e6,transparent 72%)}
+.faction-navigation{--faction-ink:#e1d6c2;--faction-muted:#a69981;position:fixed;z-index:9;bottom:max(22px,env(safe-area-inset-bottom));left:50%;transform:translateX(-50%);width:min(340px,calc(100vw - 36px));color:var(--faction-ink);font-family:var(--font-body)}
+.faction-navigation button{font:inherit;color:inherit;cursor:pointer}
+.faction-navigation button:focus-visible{outline:1px solid #d5c3a1;outline-offset:5px;border-radius:3px}
+.faction-navigation__body{position:relative;isolation:isolate}
+.faction-navigation__body{display:grid;grid-template-columns:44px minmax(0,1fr) 44px;align-items:center}
+.faction-navigation__trigger{grid-column:2;grid-row:1}
+.faction-navigation__shortcut{grid-row:1;display:grid;place-items:center;width:44px;height:44px;padding:10px;border:0;background:transparent;color:var(--faction-muted)!important;transition:color .2s,transform .2s}
+.faction-navigation__shortcut--previous{grid-column:1}
+.faction-navigation__shortcut--next{grid-column:3}
+.faction-navigation__shortcut svg{width:24px;height:24px}
+.faction-navigation__shortcut:hover{color:var(--faction-ink)!important}
+.faction-navigation__shortcut--previous:hover{transform:translateX(-2px)}
+.faction-navigation__shortcut--next:hover{transform:translateX(2px)}
+.faction-navigation__trigger{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:11px;width:100%;min-height:81px;padding:10px 22px 5px;border:0;background:transparent;text-align:center}
+.faction-navigation__trigger{padding-left:0;padding-right:0}
+.faction-navigation__identity{display:flex;flex-direction:column;align-items:center;gap:9px}
+.faction-navigation__affiliation{font-size:9px;line-height:1.2;letter-spacing:.32em;padding-left:.32em;color:var(--faction-muted)}
+.faction-navigation__name{position:relative;font-size:17px;line-height:1.5;letter-spacing:.16em;padding-left:.16em;white-space:nowrap;transition:color .25s}
+.faction-navigation__open{display:block;width:24px;height:12px;color:#b19d7c;transition:transform .25s,color .25s}
+.faction-navigation__open svg{display:block;width:100%;height:100%}
+.faction-navigation__trigger:hover .faction-navigation__name{color:#fff1d8}
+.faction-navigation__trigger:hover .faction-navigation__open{color:#ecdbb9;transform:translateY(-2px)}
+.faction-navigation__trigger[aria-expanded=true] .faction-navigation__open{transform:rotate(180deg)}
+/* A quiet inscription; the feathered shade keeps the moving scene legible. */
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__body:before{content:'';position:absolute;z-index:-1;inset:-26px -50px -22px;pointer-events:none;background:radial-gradient(ellipse at 50% 50%,#070807ed 0%,#070807d9 34%,#07080775 56%,#07080700 73%)}
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:before,.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:after{content:'';position:absolute;top:50%;width:35px;height:1px;opacity:.65;background:linear-gradient(90deg,transparent,#ae9673)}
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:before{right:calc(100% + 19px)}
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:after{left:calc(100% + 19px);transform:rotate(180deg)}
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:before,.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:after{display:none}
+.faction-navigation[data-theme=eternal-astrology] .faction-navigation__affiliation:before,.faction-navigation[data-theme=eternal-astrology] .faction-navigation__affiliation:after{content:'·';display:inline-block;margin:0 12px;color:#b9a17c;font-family:var(--font-classic);letter-spacing:0}
+.faction-navigation__catalog{position:absolute;bottom:calc(100% + 16px);left:5px;right:5px;padding:20px 23px 15px;background:linear-gradient(150deg,#171813f5,#0a0b09fa);border:1px solid #baa38128;border-top-color:#baa3816e;box-shadow:0 10px 35px #0007;backdrop-filter:blur(18px)}
+.faction-navigation__catalog[hidden]{display:none}
+.faction-navigation__catalog-heading{display:flex;justify-content:space-between;padding:0 0 13px;border-bottom:1px solid #baa38121;font-size:10px;letter-spacing:.18em;color:var(--faction-muted)}
+.faction-navigation__catalog-heading span:last-child{font-family:var(--font-classic);font-size:10px}
+.faction-navigation__entry{display:flex;align-items:center;justify-content:space-between;gap:12px;width:100%;border:0;background:none;padding:17px 0 7px;text-align:left;font-size:13px!important;letter-spacing:.08em}
+.faction-navigation__entry>span:last-child{color:#b39e7c;font-size:10px}
+.faction-navigation__entry:hover{color:#fff0d3}
+@media(max-width:650px){.faction-navigation{bottom:max(18px,env(safe-area-inset-bottom));width:min(320px,calc(100vw - 36px))}.faction-navigation__name{font-size:15px}.faction-navigation__trigger{min-height:76px}.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:before,.faction-navigation[data-theme=eternal-astrology] .faction-navigation__name:after{width:25px}}
+@media(prefers-reduced-motion:reduce){.faction-navigation *{transition:none!important}}

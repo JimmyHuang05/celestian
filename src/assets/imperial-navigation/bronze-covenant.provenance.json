@@ -1,0 +1,8 @@
+{
+  "tool": "Built-in image_gen.imagegen",
+  "reference": "C:/Users/admin/.codex/generated_images/01a1475f-5eea-7f01-b3d7-eb3df51c6abf/exec-b18cbfb6-740b-4804-a372-89cffb4d8652.png",
+  "source": "bronze-covenant-source.png",
+  "delivery": "bronze-covenant.webp",
+  "encoding": "WebP quality 88, original dimensions and alpha preserved",
+  "prompt": "Precise asset extraction edit of the approved bronze cartouche. Preserve EXACTLY the existing single bronze double-headed eagle, crown, oak branches, flowing tapered side ornaments, textured solid bronze central plaque, bottom chain and five medallions. Preserve proportions, warm subdued upper-left light, fine aged metallic texture, frontal view and original outline. Remove ALL background architecture, stone floor, shadows outside the object: genuinely transparent alpha everywhere outside the bronze object and through openwork holes. Remove ALL engraved Chinese lettering, thin divider lines beside the small lettering and upward arrow, replacing them with continuous matching aged bronze texture; the central field must be completely blank for live web typography. Do NOT redesign the ornament or introduce anything. Tightly frame the entire isolated object with approximately 2% transparent margin, landscape canvas, keep its wide silhouette around 3.7:1. High-fidelity production-ready PNG cutout, no text, no checkerboard drawn into image."
+}

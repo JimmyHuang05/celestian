@@ -1,0 +1,29 @@
+/* Approved optical sizes from the archived static-v2 / optical-center-v3 styles.
+   Artwork moves independently of the circular node frames. */
+#encyclopedia-app .animated-emblem {
+ position:absolute;inset:0;width:100%;height:100%;pointer-events:none;
+ z-index:20;opacity:.8;transition:opacity 300ms ease;
+}
+#encyclopedia-app .animated-emblem > svg {width:100%;height:100%;overflow:visible}
+#encyclopedia-app .group:hover .animated-emblem {opacity:1}
+#encyclopedia-app [data-node-id="enemies"] .emblem-artwork,
+#encyclopedia-app [data-node-id="characters"] .emblem-artwork,
+#encyclopedia-app [data-node-id="gallery"] .emblem-artwork,
+#encyclopedia-app [data-node-id="factions"] .emblem-artwork {overflow:visible}
+#encyclopedia-app [data-node-id="enemies"] .animated-emblem {
+ transform:translateY(-12px) scale(1.65);filter:drop-shadow(0 1px 1px #101722);
+}
+#encyclopedia-app [data-node-id="characters"] .animated-emblem {
+ transform:translateY(-7px) scale(1.35);filter:drop-shadow(0 1px 1px #101722);
+}
+#encyclopedia-app [data-node-id="gallery"] .animated-emblem {translate:0 -4%;transform:scale(1.1)}
+#encyclopedia-app [data-node-id="factions"] .animated-emblem {translate:0 -5%;transform:scale(1.1)}
+@keyframes deity-vortex-turn {to {rotate:360deg}}
+#encyclopedia-app [data-node-id="aeons"] img.node-image {
+ transform:none;border-radius:0;object-fit:contain;
+ animation:deity-vortex-turn 28s linear infinite paused;
+}
+#encyclopedia-app [data-node-id="aeons"]:hover img.node-image {transform:none;animation-play-state:running}
+@media(prefers-reduced-motion:reduce){
+ #encyclopedia-app [data-node-id="aeons"] img.node-image {animation:none}
+}

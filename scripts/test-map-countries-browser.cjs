@@ -1,0 +1,40 @@
+const { chromium } = require(process.env.PLAYWRIGHT_PATH || 'C:/Users/admin/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/playwright')
+const assert = require('node:assert/strict')
+const { createHash } = require('node:crypto')
+const path = require('node:path')
+const base = process.env.PREVIEW_URL || 'http://127.0.0.1:5173'
+const hash = value => createHash('sha256').update(JSON.stringify(value)).digest('hex')
+async function ready(page) { await page.waitForFunction(() => { const b = document.querySelector('button[aria-label="新增国家"]'); return b && !b.disabled }, { timeout: 60000 }); await page.waitForTimeout(900) }
+async function backup(page) {
+  const pending = page.waitForEvent('download'); await page.getByRole('button', { name: '下载备份', exact: true }).click()
+  const result = await pending, chunks = []; for await (const c of await result.createReadStream()) chunks.push(c)
+  return JSON.parse(Buffer.concat(chunks))
+}
+const area = draft => draft.tiles.reduce((n, t) => n + t.runs.reduce((s, r) => s + r[1], 0), 0)
+;(async () => {
+  const browser = await chromium.launch({ executablePath: process.env.BROWSER_BIN || 'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe', headless: true })
+  try {
+    const context = await browser.newContext({ viewport: { width: 1500, height: 1100 } })
+    const old = await context.newPage()
+    await old.goto(base + '/map-painter/?project=legacy', { waitUntil: 'domcontentloaded' }); await ready(old)
+    await old.getByRole('textbox', { name: '国家名称' }).fill('迁移前手工修改的名称')
+    await old.waitForTimeout(1000)
+    const before = await backup(old)
+    const page = await context.newPage(), errors = []; page.on('pageerror', e => errors.push(e.message))
+    await page.goto(base + '/map-painter/?project=countries', { waitUntil: 'domcontentloaded' }); await ready(page)
+    const merged = await backup(page)
+    assert.equal(merged.regions.length, 135)
+    assert.equal(area(merged), area(before), 'merging preserves every occupied pixel')
+    assert.equal(new Set(merged.regions.map(r => r.color)).size, 135)
+    assert(merged.regions.flatMap(r => r.sources || []).some(s => s.originalName === '迁移前手工修改的名称'), 'read the latest saved user draft')
+    assert.equal(hash(await backup(old)), hash(before), 'old draft remains unchanged')
+    await page.locator('summary').click()
+    assert(await page.getByText('有差异，未覆盖原资料。', { exact: false }).count() > 0)
+    await page.locator('summary').click()
+    await page.reload({ waitUntil: 'domcontentloaded' }); await ready(page)
+    assert.equal(hash(await backup(page)), hash(merged), 'merged project survives refresh')
+    await page.screenshot({ path: path.join(__dirname, '../../design/map-legacy-migration/countries-merged.png') })
+    assert.deepEqual(errors, [])
+    console.log('Passed: latest saved legacy draft used; 135 objects; occupied area preserved; original names, source metadata and conflicts retained; original project unchanged; refresh restores merged project.')
+  } finally { await browser.close() }
+})().catch(e => { console.error(e.message); process.exit(1) })

@@ -19,7 +19,7 @@
 }
 .dossier-heading{display:flex;align-items:center;justify-content:space-between;gap:1cqw;position:relative;padding-bottom:1.6cqw;flex-shrink:0}
 .dossier-heading:after{content:'';position:absolute;bottom:0;left:0;right:0;height:1px;background:linear-gradient(90deg,#b59d6e99,#a9916326)}
-.dossier-eyebrow{font:clamp(7px,.53cqw,10px) Georgia,serif;color:#a59474;letter-spacing:.24em;margin:0 0 .75cqw}
+.dossier-eyebrow{font:clamp(7px,.53cqw,10px) var(--font-classic);color:#a59474;letter-spacing:.24em;margin:0 0 .75cqw}
 .dossier-heading h2{font-size:clamp(22px,1.9cqw,34px);font-weight:500;letter-spacing:.16em;color:#e2d4b6;margin:0;line-height:1.35}
 .dossier-subtitle{display:block;color:#8c8578;font-size:clamp(9px,.68cqw,12px);margin-top:.55cqw;letter-spacing:.2em}
 .dossier-emblem{position:relative;width:5.9cqw;height:5.9cqw;flex-shrink:0;display:grid;place-items:center;color:#b49b6c}
@@ -33,7 +33,7 @@
 .dossier-facts dd{margin:0;color:#d6d5cf;overflow-wrap:anywhere}
 .story-heading{display:flex;align-items:center;gap:.8cqw;flex-shrink:0;margin:2cqw 0 1.1cqw}
 .story-heading h3{font-size:clamp(14px,1.1cqw,20px);font-weight:500;letter-spacing:.13em;margin:0;color:#d1be97}
-.story-heading>span{font:clamp(7px,.5cqw,10px) Georgia,serif;letter-spacing:.2em;color:#867b66}
+.story-heading>span{font:clamp(7px,.5cqw,10px) var(--font-classic);letter-spacing:.2em;color:#867b66}
 .story-heading:after{content:'';height:1px;background:linear-gradient(90deg,#a9916352,transparent);flex:1}
 .story-heading i{font-size:8px;font-style:normal;color:#a9916377;order:1}
 .story-scroll{flex:1;min-height:0;overflow-y:auto;overscroll-behavior:contain;padding:0 .8cqw 1.4cqw 0;scrollbar-width:thin;scrollbar-color:#8e7a514f transparent;font-size:clamp(13px,.95cqw,18px);line-height:2.15;color:#afb6c1;outline-offset:5px}
@@ -55,7 +55,7 @@
 .archive-switch{display:flex;align-items:center;gap:.75cqw}
 .archive-switch button{width:2cqw;height:2cqw;min-width:24px;min-height:24px;padding:.2cqw;border:1px solid #a9916338;background:#a9916306;color:#bca67e;transition:background .15s,border-color .15s}
 .archive-switch button:hover{background:#a991631a;border-color:#bca67e}
-.archive-count{display:flex;align-items:center;gap:.65cqw;font:clamp(10px,.7cqw,13px) Georgia,serif;color:#80796c;font-variant-numeric:tabular-nums}
+.archive-count{display:flex;align-items:center;gap:.65cqw;font:clamp(10px,.7cqw,13px) var(--font-classic);color:#80796c;font-variant-numeric:tabular-nums}
 .archive-count strong{font-size:1.25em;color:#d1bb91;font-weight:400}
 .dossier-loading{color:#ac9e83}
 .dossier-error{border:1px solid #a991634a;padding:1cqw;color:#d6c9ad}

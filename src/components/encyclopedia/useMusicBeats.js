@@ -1,3 +1,4 @@
+import { pageIsActive, startPageLoop } from '../../page-lifecycle.js'
 import { useEffect, useRef } from 'react'
 import approvedBeats from './encyclopedia-beats.json'
 
@@ -61,7 +62,7 @@ export default function useMusicBeats(audioRef, onBeat) {
     if (!audio) return
     const motion = matchMedia('(prefers-reduced-motion: reduce)')
     const cues = approvedBeats.cues
-    let frame, index = 0, previousTime = null
+    let index = 0, previousTime = null
     const align = () => {
       index = cues.findIndex(cue => cue.time > audio.currentTime)
       if (index < 0) index = cues.length
@@ -69,7 +70,7 @@ export default function useMusicBeats(audioRef, onBeat) {
     }
     const tick = () => {
       const time = audio.currentTime
-      if (audio.paused || audio.seeking || document.hidden || motion.matches) align()
+      if (audio.paused || audio.seeking || !pageIsActive() || motion.matches) align()
       else {
         if (previousTime === null || time < previousTime || time - previousTime > .4) align()
         while (index < cues.length && cues[index].time <= time) {
@@ -78,12 +79,11 @@ export default function useMusicBeats(audioRef, onBeat) {
         }
         previousTime = time
       }
-      frame = requestAnimationFrame(tick)
     }
     audio.addEventListener('seeked', align)
-    align(); frame = requestAnimationFrame(tick)
+    align(); const stopLoop = startPageLoop(tick)
     return () => {
-      cancelAnimationFrame(frame)
+      stopLoop()
       audio.removeEventListener('seeked', align)
     }
   }, [audioRef])
