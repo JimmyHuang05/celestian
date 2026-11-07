@@ -94,8 +94,8 @@
     },
     {
       "id": "b9a47c72-1169-468e-8b28-079af7598304",
-      "lat": 3965.25,
-      "lng": 4001.7497811037,
+      "lat": 3995.25,
+      "lng": 4031.7497811,
       "title": "维斯廷港",
       "foreign_title": "Port Vestine",
       "type": "主要城市",
@@ -865,7 +865,7 @@
     {
       "id": "da965837-bd17-4ccd-8dc3-1793151a78e5",
       "lat": 3379.891,
-      "lng": 3997.65,
+      "lng": 4007.65,
       "title": "里贝拉德尔马",
       "foreign_title": "Ribera del Mar",
       "type": "城市",
@@ -887,7 +887,7 @@
     {
       "id": "7ac9b8ed-d23c-4c13-9b29-1e88e47a7a27",
       "lat": 3339.972,
-      "lng": 4182.562,
+      "lng": 4202.562,
       "title": "莱万特港",
       "foreign_title": "Puerto de Levante",
       "type": "主要城市",
@@ -919,8 +919,8 @@
     },
     {
       "id": "08b480d7-bc21-48e4-8902-5f3cac21534e",
-      "lat": 3232.172,
-      "lng": 3700.853,
+      "lat": 3242.172,
+      "lng": 3690.853,
       "title": "恩塞纳达",
       "foreign_title": "Ensenada",
       "type": "城市",
@@ -930,7 +930,7 @@
     },
     {
       "id": "60644f54-2e0a-4d2f-af67-562993aaf4ae",
-      "lat": 3230.268,
+      "lat": 3220.268,
       "lng": 3834.397,
       "title": "奥利瓦雷斯",
       "foreign_title": "Olivares",
@@ -942,7 +942,7 @@
     {
       "id": "1e493599-ffcc-4818-bedd-ead7e60d0291",
       "lat": 3132.969,
-      "lng": 3630.265,
+      "lng": 3620.265,
       "title": "贝尔蒙特",
       "foreign_title": "Belmonte",
       "type": "城市",
@@ -952,8 +952,8 @@
     },
     {
       "id": "b0cb3b88-1cf0-46c2-950b-d96a87ed09bd",
-      "lat": 3065.251,
-      "lng": 3781.932,
+      "lat": 3075.251,
+      "lng": 3771.932,
       "title": "丰特克拉拉",
       "foreign_title": "Fuente Clara",
       "type": "主要城市",
@@ -986,7 +986,7 @@
     {
       "id": "efc5d772-469b-45d9-a3c5-c75da17cb8bf",
       "lat": 4059.679,
-      "lng": 3822.02,
+      "lng": 3792.02,
       "title": "卡恩港",
       "foreign_title": "Porzh Karn",
       "type": "主要城市",
@@ -1007,8 +1007,8 @@
     },
     {
       "id": "40e1e903-4e76-4900-b085-9ccb46c2dfe7",
-      "lat": 3967.803,
-      "lng": 3861.167,
+      "lat": 3977.803,
+      "lng": 3866.167,
       "title": "朗桥",
       "foreign_title": "Pont an Traon",
       "type": "城市",
@@ -1029,7 +1029,7 @@
     },
     {
       "id": "3c6ecd13-5249-4151-b30f-ee530d92752a",
-      "lat": 3875.289,
+      "lat": 3865.289,
       "lng": 4020.448,
       "title": "凯吕埃尔",
       "foreign_title": "Keruhel",
