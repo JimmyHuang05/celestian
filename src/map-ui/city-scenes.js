@@ -153,7 +153,7 @@ export const cityScenes = {
   }],
   'north-cape-fortress': [{
     title: '北岬要塞',
-    foreign_title: 'Крепость Северного Мыса',
+    foreign_title: 'Krepost’ Severnogo Mysa',
     image: '/gallery/scenes/north-cape-fortress-v1.webp',
     alt: '北岬要塞，覆雪海岬上的重炮堡垒俯瞰军港，战舰、铁路与军需设施沿岸排列',
     description: '覆雪的岩坡上，低矮厚重的炮堡逐级伸向海岬，巨炮俯瞰灰蓝色港湾。战舰静泊于山脚，运煤列车穿行在仓库与码头之间，烟汽沿冰冷的海岸缓缓散开。',
@@ -167,7 +167,7 @@ export const cityScenes = {
   }],
   '4558f761-8b9c-4306-8990-0d5bfd85081c': [{
     title: '利莫加德永备要塞',
-    foreign_title: 'Лимоградская крепость',
+    foreign_title: 'Limogradskaya Krepost’',
     image: '/gallery/scenes/limogard-permanent-fortress-v1.webp',
     alt: '利莫加德永备要塞，积雪覆盖的花岗岩堡垒与重炮阵地沿山势层叠展开，三艘军舰停泊于浮冰散布的港湾',
     description: '维瑟蒂亚帝国北洋舰队的驻地，花岗岩堡垒与重炮阵地自永静海岸层叠延伸至雪覆山脊。岩腹内设弹药库与军需设施，港湾为舰队提供补给和检修，构成帝国北方海防的坚固支点。',

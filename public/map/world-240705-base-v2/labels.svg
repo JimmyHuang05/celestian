@@ -93,7 +93,7 @@
 <text xml:lang="zh" letter-spacing="-0.18em" x="1" y="255" font-size="104" font-family="AtlasPreview-zh, 润植家康熙字典美化体">水晶池</text>
 </g>
 <g id="place-label-00656-editable" data-map-text="" data-tier="4" transform="translate(7480 5028) rotate(0)">
-<text xml:lang="it" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Rotta del Mare di Sant’Elmo</text>
+<text xml:lang="en" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Sant’Elmo Route</text>
 <text xml:lang="zh" letter-spacing="-0.18em" x="0" y="141.95" font-size="61.2" font-family="AtlasPreview-zh, 润植家康熙字典美化体">圣特尔莫海航线</text>
 </g>
 <g id="place-label-00698-editable" data-map-text="" data-tier="1" transform="translate(15504.5 5041) rotate(0)">
@@ -105,11 +105,11 @@
 </g>
 </g>
 <g id="place-label-00724-editable" data-map-text="" data-tier="4" transform="translate(11616.5 5236) rotate(0)">
-<text xml:lang="en" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Champieian Route</text>
+<text xml:lang="en" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Ciampiana Route</text>
 <text xml:lang="zh" letter-spacing="-0.18em" x="0" y="141.95" font-size="61.2" font-family="AtlasPreview-zh, 润植家康熙字典美化体">香佩安航线</text>
 </g>
 <g id="place-label-00741-editable" data-map-text="" data-tier="2" transform="translate(13652 5410) rotate(0)">
-<text xml:lang="en" x="0" y="190" font-size="240" font-family="AtlasPreview-en, Pirata One">Droshenie</text>
+<text xml:lang="en" x="0" y="190" font-size="240" font-family="AtlasPreview-en, Pirata One">Droshenie Strait</text>
 <text xml:lang="zh" letter-spacing="-0.18em" x="0" y="378" font-size="144" font-family="AtlasPreview-zh, 润植家康熙字典美化体">德洛舍涅海峡</text>
 </g>
 <g id="place-label-00773-editable" data-map-text="" data-tier="4" transform="translate(12876 5787) rotate(0)">
@@ -190,7 +190,7 @@
 <text xml:lang="zh" letter-spacing="-0.18em" x="0" y="141.95" font-size="61.2" font-family="AtlasPreview-zh, 润植家康熙字典美化体">南梅里迪亚沿岸航线</text>
 </g>
 <g id="place-label-00391-editable" data-map-text="" data-tier="4" transform="translate(7111 2239) rotate(0)">
-<text xml:lang="es" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Ruta de Campovera</text>
+<text xml:lang="en" x="0" y="64.6" font-size="81.6" font-family="AtlasPreview-en, Pirata One">Campovera Route</text>
 <text xml:lang="zh" letter-spacing="-0.18em" x="0" y="141.95" font-size="61.2" font-family="AtlasPreview-zh, 润植家康熙字典美化体">坎波韦拉航线</text>
 </g>
 <g id="place-label-monteran-editable" data-map-text="" data-tier="3" transform="translate(8185 1990) scale(0.606375)"><text xml:lang="en" x="0" y="100" font-size="128" font-family="AtlasPreview-en, Pirata One">Monteran Channel</text><text xml:lang="zh" letter-spacing="-0.18em" x="0" y="190" font-size="88" font-family="AtlasPreview-zh">蒙特兰海峡</text></g><g id="place-label-volen-editable" data-map-text="" data-tier="4" transform="translate(13820 1050) rotate(32)"><text xml:lang="en" x="0" y="0" font-size="96" font-family="AtlasPreview-en, Pirata One">Volen Strait</text><text xml:lang="zh" x="0" y="76" letter-spacing="-0.18em" font-size="64" font-family="AtlasPreview-zh">伏棱海峡</text></g><g id="place-label-00197-editable" data-map-text="" data-tier="3" transform="translate(11579 1513) rotate(0) scale(0.2) scale(1.2) scale(1.2) scale(1.1) scale(1.1)">

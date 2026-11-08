@@ -368,7 +368,7 @@
     {
       "id": "place-label-00656",
       "title": "圣特尔莫海航线",
-      "foreignTitle": "Rotta del Mare di Sant’Elmo",
+      "foreignTitle": "Sant’Elmo Route",
       "kind": "route",
       "minZoom": 3,
       "priority": 3,
@@ -376,10 +376,10 @@
         "place-label-00656-editable"
       ],
       "bounds": [
-        7081.544342041016,
-        5017.018607139587,
-        7873.504608154297,
-        5185.066275596619
+        7256.1806640625,
+        5013.271484375,
+        7703.8193359375,
+        5181.28271484375
       ]
     },
     {
@@ -404,7 +404,7 @@
     {
       "id": "place-label-00724",
       "title": "香佩安航线",
-      "foreignTitle": "Champieian Route",
+      "foreignTitle": "Ciampiana Route",
       "kind": "route",
       "minZoom": 3,
       "priority": 3,
@@ -412,16 +412,16 @@
         "place-label-00724-editable"
       ],
       "bounds": [
-        11350.902252197266,
-        5225.018607139587,
-        11877.575469970703,
-        5393.066275596619
+        11383.8271484375,
+        5221.271484375,
+        11849.1728515625,
+        5389.28271484375
       ]
     },
     {
       "id": "place-label-00741",
       "title": "德洛舍涅海峡",
-      "foreignTitle": "Droshenie",
+      "foreignTitle": "Droshenie Strait",
       "kind": "geography",
       "minZoom": 2,
       "priority": 1,
@@ -429,10 +429,10 @@
         "place-label-00741-editable"
       ],
       "bounds": [
-        13207.723114013672,
-        5358.139541625977,
-        14084.802642822266,
-        5833.348831176758
+        12971.068359375,
+        5362.0146484375,
+        14325.4697265625,
+        5821.998046875
       ],
       "sizeTier": 2,
       "effectiveFontSize": 240
@@ -728,7 +728,7 @@
     {
       "id": "place-label-00391",
       "title": "坎波韦拉航线",
-      "foreignTitle": "Ruta de Campovera",
+      "foreignTitle": "Campovera Route",
       "kind": "route",
       "minZoom": 3,
       "priority": 3,
@@ -736,10 +736,10 @@
         "place-label-00391-editable"
       ],
       "bounds": [
-        6825.79833984375,
-        2228.0186071395874,
-        7392.802490234375,
-        2396.0662755966187
+        6865.04638671875,
+        2224.271484375,
+        7356.95361328125,
+        2392.28271484375
       ],
       "allowOverlap": true
     },
