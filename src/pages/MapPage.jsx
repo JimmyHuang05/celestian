@@ -108,7 +108,6 @@ export default function MapPage() {
       try {
         let metadata = attempt === 0 ? await window.__celestianMapManifest : null
         if (controller.signal.aborted) return
-        delete window.__celestianMapManifest
         if (!metadata) {
           const response = await fetch(`${MAP_ROOT}/manifest.json`, { signal: controller.signal, priority: 'high' })
           if (!response.ok) throw new Error('地图暂时无法打开，请重试。')
@@ -125,12 +124,14 @@ export default function MapPage() {
           zoomAnimation: !reduced, fadeAnimation: !reduced, inertia: !reduced,
         })
         map.fitBounds(bounds, { animate: false })
-        const frame = attachMapFrame(L, map, metadata)
+        const frame = attachMapFrame(L, map, metadata, controller.signal)
         map.options.worldBounds = frame.bounds
         const fitZoom = () => frameZoom(map, frame.bounds, true)
         let coverZoom = frameZoom(map, frame.bounds, true)
-        map.setMinZoom(fitZoom())
         coverMap(map, frame.bounds)
+        // Establish the camera before raising minZoom: otherwise Leaflet queues
+        // a zoom animation that can later overwrite the restored saved view.
+        map.setMinZoom(fitZoom())
         const saved = restoreView(settings.current.view, metadata)
         // Upgrade the old tiny overview once, while retaining intentional shared
         // views, open dossiers, and the user's later full-map preference.
@@ -181,9 +182,14 @@ export default function MapPage() {
         ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
         const labelRoot = import.meta.env.DEV && (window.__celestianCompositePreview || new URLSearchParams(window.location.search).get('labelPreview') === 'text')
           ? '/__local-map/text-labels' : MAP_ROOT
+        const earlyLabels = attempt === 0 && window.__celestianMapLabels?.root === labelRoot ? window.__celestianMapLabels : null
         const labelRequest = Promise.all([
-          fetchMapLabels(overlayFetch.signal, overlayFetch.priority, labelRoot),
-          fetch(`${labelRoot}/labels-index.json`, overlayFetch).then(r => { if (!r.ok) throw Error(); return r.json() }).catch(() => null),
+          fetchMapLabels(controller.signal, 'high', labelRoot, earlyLabels?.svg),
+          Promise.resolve(earlyLabels?.index).then(index => {
+            if (controller.signal.aborted || index) return index
+            return fetch(`${labelRoot}/labels-index.json`, { signal: controller.signal, priority: 'high' })
+              .then(r => { if (!r.ok) throw Error(); return r.json() })
+          }).catch(() => null),
         ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
         map.createPane('mapLabelsPane').style.zIndex = '610'
         const saveView = () => {

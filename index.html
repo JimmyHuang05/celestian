@@ -17,10 +17,18 @@
       if (/^\/map\/?$/.test(location.pathname)) {
         document.documentElement.dataset.mapBoot = 'true'
         const root = '/map/world-240705-base-v2'
-        window.__celestianMapManifest = fetch(root + '/manifest.json', { priority: 'high' })
+        const geometry = /* map-boot-geometry */ null
+        window.__celestianMapManifest = geometry ? Promise.resolve(geometry) : fetch(root + '/manifest.json', { priority: 'high' })
           .then(response => response.ok ? response.json() : null)
           .catch(() => null)
-        const geometry = /* map-boot-geometry */ null
+        // Fetch text while the application downloads, rather than after Leaflet mounts.
+        // Keep raw text promises: each mount parses its own SVG, including StrictMode.
+        const labelRoot = window.__celestianCompositePreview || window.__celestianTextLabelPreview
+          ? '/__local-map/text-labels' : root
+        window.__celestianMapLabels = { root: labelRoot,
+          svg: fetch(labelRoot + '/labels.svg', { priority: 'high' }).then(r => r.ok ? r.text() : null).catch(() => null),
+          index: fetch(labelRoot + '/labels-index.json', { priority: 'high' }).then(r => r.ok ? r.json() : null).catch(() => null),
+        }
         const primeTile = map => {
           if (!map || window.__celestianLayeredPreview || new URLSearchParams(location.search).has('map')) return
           try {

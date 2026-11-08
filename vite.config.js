@@ -53,7 +53,8 @@ function layeredMapPreview() {
     transformIndexHtml() {
       return [{
         tag: 'script', injectTo: 'head-prepend',
-        children: `if (/^\\/map\\/?$/.test(location.pathname) && [null, 'composite'].includes(new URLSearchParams(location.search).get('basemap'))) {
+        children: `window.__celestianTextLabelPreview = new URLSearchParams(location.search).get('labelPreview') === 'text'
+        if (/^\\/map\\/?$/.test(location.pathname) && [null, 'composite'].includes(new URLSearchParams(location.search).get('basemap'))) {
           window.__celestianCompositePreview = true
         } else if (/^\\/map\\/?$/.test(location.pathname) && new URLSearchParams(location.search).get('basemap') === 'layers') {
           window.__celestianLayeredPreview = true
@@ -132,10 +133,15 @@ function optimizeMapEntry() {
       order: 'post',
       handler(html, { path, bundle }) {
         if (path !== '/index.html') return html
-        const { width, height, tileSize, minZoom, maxZoom } = JSON.parse(readFileSync(
+        const { width, height, tileSize, minZoom, maxZoom, coordinateSystemSha256 } = JSON.parse(readFileSync(
           new URL('./public/map/world-240705-base-v2/manifest.json', import.meta.url), 'utf8',
         ))
-        html = html.replace('/* map-boot-geometry */ null', JSON.stringify({ width, height, tileSize, minZoom, maxZoom }))
+        html = html.replace('/* map-boot-geometry */ null', JSON.stringify({ width, height, tileSize, minZoom, maxZoom, coordinateSystemSha256 }))
+        // Map lettering has its own embedded font subset. Let UI fonts load from
+        // CSS when needed, instead of competing with tiles at high priority.
+        html = html.replace(/<link\b[^>]*rel="preload"[^>]*as="font"[^>]*>/g, link =>
+          link.replace('>', ' media="not all">') +
+          '<script>if (!/^\\/map\\/?$/.test(location.pathname)) document.currentScript.previousElementSibling.media = "all"</script>')
         return html.replace(/<link\b[^>]*rel="stylesheet"[^>]*href="\/([^"]+)"[^>]*>/g, (link, file) => {
           const asset = bundle?.[file]
           if (asset?.type !== 'asset' || !String(asset.source).includes('@font-face')) return link
