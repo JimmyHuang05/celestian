@@ -133,6 +133,18 @@ function optimizeMapEntry() {
       order: 'post',
       handler(html, { path, bundle }) {
         if (path !== '/index.html') return html
+        const emblems = Object.keys(bundle || {}).filter(file => /^assets\/node-emblem-.+\.svg$/.test(file))
+        const homeBoot = `<script>if (/^\\/(?:encyclopedia\\/?)?$/.test(location.pathname)) {
+          window.__celestianNodeEmblems = {}
+          for (const url of ${JSON.stringify(emblems.map(file => '/' + file))}) {
+            if (/node-emblem-(characters|enemies|factions|gallery)-/.test(url)) {
+              window.__celestianNodeEmblems[url] = fetch(url, {priority:'high'}).then(r => r.ok ? r.text() : null).catch(() => null)
+            } else {
+              const link = document.createElement('link'); link.rel = 'preload'; link.as = 'image'; link.href = url; link.fetchPriority = 'high'; document.head.append(link)
+            }
+          }
+        }</script>`
+        html = html.replace('<meta charset="UTF-8">', '<meta charset="UTF-8">' + homeBoot)
         const { width, height, tileSize, minZoom, maxZoom, coordinateSystemSha256 } = JSON.parse(readFileSync(
           new URL('./public/map/world-240705-base-v2/manifest.json', import.meta.url), 'utf8',
         ))

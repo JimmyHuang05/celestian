@@ -1,13 +1,21 @@
 import ProgressIcon from './ProgressIcon.jsx'
-import { useEffect, useRef } from 'react'
-import emblems from './node-emblems.js'
+import { useEffect, useRef, useState } from 'react'
+import { emblemUrls, loadEmblem } from './node-emblem-assets.js'
 import { mountEmblemMotion } from './node-emblem-motion.js'
 import './node-emblems.css'
 
-function DataNode({ node, mouseX, mouseY, onHoverNode, onClickNode, arrivalOrder = 0 }) {
+function DataNode({ node, onHoverNode, onClickNode, arrivalOrder = 0 }) {
   const cardRef = useRef(null)
   const animated = ['characters', 'enemies', 'factions', 'gallery'].includes(node.id)
-  useEffect(() => animated ? mountEmblemMotion(cardRef.current) : undefined, [animated, node.id])
+  const [artwork, setArtwork] = useState(null)
+  const [failed, setFailed] = useState(false)
+  useEffect(() => {
+    if (!animated) return
+    let active = true
+    loadEmblem(node.id).then(svg => { if (active) setArtwork(svg) }).catch(() => { if (active) setFailed(true) })
+    return () => { active = false }
+  }, [animated, node.id])
+  useEffect(() => animated && artwork ? mountEmblemMotion(cardRef.current) : undefined, [animated, node.id, artwork])
   const handleClick = (e) => {
     if (onClickNode) onClickNode(node, e)
   }
@@ -20,7 +28,7 @@ function DataNode({ node, mouseX, mouseY, onHoverNode, onClickNode, arrivalOrder
       style={{
         top: node.pos.top,
         left: node.pos.left,
-        transform: `translate(-50%, -50%) scale(${node.scale}) translate(${-mouseX * 35 * node.scale}px, ${-mouseY * 35 * node.scale}px)`,
+        transform: `translate(-50%, -50%) scale(${node.scale})`,
         zIndex: 100 - node.layer,
       }}
       onMouseEnter={onHoverNode}
@@ -38,9 +46,10 @@ function DataNode({ node, mouseX, mouseY, onHoverNode, onClickNode, arrivalOrder
           <div className="absolute -right-[4px] w-2 h-2 bg-[#44403c] rotate-45 border border-[#1c1917] group-hover:bg-[#d4b58e] transition-colors" />
           <div className="emblem-artwork relative w-[118px] h-[118px] rounded-full bg-transparent overflow-hidden border border-[#d4b58e]/30 flex items-center justify-center">
             {animated ? (
-              <span className="animated-emblem" aria-hidden="true" dangerouslySetInnerHTML={{ __html: emblems[node.id] }} />
+              failed ? <span className="animated-emblem" aria-hidden="true"><img src={emblemUrls[node.id]} className="w-full h-full" alt="" /></span> :
+              <span className="animated-emblem" aria-hidden="true" dangerouslySetInnerHTML={{ __html: artwork || '' }} />
             ) : node.icon ? (
-              <img src={node.icon} className="node-image w-full h-full object-cover rounded-full opacity-80 group-hover:opacity-100" draggable="false" onError={(e) => { e.target.style.display = 'none' }} />
+              <img src={emblemUrls[node.id] || node.icon} alt="" fetchPriority="high" className="node-image w-full h-full object-cover rounded-full opacity-80 group-hover:opacity-100" draggable="false" onError={(e) => { e.target.style.display = 'none' }} />
             ) : (
               <div className="w-16 h-16 rounded-full bg-gradient-to-tr from-[#d4b58e] to-[#44403c] blur-md opacity-50 group-hover:opacity-80 transition-opacity" />
             )}

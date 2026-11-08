@@ -1,10 +1,9 @@
-import { startPageLoop } from '../page-lifecycle.js'
 import { getSoundManager } from '../sound-manager.js'
 import { pageUrl } from '../page-registry.js'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
 import supabaseClient from '../lib/supabaseClient'
-import Starfield from '../components/encyclopedia/Starfield.jsx'
+import StaticStarfield from '../components/encyclopedia/StaticStarfield.jsx'
 import GalaxyVeil from '../components/encyclopedia/GalaxyVeil.jsx'
 import { galaxyTextureMask } from '../components/encyclopedia/galaxyDensity.js'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
@@ -16,7 +15,6 @@ import VersionBadge from '../components/VersionBadge.jsx'
 import ASSETS_BASE from '../constants.js'
 import { openCharacterProfile } from '../profile-navigation.js'
 import useGalaxyArrival from '../components/encyclopedia/useGalaxyArrival.js'
-import { useBackgroundMusic } from '../music-context.js'
 import { openMusicPage } from '../music-navigation.js'
 
 const desktopNodes = [
@@ -59,18 +57,11 @@ function EncyclopediaPage({ onArrivalReady }) {
 
   const [nodes, setNodes] = useState(allNodes)
   const [activeNode, setActiveNode] = useState(nodeFromUrl)
-  const [mouseX, setMouseX] = useState(0)
-  const [mouseY, setMouseY] = useState(0)
-  const { encyclopediaAudioRef: bgmAudioRef } = useBackgroundMusic()
   const [isTransitioning, setIsTransitioning] = useState(false)
   const [isClosing, setIsClosing] = useState(false)
 
   const [panelStyle, setPanelStyle] = useState(null)
 
-  const targetX = useRef(0)
-  const targetY = useRef(0)
-  const currentMouseX = useRef(0)
-  const currentMouseY = useRef(0)
   const hasEverHadEntryId = useRef(false)
 
   useEffect(() => {
@@ -88,41 +79,6 @@ function EncyclopediaPage({ onArrivalReady }) {
       setIsTransitioning(false)
     }
   }, [entryId, nodeId, navigate])
-
-  useEffect(() => {
-    const updateParallax = () => {
-      if (Number.isFinite(targetX.current)) {
-        currentMouseX.current += (targetX.current - currentMouseX.current) * 0.05
-      }
-      if (Number.isFinite(targetY.current)) {
-        currentMouseY.current += (targetY.current - currentMouseY.current) * 0.05
-      }
-      setMouseX(currentMouseX.current)
-      setMouseY(currentMouseY.current)
-    }
-    const stopParallax = startPageLoop(updateParallax)
-    return () => {
-      stopParallax()
-    }
-  }, [activeNode?.id])
-
-  const onMouseMove = useCallback((e) => {
-    if (arrival.phase) return
-    const w = window.innerWidth || 1
-    const h = window.innerHeight || 1
-    targetX.current = e.clientX / w - 0.5
-    targetY.current = e.clientY / h - 0.5
-  }, [arrival.phase])
-
-  const onTouchMove = useCallback((e) => {
-    if (arrival.phase) return
-    if (e.touches.length > 0) {
-      const w = window.innerWidth || 1
-      const h = window.innerHeight || 1
-      targetX.current = e.touches[0].clientX / w - 0.5
-      targetY.current = e.touches[0].clientY / h - 0.5
-    }
-  }, [arrival.phase])
 
   const playHoverSfx = useCallback(() => {
     getSoundManager().play('hover')
@@ -278,14 +234,14 @@ function EncyclopediaPage({ onArrivalReady }) {
   return (
     <div id="encyclopedia-app" data-arrival={arrival.phase || undefined} tabIndex={-1} aria-busy={Boolean(arrival.phase)}>
       <div inert={Boolean(nodeId)} aria-hidden={Boolean(nodeId)} className="encyclopedia-sky relative w-full h-screen overflow-hidden font-serif select-none bg-gray-900"
-        onMouseMove={onMouseMove} onTouchMove={onTouchMove} onContextMenu={(e) => e.preventDefault()}
+        onContextMenu={(e) => e.preventDefault()}
       >
         <div className="encyclopedia-arrival-texture absolute inset-0 pointer-events-none bg-[url('https://www.transparenttextures.com/patterns/stardust.png')]" style={{ maskImage: galaxyTextureMask, maskSize: '100% 100%', maskRepeat: 'no-repeat' }} aria-hidden="true" />
         <div className="encyclopedia-arrival-stars absolute inset-0 pointer-events-none">
-          {activeNode?.id !== 'gallery' && <Starfield mouseX={mouseX} mouseY={mouseY} audioRef={bgmAudioRef} revealRef={arrival.starRevealRef} />}
+          {activeNode?.id !== 'gallery' && <StaticStarfield />}
         </div>
         <div className="encyclopedia-arrival-stars absolute inset-0 pointer-events-none z-[1]">
-          {activeNode?.id !== 'gallery' && <GalaxyVeil revealRef={arrival.starRevealRef} />}
+          {activeNode?.id !== 'gallery' && <GalaxyVeil />}
         </div>
 
 
@@ -297,8 +253,6 @@ function EncyclopediaPage({ onArrivalReady }) {
                 key={node.id}
                 node={node}
                 arrivalOrder={arrivalOrder.findIndex(item => item.id === node.id)}
-                mouseX={mouseX}
-                mouseY={mouseY}
                 isMobile={isMobile}
                 onHoverNode={playHoverSfx}
                 onClickNode={openDetail}
