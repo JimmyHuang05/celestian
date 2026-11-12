@@ -14,7 +14,7 @@ async function ready(page) {
       const page = await browser.newPage(mobile ? { viewport: { width: 390, height: 844 }, isMobile: true, hasTouch: true, userAgent: 'Mozilla/5.0 (iPhone; CPU iPhone OS 17_0 like Mac OS X) AppleWebKit/605.1.15 Mobile/15E148' } : { viewport: { width: 1440, height: 960 } })
       const errors = [], requests = []
       page.on('pageerror', e => errors.push(e.message)); page.on('request', r => requests.push(r.url()))
-      await page.route('https://*.supabase.co/**', r => r.fulfill({ status: 200, contentType: 'application/json', body: '[]' }))
+      await page.route('**/api/entries/**', r => r.fulfill({ status: 200, contentType: 'application/json', body: '{"data":[],"error":null}' }))
       await page.goto(base + '/encyclopedia/'); await ready(page)
       assert.equal(requests.filter(url => /node-emblem-.+\.svg/.test(url)).length, 7)
       const snapshot = () => page.evaluate(() => ({

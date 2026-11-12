@@ -1,6 +1,6 @@
 """Overlay character assets onto the existing production API source.
 
-Usage: python prepare-character-release.py BASELINE NEW_OUTPUT
+Usage: python scripts/assets/prepare-character-release.py BASELINE NEW_OUTPUT
 """
 import json
 import re
@@ -8,7 +8,7 @@ import shutil
 import sys
 from pathlib import Path
 
-repo = Path(__file__).resolve().parent
+repo = Path(__file__).resolve().parents[2]
 baseline, out = map(Path, sys.argv[1:])
 out.mkdir(parents=True, exist_ok=False)
 for name in ['src', 'public', 'index.html', 'package.json', 'package-lock.json',

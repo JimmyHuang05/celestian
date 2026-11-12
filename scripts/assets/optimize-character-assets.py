@@ -3,7 +3,7 @@ import json
 from pathlib import Path
 from PIL import Image
 
-root = Path(__file__).resolve().parent / 'public'
+root = Path(__file__).resolve().parents[2] / 'public'
 catalog = root / 'character-profile/characters.json'
 characters = json.loads(catalog.read_text(encoding='utf-8'))
 sizes = []

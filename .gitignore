@@ -336,3 +336,18 @@ __pycache__/
 /tiger-banners-three.html
 /vinyl-player-designs.html
 /wolf-banners-three.html
+
+# Original artwork lives in the verified server archive.
+/public/character-profile/redraws/day-fourteen-v1.png
+/public/character-profile/redraws/elowen-v5.png
+/public/character-profile/redraws/elowen-v6-neckline.png
+/public/character-profile/redraws/euphemia-v1.png
+/public/character-profile/redraws/sylvia-v1.png
+/public/character-profile/redraws/xianna-v1.png
+
+# Local dependency cache and editor files.
+.npm-cache/
+.pnpm-store/
+
+# Independent legacy build output; maintained source lives in legacy/.
+/public/old/

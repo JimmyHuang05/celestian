@@ -9,7 +9,7 @@ from PIL import Image
 sys.path.insert(0, 'D:/Projects/celestian/tools/vector-trace')
 import vtracer
 
-ROOT = Path(__file__).resolve().parent
+ROOT = Path(__file__).resolve().parents[2]
 SOURCE = Path('C:/Users/admin/.codex/generated_images/01a141bb-3063-71d2-a63d-5f66a21bc6ea')
 ITEMS = [
     ('ec561630-2810-41a0-8524-857bfa8365e1', 'day-fourteen-tower', 'exec-2b59aec4-db45-434f-ab9d-c4be4392fd84.png'),

@@ -1,0 +1,11 @@
+{
+  "serverSnapshot": "/var/www/celestian-map-rollback-20261111-033436",
+  "sha256": {
+    "day-fourteen-v1.png": "8bd09124d572d198fce46a48bb66b9924d82399a0efe75955f0d63a226cc831b",
+    "elowen-v5.png": "16becbd46b993d5ccb229f1439f10ae25a4e611c927d59ab270b93ea6628631b",
+    "elowen-v6-neckline.png": "2c25d2a93b2560689603e75c58de27c33c689d3002003a1f9a5e21749a68c829",
+    "euphemia-v1.png": "1ac147a2fe09342f18f084aae39c1b923d401d8785dbe8546052ef630e22f257",
+    "sylvia-v1.png": "ee21d613d3b7887a375b019c93a044b43543bf482bca2fb647dfbb8dc1f1a57b",
+    "xianna-v1.png": "1ea8e795440d6f832610a5f1db8a5dbfeca25750100887b47596b2007419d32d"
+  }
+}

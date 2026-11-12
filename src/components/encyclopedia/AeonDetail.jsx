@@ -1,6 +1,7 @@
+import { fetchEntriesForNode } from '../../lib/entries-api.js'
 import { useState, useEffect, useCallback } from 'react'
 
-function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryChange }) {
+function AeonDetail({ node, isMobile, onClose, entryId, onEntryChange }) {
   const [characters, setCharacters] = useState([])
   const [ids, setIds] = useState([])
   const [isLoading, setIsLoading] = useState(true)
@@ -10,13 +11,13 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
   const character = characters[currentIndex] || null
 
   useEffect(() => {
+    const controller = new AbortController()
     const fetchEntries = async () => {
-      if (!supabaseClient || !node) return
+      if (!node) return
       setIsLoading(true)
       try {
-        const { data, error } = await supabaseClient
-          .from('entries').select('*').eq('node_id', node.id).order('created_at', { ascending: false })
-        if (error) throw error
+        const data = await fetchEntriesForNode(node.id, controller.signal)
+        if (controller.signal.aborted) return
         if (data && data.length > 0) {
           const parsedData = data.map(row => {
             const blocksArr = []
@@ -24,7 +25,8 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
             if (row.blocks) {
               try {
                 let firstParagraphFound = false
-                JSON.parse(row.blocks).forEach(b => {
+                const sourceBlocks = Array.isArray(row.blocks) ? row.blocks : JSON.parse(row.blocks)
+                sourceBlocks.forEach(b => {
                   if (b.type === 'paragraph' && b.content) {
                     if (b.dropCap === undefined) b.dropCap = !firstParagraphFound
                     firstParagraphFound = true
@@ -63,14 +65,16 @@ function AeonDetail({ node, isMobile, onClose, supabaseClient, entryId, onEntryC
           setIds([])
         }
       } catch (e) {
+        if (controller.signal.aborted) return
         setCharacters([])
         setIds([])
       } finally {
-        setIsLoading(false)
+        if (!controller.signal.aborted) setIsLoading(false)
       }
     }
     fetchEntries()
-  }, [node, supabaseClient])
+    return () => controller.abort()
+  }, [node])
 
   useEffect(() => {
     if (ids.length === 0) return

@@ -2,7 +2,7 @@ import { getSoundManager } from '../sound-manager.js'
 import { pageUrl } from '../page-registry.js'
 import { useState, useEffect, useRef, useCallback } from 'react'
 import { useNavigate, useParams, useSearchParams } from 'react-router-dom'
-import supabaseClient from '../lib/supabaseClient'
+import { fetchEntryCounts } from '../lib/entries-api.js'
 import StaticStarfield from '../components/encyclopedia/StaticStarfield.jsx'
 import GalaxyVeil from '../components/encyclopedia/GalaxyVeil.jsx'
 import { galaxyTextureMask } from '../components/encyclopedia/galaxyDensity.js'
@@ -85,16 +85,16 @@ function EncyclopediaPage({ onArrivalReady }) {
   }, [])
 
   useEffect(() => {
+    const countsRequest = new AbortController()
     const fetchNodeCounts = async () => {
-      if (!supabaseClient) return
       try {
-        const { data, error } = await supabaseClient.from('entries').select('node_id')
-        if (error) throw error
+        const data = await fetchEntryCounts(countsRequest.signal)
+        if (countsRequest.signal.aborted) return
         const counts = {}
-        data.forEach(row => { counts[row.node_id] = (counts[row.node_id] || 0) + 1 })
+        data.forEach(row => { counts[row.node_id] = Number(row.count) || 0 })
         setNodes(prev => prev.map(node => ({ ...node, current: node.id === 'factions' ? node.current : counts[node.id] || 0 })))
       } catch (err) {
-        console.error('获取节点进度失败:', err)
+        if (!countsRequest.signal.aborted) console.error('获取节点进度失败:', err)
       }
     }
     fetchNodeCounts()
@@ -103,7 +103,7 @@ function EncyclopediaPage({ onArrivalReady }) {
       .then(response => { if (!response.ok) throw new Error('Archive unavailable'); return response.json() })
       .then(entries => { if (Array.isArray(entries)) setNodes(prev => prev.map(node => node.id === 'factions' ? { ...node, current: entries.length } : node)) })
       .catch(() => {})
-    return () => archiveRequest.abort()
+    return () => { countsRequest.abort(); archiveRequest.abort() }
   }, [])
 
   useEffect(() => {
@@ -225,7 +225,7 @@ function EncyclopediaPage({ onArrivalReady }) {
   const renderDetailComponent = () => {
     if (!activeNode) return null
     const compType = activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
-    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, supabaseClient, entryId, onEntryChange }
+    const commonProps = { node: activeNode, isMobile, onClose: closeDetail, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
     if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />
     return null
