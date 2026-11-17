@@ -1,15 +1,35 @@
-# 已关闭的历史功能
+# 退役功能 · Retired Features
 
-本目录只供查阅，不参与 Vite 构建、ESLint 或部署。
+[简体中文](#中文) · [English](#english)
 
-| 路径 | 原位置与用途 | 状态 |
-| --- | --- | --- |
-| `deepseek/edge-function.ts` | `supabase/functions/Deepseek_API/index.ts`，DeepSeek 对话接口 | 停用 |
-| `frontend/FunctionsPage.jsx` | `src/pages/FunctionsPage.jsx`，有求必应与对话页 | 停用，旧地址转百科 |
-| `frontend/BadgePage.jsx` | `src/pages/BadgePage.jsx`，制证页 | 停用，旧地址转百科 |
-| `supabase/client.js` | `src/lib/supabaseClient.js`，旧客户端初始化 | 停用，已替换为同源 API |
-| `supabase/keepalive.yml.txt` | `.github/workflows/keepalive.yml`，定时保活 | 改为文本，不会执行 |
+## 中文
 
-历史前端文件仍保留原有相对 import，不能从归档目录直接运行。若确需恢复，须按原位置还原并重新审查接口、配置及依赖；不要直接启用旧工作流。当前主站不再安装 Supabase SDK 或 CLI。
+这里保存不参与正式构建的历史实现。相对导入保持原状，便于查阅历史上下文。
 
-`legacy/` 则是仍能独立构建的怀旧版，其源码不属于这里的废弃代码。
+| 归档 | 原用途 |
+| --- | --- |
+| [deepseek/edge-function.ts](deepseek/edge-function.ts) | 旧 DeepSeek 对话接口 |
+| [frontend/](frontend/) | 历史对话页与制证页 |
+| [supabase/client.js](supabase/client.js) | 旧数据客户端 |
+| [supabase/keepalive.yml.txt](supabase/keepalive.yml.txt) | 历史保活工作流，现为文本记录 |
+
+当前百科使用同源只读 API，现行路由见 [App.jsx](../src/App.jsx)。[怀旧版](../legacy/README.md)仍独立构建。
+
+[查看英文版 / English](#english)
+
+---
+
+## English
+
+[Read in Simplified Chinese / 简体中文](#中文)
+
+This archive holds historical implementations outside the production build. Original relative imports are preserved for context.
+
+| Archive | Former purpose |
+| --- | --- |
+| [deepseek/edge-function.ts](deepseek/edge-function.ts) | Former DeepSeek dialogue endpoint |
+| [frontend/](frontend/) | Historical dialogue and badge pages |
+| [supabase/client.js](supabase/client.js) | Former data client |
+| [supabase/keepalive.yml.txt](supabase/keepalive.yml.txt) | Former keepalive workflow, preserved as text |
+
+The current encyclopedia uses the same-origin, read-only API. See [App.jsx](../src/App.jsx) for current routes. The [classic edition](../legacy/README.md#english) has its own build.

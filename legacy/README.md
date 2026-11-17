@@ -1,11 +1,37 @@
-# 怀旧版 /old
+# 怀旧版 · Classic Edition
 
-保留角色立绘、留影布局和百科分类图标改版前的页面。它是独立构建，当前站点不导入这里的组件。
+[简体中文](#中文) · [English](#english)
 
-来源：`archive/celestian/src` 的原始生产 API 版本（2026 年 7 月页面）；分类定义恢复自服务器 `celestian-gallery-20261011` 改版前备份，七枚原始 SVG 单独保存。公开 API 仍保存旧五位角色的原始立绘和故事，2026-10-16 将其及其他公开条目存入 `public/snapshot.json`。不访问实时 API，不包含编辑器或管理数据。原始插图、音乐等继续引用原有资产域名。
+## 中文
 
-仅做路径兼容：路由 basename 为 `/old`，首页链接保持在旧版，音乐存储单独命名，右下角可以返回新版。未加载新版共享徽章样式或动画脚本。
+`/old/` 保存立绘、留影布局和百科分类图标改版前的页面。源码源自 2026 年 7 月站点，分类图标取自 10 月 11 日改版前备份，10 月 16 日收录的公开条目存于 [public/snapshot.json](public/snapshot.json)。插图和音乐仍可能从原资产域名加载。
 
-构建：在仓库根目录运行 `npx vite build --config legacy/vite.config.js`。输出在 `public/old`，不覆盖主站。`scripts/old-preview.js` 支持本地 `/old` 及深链接。
+在仓库根目录运行：
 
-服务器须配置 `location /old/ { try_files $uri $uri/ /old/index.html; }`，并将 `/old` 转至 `/old/`。对 `/old/assets/` 使用 `try_files $uri =404`。部署只同步 `public/old` 和相应 nginx 路由，不修改主站入口。
+```sh
+npx vite build --config legacy/vite.config.js
+```
+
+产物写入 `public/old/`。根站 Vite 通过 [old-preview.js](../scripts/old-preview.js) 支持 `/old` 和深链接。旧版路由基址为 `/old`，音乐使用独立的存储键，数据读取冻结快照。
+
+部署时将 `/old` 转至 `/old/`，对 `/old/` 使用 `try_files $uri $uri/ /old/index.html`，对 `/old/assets/` 使用 `try_files $uri =404`。见[运维索引](../ops/README.md)。
+
+[查看英文版 / English](#english)
+
+---
+
+## English
+
+[Read in Simplified Chinese / 简体中文](#中文)
+
+The `/old/` edition preserves the character illustrations, gallery layout, and encyclopedia icons from before the redesign. It draws on the July 2026 site and the October 11 pre-redesign backup. Public entries captured on October 16 are in [public/snapshot.json](public/snapshot.json). Some artwork and music still load from their original asset hosts.
+
+Run from the repository root:
+
+```sh
+npx vite build --config legacy/vite.config.js
+```
+
+Output is written to `public/old/`. The root Vite server supports `/old` and deep links through [old-preview.js](../scripts/old-preview.js). The edition uses `/old` as its route basename, a separate music preference key, and a frozen data snapshot.
+
+On deployment, redirect `/old` to `/old/`. Use `try_files $uri $uri/ /old/index.html` under `/old/`, and `try_files $uri =404` under `/old/assets/`. See the [operations guide](../ops/README.md#english).

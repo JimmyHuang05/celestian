@@ -1,15 +1,39 @@
-# 维护脚本
+# 维护脚本 · Maintenance Scripts
 
-为避免破坏现有调用，已有地图、字体和检查脚本保留原路径。
+[简体中文](#中文) · [English](#english)
 
-| 分类 | 路径或名称 |
+## 中文
+
+通常从仓库根目录运行。浏览器验收、美术处理和历史发布另有工具需求。
+
+| 任务 | 入口 |
 | --- | --- |
-| 美术资产 | `assets/*.py`，原根目录的四个美术制作工具 |
-| 字体 | `check-fonts.mjs`、`sync-fonts.py`、`font-*.mjs` |
-| 地图制作 | `build-map-tiles.py`、`trace-map-*.py`、`index-map-labels.py` |
-| 页面检查 | `check-*.cjs`、`test-*.cjs`、`test-*.mjs` |
-| 历史发布工具 | `package-*.py`、`publish-*.py`、`prepare-*.py` |
+| 主站构建与字体校验 | `npm run build` · `npm run fonts:check` |
+| 字体更新 | `npm run fonts:sync` · [字体说明](../src/fonts/README.md) |
+| 只读 API 测试 | `node --test scripts/entries-api.test.mjs` |
+| 地图生成 | `build-map-tiles.py` · `trace-map-*.py` · `index-map-labels.py` |
+| 浏览器验收 | `check-*.cjs` 和有关 `test-*.cjs`，按各脚本要求准备 Playwright |
+| 美术与历史发布 | [assets/](assets/README.md) · `prepare-*` · `package-*` · `publish-*` |
 
-部分美术与发布工具依赖仓库外的原图、服务器数据或本机工具链，不能当作构建前置步骤。美术工具解析仓库根目录的路径已随移动更新；通常从仓库根目录调用，例如 `python scripts/assets/optimize-character-assets.py`。
+生成资源或发布前先核对脚本输入与目标版本。部分工具依赖外部原图、特定预览地址或服务器数据。
 
-检查当前只读数据接口：`node --test scripts/entries-api.test.mjs`。构建检查：`npm run build`。浏览器检查工具需要另外准备 Playwright。
+[查看英文版 / English](#english)
+
+---
+
+## English
+
+[Read in Simplified Chinese / 简体中文](#中文)
+
+Run scripts from the repository root. Browser checks, artwork processing, and historical releases have additional tool requirements.
+
+| Task | Entry point |
+| --- | --- |
+| Site build and font integrity | `npm run build` · `npm run fonts:check` |
+| Font updates | `npm run fonts:sync` · [Typography guide](../src/fonts/README.md#english) |
+| Read-only API tests | `node --test scripts/entries-api.test.mjs` |
+| Map generation | `build-map-tiles.py` · `trace-map-*.py` · `index-map-labels.py` |
+| Browser checks | `check-*.cjs` and related tests; see each script's Playwright setup |
+| Art and historical releases | [assets/](assets/README.md#english) · `prepare-*` · `package-*` · `publish-*` |
+
+Check inputs and target versions before generating assets or publishing. Some tools expect external artwork, a specific preview URL, or server data.
