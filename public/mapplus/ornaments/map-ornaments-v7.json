@@ -1,0 +1,40 @@
+{
+  "source": "D:/WorldMap_240705_指北针.png",
+  "crop": [
+    250,
+    7500,
+    9150,
+    10250
+  ],
+  "size": [
+    8900,
+    2750
+  ],
+  "headingBounds": [
+    2922,
+    6339
+  ],
+  "iconGap": 299.0,
+  "legend": [
+    {
+      "zh": "龙族",
+      "en": "Dracones"
+    },
+    {
+      "zh": "人族",
+      "en": "Homines"
+    },
+    {
+      "zh": "深渊种",
+      "en": "Abyssales"
+    },
+    {
+      "zh": "泰坦",
+      "en": "Titanes"
+    },
+    {
+      "zh": "以太",
+      "en": "Aether"
+    }
+  ]
+}

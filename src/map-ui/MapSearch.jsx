@@ -3,7 +3,7 @@ import MapIcon from './MapIcon.jsx'
 import { searchMap } from './search.js'
 import { regionMeta } from './region-presentation.js'
 
-export default function MapSearch({ points, regions, query, setQuery, type, onType, open, onOpen, onSelect, inputRef }) {
+export default function MapSearch({ points, regions, pointsOnly, query, setQuery, type, onType, open, onOpen, onSelect, inputRef }) {
   const host = useRef(null)
   const filterButton = useRef(null)
   const [filterOpen, setFilterOpen] = useState(false)
@@ -51,7 +51,7 @@ export default function MapSearch({ points, regions, query, setQuery, type, onTy
   }}>
     <div className="map-search__bar">
       <button ref={filterButton} className="map-icon-button map-search__filter-toggle" aria-label="筛选地点分类" aria-expanded={filterOpen} aria-controls="map-type-panel" data-active={types.length > 0} onClick={() => { setFilterOpen(!filterOpen); onOpen(false) }}><MapIcon name="filter" />{types.length > 0 && <span className="map-filter-count">{types.length}</span>}</button>
-      <input ref={inputRef} role="combobox" aria-label="搜索地点或区域" aria-autocomplete="list" aria-expanded={visible} aria-controls="map-search-results" aria-activedescendant={visible && active >= 0 && results[active] ? `map-result-${active}` : undefined} autoComplete="off" placeholder="搜索地点、国家或区域" value={query} onFocus={() => onOpen(true)} onChange={event => { setQuery(event.target.value); setActive(-1); onOpen(true) }} />
+      <input ref={inputRef} role="combobox" aria-label={pointsOnly ? "搜索地点" : "搜索地点或区域"} aria-autocomplete="list" aria-expanded={visible} aria-controls="map-search-results" aria-activedescendant={visible && active >= 0 && results[active] ? `map-result-${active}` : undefined} autoComplete="off" placeholder={pointsOnly ? "搜索地点" : "搜索地点、国家或区域"} value={query} onFocus={() => onOpen(true)} onChange={event => { setQuery(event.target.value); setActive(-1); onOpen(true) }} />
       {query && <button className="map-icon-button" aria-label="清空搜索" onClick={() => { setQuery(''); setActive(-1); inputRef.current?.focus() }}><MapIcon name="close" /></button>}
     </div>
     {filterOpen && <div className="map-search__filter-panel" id="map-type-panel">

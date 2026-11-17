@@ -1,4 +1,5 @@
 import { DEFAULT_LAYERS } from './preferences.js'
+import { normalizeBasemapStyle } from './basemap-styles.js'
 
 const layerKeys = Object.keys(DEFAULT_LAYERS)
 const validID = value => typeof value === 'string' && /^[\w-]{1,120}$/.test(value)
@@ -11,17 +12,17 @@ export function readMapShare(search) {
   if (p.get('map') !== '2' || !/^[a-f0-9]{64}$/.test(coordinates || '') ||
     ![x, y].every(n => Number.isFinite(n) && n >= -1 && n <= 2) || !Number.isFinite(zoom) || zoom < -1 || zoom > 6 ||
     (p.has('point') && !validID(point)) || (p.has('region') && !validID(region)) || (point && region) ||
-    !/^[01]{4}$/.test(layers || '') || !['auto', 'all'].includes(p.get('labels'))) return { error: '分享链接无效，已打开默认地图。' }
+    !/^(?:[01]{4}|[01]{7,8})$/.test(layers || '') || !['auto', 'all'].includes(p.get('labels'))) return { error: '分享链接无效，已打开默认地图。' }
   return {
     view: { coordinates, center: [x, y], zoom },
     selection: point ? { kind: 'point', id: point } : region ? { kind: 'region', id: region } : null,
-    layers: Object.fromEntries(layerKeys.map((key, i) => [key, layers[i] === '1'])),
-    labelMode: p.get('labels'), type: '', query: '',
+    layers: Object.fromEntries(layerKeys.map((key, i) => [key, key === 'lakes' ? (layers.length > 4 ? layers[4] === '1' : DEFAULT_LAYERS.rivers) : i < layers.length ? layers[i] === '1' : DEFAULT_LAYERS[key]])),
+    labelMode: p.get('labels'), basemapStyle: normalizeBasemapStyle(p.get('style')), type: '', query: '',
   }
 }
 
-export function buildMapShare(base, settings, selection = null) {
-  const url = new URL('/map/', base), view = settings.view
+export function buildMapShare(base, settings, selection = null, path = '/map/') {
+  const url = new URL(path, base), view = settings.view
   url.searchParams.set('map', '2')
   url.searchParams.set('atlas', view.coordinates)
   url.searchParams.set('x', Number(view.center[0].toFixed(7)))
@@ -29,6 +30,7 @@ export function buildMapShare(base, settings, selection = null) {
   url.searchParams.set('z', Number(view.zoom.toFixed(4)))
   url.searchParams.set('layers', layerKeys.map(key => settings.layers[key] ? '1' : '0').join(''))
   url.searchParams.set('labels', settings.labelMode === 'all' ? 'all' : 'auto')
+  if (path === '/mapplus/' && normalizeBasemapStyle(settings.basemapStyle) !== 'default') url.searchParams.set('style', normalizeBasemapStyle(settings.basemapStyle))
   if (selection && ['point', 'region'].includes(selection.kind) && validID(selection.id)) url.searchParams.set(selection.kind, selection.id)
   return url.href
 }

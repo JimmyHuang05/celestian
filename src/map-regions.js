@@ -1,5 +1,6 @@
 import { pollutionStyle, statusLabel, countryLegend, focusRegionIDs, SPECIAL_STATUSES, territoryPreviewRows } from './map-ui/region-presentation.js'
 import { softenCoast } from './map-coast-display.js'
+import { countryFlagHover } from './map-country-flags.js'
 
 const special = new Set(SPECIAL_STATUSES)
 const color = value => /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#d4b58e'
@@ -28,7 +29,7 @@ export function focusMap(map, latlng, zoom = map.getZoom()) {
   const size = map.getSize()
   const sheet = Math.min(size.y * .46, 420, Math.max(120, size.y - 180))
   const offset = size.x > 640 ? [204, 0] : [0, 24 - sheet / 2]
-  moveMap(map, map.unproject(point.subtract(offset), zoom), zoom, { allowPadding: true })
+  moveMap(map, map.unproject(point.subtract(offset), zoom), zoom)
 }
 
 export function fitRegionBounds(map, bounds) {
@@ -46,27 +47,13 @@ export function fitRegionBounds(map, bounds) {
   ))))
   const a = map.project(bounds.getNorthWest(), zoom), b = map.project(bounds.getSouthEast(), zoom)
   const center = a.add(b).divideBy(2).add([(bottomRight[0] - topLeft[0]) / 2, (bottomRight[1] - topLeft[1]) / 2])
-  moveMap(map, map.unproject(center, zoom), zoom, { allowPadding: true })
+  moveMap(map, map.unproject(center, zoom), zoom)
 }
 
-export function moveMap(map, position, zoom = map.getZoom(), { allowPadding = false, animate = true } = {}) {
+export function moveMap(map, position, zoom = map.getZoom(), { animate = true } = {}) {
   map.stop()
   zoom = Math.max(map.getMinZoom(), zoom)
-  allowPadding = false
-  const world = map.options.worldBounds || map.options.maxBounds
-  if (world) {
-    if (allowPadding) {
-      // Extend only enough to place the target beside the dossier, including
-      // when the whole image is smaller than a phone's viewport.
-      const center = map.project(position, zoom), size = map.getSize().divideBy(2)
-      const min = map.project(world.getNorthWest(), zoom), max = map.project(world.getSouthEast(), zoom)
-      min.x = Math.min(min.x, center.x - size.x); min.y = Math.min(min.y, center.y - size.y)
-      max.x = Math.max(max.x, center.x + size.x); max.y = Math.max(max.y, center.y + size.y)
-      // The existing maxBounds moveend/drag handlers read this option. Updating
-      // it directly avoids setMaxBounds starting a competing pan at the OLD zoom.
-      map.options.maxBounds = world.pad(0).extend(map.unproject(min, zoom)).extend(map.unproject(max, zoom))
-    } else map.options.maxBounds = world
-  }
+  if (map.options.worldBounds) map.options.maxBounds = map.options.worldBounds
   // Clamp before animating, so maxBounds cannot trigger a second corrective pan.
   const bounds = map.options.maxBounds
   if (bounds) {
@@ -83,22 +70,63 @@ export function moveMap(map, position, zoom = map.getZoom(), { allowPadding = fa
   else map.setView(position, zoom, { animate: true })
 }
 
+// Draft outlines use clockwise land rings and counterclockwise holes.
+function simplifyInsetPath(path, span, removeSpecks) {
+  return path.replace(/M[^Z]+Z/g, ring => {
+    const points = ring.slice(1, -1).split('L').map(point => point.split(' ').map(Number))
+    let area = 0, left = Infinity, right = -Infinity, top = Infinity, bottom = -Infinity
+    for (const [i, [x, y]] of points.entries()) {
+      const [nextX, nextY] = points[(i + 1) % points.length]
+      area += x * nextY - nextX * y
+      left = Math.min(left, x); right = Math.max(right, x)
+      top = Math.min(top, y); bottom = Math.max(bottom, y)
+    }
+    const width = right - left, height = bottom - top
+    const smallHole = area < 0 && Math.min(width, height) < span * .015 && Math.max(width, height) < span * .05
+    const speck = removeSpecks && area > 0 && Math.max(width, height) < span * .015
+    return smallHole || speck ? '' : ring
+  })
+}
+
 export function attachRegions(L, map, svg, records, bounds, select, options = {}) {
   const data = new Map(records.map(row => [row.region_id.trim(), row]))
   const allPaths = [...svg.querySelectorAll('[data-region-id]')]
   let settings = { countries: false, statuses: true, ...options.settings }
   const selected = new Set()
   let hovered = null
-  map.createPane('territoriesPane').style.zIndex = '450'
+  const pane = map.getPane('territoriesPane') || map.createPane('territoriesPane')
+  pane.style.zIndex = '450'
   svg.style.pointerEvents = 'none'; svg.removeAttribute('aria-hidden')
   svg.classList.add('map-territories')
+  if (options.political) svg.classList.add('map-territories--political')
   const layer = L.svgOverlay(svg, bounds, { interactive: true, pane: 'territoriesPane' }).addTo(map)
-  const removeCoastDisplay = softenCoast(svg, map)
+  // MapPlus already clips the entire layer to its own coast below. Avoid
+  // rasterizing the old, blurred full-map mask inside that clip on every pan.
+  const removeCoastDisplay = options.coastline || options.political ? () => {} : softenCoast(svg, map)
   // Keep interaction outlines outside the feathered coastline mask.
   const outlineLayer = document.createElementNS('http://www.w3.org/2000/svg', 'g')
   outlineLayer.style.pointerEvents = 'none'
   outlineLayer.setAttribute('aria-hidden', 'true')
   svg.append(outlineLayer)
+  if (options.coastline) {
+    const ns = svg.namespaceURI, box = svg.viewBox.baseVal
+    const source = new DOMParser().parseFromString(options.coastline, 'image/svg+xml').querySelector('#river-land')
+    if (source) {
+      const clip = document.createElementNS(ns, 'clipPath'), group = document.createElementNS(ns, 'g')
+      clip.id = 'mapplus-legacy-coast-clip'
+      for (const offset of [-2048, 0, 2048]) for (const path of source.children) {
+        const shape = document.importNode(path, true)
+        shape.setAttribute('transform', `scale(${box.width/2048} ${box.height/1024}) translate(${offset-options.centralMeridian/360*2048} 0)`)
+        clip.append(shape)
+      }
+      const defs = svg.querySelector('defs')
+      defs.append(clip)
+      for (const child of [...svg.children]) if (child !== defs) group.append(child)
+      group.setAttribute('clip-path', `url(#${clip.id})`)
+      svg.append(group)
+      svg.setAttribute('preserveAspectRatio', 'none')
+    }
+  }
   const normalOutlines = document.createElementNS('http://www.w3.org/2000/svg', 'g')
   const pollutionOutlines = document.createElementNS('http://www.w3.org/2000/svg', 'g')
   outlineLayer.append(normalOutlines, pollutionOutlines)
@@ -143,16 +171,40 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
   }
   const byID = new Map(paths.map(path => [path.dataset.regionId, path]))
   const configured = records.filter(row => byID.has(row.region_id))
-  const legend = countryLegend(configured), colors = new Map(legend.map(item => [item.name, item.color]))
+  const legend = options.political ? configured.map(row => ({ name: row.group_id, color: '#8c7049' })) : countryLegend(configured)
+  const colors = new Map(legend.map(item => [item.name, item.color]))
+  const flags = options.political ? countryFlagHover(svg, outlineLayer) : null
   function paint(path) {
     const id = path.dataset.regionId, row = data.get(id)
     const specialVisible = settings.statuses && special.has(row?.status)
     const active = selected.has(id), over = hovered === path
+    if (options.political) {
+      const visible = settings.countries || active || over
+      const disputes = svg.querySelector('[data-political-disputes]')
+      if (disputes) disputes.style.display = 'none'
+      const liveBorder = svg.querySelector('[data-live-border]')
+      if (liveBorder) liveBorder.style.display = 'none'
+      const brush = svg.querySelector('[data-brush-overlay]')
+      if (brush) brush.style.display = visible ? '' : 'none'
+      const ink = '#8c7049'
+      const flagVisible = flags.show(path, row, visible)
+      path.style.fill = flagVisible ? 'transparent' : visible && (active || over) ? (active ? '#9c805873' : ink + '30') : 'transparent'
+      path.style.stroke = visible ? ink + (active || over ? 'B0' : '90') : 'transparent'
+      path.style.strokeWidth = active || over ? '1.05' : '.5'
+      path.style.strokeLinejoin = 'round'
+      path.style.strokeDasharray = row?.provisional ? '2 1.4' : ''
+      path.style.pointerEvents = row ? 'all' : 'none'
+      if (row) path.setAttribute('tabindex', '0')
+      else path.removeAttribute('tabindex')
+      if (active) path.dataset.selected = 'true'
+      else path.removeAttribute('data-selected')
+      return
+    }
     const pollution = row?.status === '污染' ? pollutionStyle(row) : null
     const c = specialVisible ? (pollution?.color || color(row.status_color)) : active || over ? '#8c7049' : colors.get(row?.group_id) || '#8c7049'
     // Stronger selected tint, retaining the basemap detail beneath it.
     path.style.fill = active ? (specialVisible ? c : '#9c8058') + (specialVisible && pollution ? pollution.selected : '73') : specialVisible ? c + (pollution?.fill || '30') : 'transparent'
-    path.style.stroke = active || over ? c + 'B0' : specialVisible ? c + '60' : settings.countries && row ? c + '70' : 'transparent'
+    path.style.stroke = active || over ? c + 'B0' : specialVisible ? c + '60' : settings.countries && !options.hideCountryBorders && row ? c + '70' : 'transparent'
     // Map-space widths scale with the SVG, including during zoom animations.
     path.style.strokeWidth = active || over ? '12' : '6'
     path.style.strokeDasharray = ''
@@ -176,9 +228,14 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
     const display = regionDetails(row, records)
     path.style.cursor = 'pointer'; path.setAttribute('tabindex', '0'); path.setAttribute('role', 'button')
     path.setAttribute('aria-label', display.title || row.sub_group_id || row.group_id || row.region_id)
+    if (options.political) paint(path)
   }
-  function groupPaths(row) { return relatedRegions(row, configured).map(r => byID.get(r.region_id)).filter(Boolean) }
+  function groupPaths(row) {
+    const related = row.mergedEmpire ? [row] : relatedRegions(row, configured)
+    return related.map(r => byID.get(r.region_id)).filter(Boolean)
+  }
   function focusedPaths(row) {
+    if (row.mergedEmpire) return groupPaths(row)
     const primary = resolveRegion(row, records)
     const local = special.has(row.status) && row.status !== primary.status
     const ids = focusRegionIDs(local ? { ...row, is_primary: false, is_sub_primary: false } : primary, configured, boxes)
@@ -189,8 +246,9 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
     const result = L.latLngBounds([])
     for (const path of targets) {
       const box = boxes.get(path.dataset.regionId)
-      result.extend([-(box.y + box.height) / 32, box.x / 32])
-      result.extend([-box.y / 32, (box.x + box.width) / 32])
+      const sx = bounds.getEast() / svg.viewBox.baseVal.width, sy = -bounds.getSouth() / svg.viewBox.baseVal.height
+      result.extend([-(box.y + box.height) * sy, box.x * sx])
+      result.extend([-box.y * sy, (box.x + box.width) * sx])
     }
     return result
   }
@@ -207,10 +265,18 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
       const box = boxes.get(path.dataset.regionId)
       left = Math.min(left, box.x); top = Math.min(top, box.y)
       right = Math.max(right, box.x + box.width); bottom = Math.max(bottom, box.y + box.height)
-      const clone = path.cloneNode(false)
-      for (const attr of ['id', 'tabindex', 'role', 'aria-label', 'data-region-id', 'data-selected']) clone.removeAttribute(attr)
+      // The inset needs the complete geometry. Main-map masks and styles
+      // would hide the affected part of the country here as well.
+      const clone = document.createElementNS(preview.namespaceURI, 'path')
+      for (const attr of ['d', 'fill-rule', 'transform']) {
+        if (path.hasAttribute(attr)) clone.setAttribute(attr, path.getAttribute(attr))
+      }
+      if (options.political) clone.dataset.regionId = path.dataset.regionId
+      const config = options.political ? null : data.get(path.dataset.regionId)
+      if (options.simplifyInset && clone.hasAttribute('d')) {
+        clone.setAttribute('d', simplifyInsetPath(clone.getAttribute('d'), Math.max(box.width, box.height), config?.mergedEmpire))
+      }
       clone.style.pointerEvents = 'none'
-      const config = data.get(path.dataset.regionId)
       // The inset uses restrained printed-ink colors, independent of map highlights.
       const ink = config?.status === '深渊' ? '#92809b' : config?.status === '污染' ? pollutionStyle(config).ink : '#bca274'
       clone.style.fill = ink + '70'
@@ -236,13 +302,15 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
     for (const sibling of related) selected.add(sibling.dataset.regionId)
     paths.forEach(paint)
     const national = primary.is_primary || (primary.is_sub_primary && primary.sub_group_id === '本土')
-    const previewPaths = territoryPreviewRows(row, related.map(p => data.get(p.dataset.regionId))).map(r => byID.get(r.region_id))
+    // Assigned political regions already contain the country's complete current
+    // geometry; legacy homeland/colony filters would discard that unified row.
+    const previewPaths = options.political ? related : territoryPreviewRows(row, related.map(p => data.get(p.dataset.regionId))).map(r => byID.get(r.region_id))
     select({ ...regionDetails(row, records), isRegion: true, sourceRegionId: row.region_id,
-      preview: previewFor(previewPaths), focusLabel: national ? '主要领土' : '此区域',
-      previewStatuses: [...new Set(previewPaths.map(p => data.get(p.dataset.regionId)).filter(r => special.has(r?.status)).map(statusLabel))],
+      preview: previewFor(previewPaths), focusLabel: row.mergedEmpire ? '帝国版图' : national ? '主要领土' : '此区域',
+      previewStatuses: options.political ? [] : [...new Set(previewPaths.map(p => data.get(p.dataset.regionId)).filter(r => special.has(r?.status)).map(statusLabel))],
       hasWholeTerritory: related.length > focused.length })
     if (navigate) {
-      if (latlng) focusMap(map, latlng)
+      if (latlng && !row.mergedEmpire) focusMap(map, latlng)
       else focus(row.region_id, { remember: false })
     }
   }
@@ -266,7 +334,7 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
     layer, legend, clear, focus,
     select: (id, value) => { const path = byID.get(id); if (path) activate(path, null, value) },
     configure(value) { settings = { ...settings, ...value }; paths.forEach(paint) },
-    destroy() { endHover(); map.off('movestart zoomstart', endHover); removeCoastDisplay() },
+    destroy() { endHover(); map.off('movestart zoomstart', endHover); removeCoastDisplay(); layer.remove() },
     count: configured.length,
   }
 }

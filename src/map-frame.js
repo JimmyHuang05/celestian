@@ -1,10 +1,11 @@
 import artworkUrl from './assets/map/atlas-frame.svg?url'
+import openCornersUrl from './assets/map/atlas-frame-open-corners.svg?url'
 
 // Match the basemap to the innermost rail (23.525–24.881 SVG units).
 // A small overlap under the metal prevents a hairline gap during zooming.
 const FRAME_VIEWBOX = { width: 2232, height: 1112, apertureInset: 24.6 }
 
-export function attachMapFrame(L, map, metadata, signal) {
+export function attachMapFrame(L, map, metadata, signal, {openCorners=false} = {}) {
   const scale = 2 ** metadata.maxZoom
   const { width, height, apertureInset } = FRAME_VIEWBOX
   const insetX = metadata.width * apertureInset / (width - 2 * apertureInset)
@@ -21,11 +22,11 @@ export function attachMapFrame(L, map, metadata, signal) {
   svg.setAttribute('preserveAspectRatio', 'none')
   svg.setAttribute('aria-hidden', 'true')
   svg.classList.add('map-atlas-frame')
-  map.createPane('mapFramePane').style.zIndex = '470'
+  map.createPane('mapFramePane').style.zIndex = openCorners ? '645' : '470'
   map.getPane('mapFramePane').style.pointerEvents = 'none'
   const layer = L.svgOverlay(svg, bounds, { interactive: false, pane: 'mapFramePane' }).addTo(map)
   // Frame geometry is immediate; its decorative paths need not block the map bundle.
-  fetch(artworkUrl, { signal, priority: 'low' }).then(async response => {
+  fetch(openCorners ? openCornersUrl : artworkUrl, { signal, priority: 'low' }).then(async response => {
     if (!response.ok) return
     const artwork = await response.text()
     if (signal?.aborted) return

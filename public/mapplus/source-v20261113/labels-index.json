@@ -1,0 +1,881 @@
+{
+  "version": 1,
+  "width": 21600,
+  "height": 10400,
+  "data": [
+    {
+      "id": "place-label-00001",
+      "title": "莱文特里-伏棱航线",
+      "foreignTitle": "Leventry-Volen Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00001-editable"
+      ],
+      "bounds": [
+        11023.007629394531,
+        310.0186071395874,
+        11664.399780273438,
+        478.06627559661865
+      ]
+    },
+    {
+      "id": "place-label-00019",
+      "title": "大冰洋",
+      "foreignTitle": "Great Ice Ocean",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00019-editable"
+      ],
+      "bounds": [
+        11911.06103515625,
+        92.13953399658203,
+        13196.68115234375,
+        531.3488235473633
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    },
+    {
+      "id": "place-label-00027",
+      "title": "维多利亚洲际航线",
+      "foreignTitle": "Victoria Intercontinental Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00027-editable"
+      ],
+      "bounds": [
+        5596.132629394531,
+        424.0186071395874,
+        6481.464782714844,
+        592.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00091",
+      "title": "极夜航线",
+      "foreignTitle": "Longnight Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00091-editable"
+      ],
+      "bounds": [
+        1733.0290832519531,
+        704.0186071395874,
+        2208.535186767578,
+        872.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00124",
+      "title": "昂格莱德之海",
+      "foreignTitle": "Neal Ungerleider",
+      "kind": "geography",
+      "minZoom": 1,
+      "priority": 0,
+      "parts": [
+        "place-label-00124-editable"
+      ],
+      "bounds": [
+        17523.119995117188,
+        845,
+        19616.880004882812,
+        1620.375
+      ],
+      "sizeTier": 1,
+      "effectiveFontSize": 360
+    },
+    {
+      "id": "place-label-00160",
+      "title": "东方航线",
+      "foreignTitle": "Eastern Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00160-editable"
+      ],
+      "bounds": [
+        15101.198776245117,
+        1063.0186071395874,
+        15518.286148071289,
+        1231.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00196",
+      "title": "双岬湾",
+      "foreignTitle": "Twincape",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-00196-editable"
+      ],
+      "bounds": [
+        9844.630825195312,
+        1513.559073791504,
+        10243.866870117188,
+        1748.6474453735352
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 115.2
+    },
+    {
+      "id": "place-label-00289",
+      "title": "俄提斯洋",
+      "foreignTitle": "Orthys",
+      "kind": "geography",
+      "minZoom": 1,
+      "priority": 0,
+      "parts": [
+        "place-label-00289-editable"
+      ],
+      "bounds": [
+        5822.877502441406,
+        2178,
+        6622.122497558594,
+        2928.75
+      ],
+      "sizeTier": 1,
+      "effectiveFontSize": 360
+    },
+    {
+      "id": "place-label-00291",
+      "title": "蓝海",
+      "foreignTitle": "Blue Sea",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00291-editable"
+      ],
+      "bounds": [
+        1746.200946044922,
+        1765.225580596924,
+        2391.778955078125,
+        2161.413941192627
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 216
+    },
+    {
+      "id": "place-label-00310",
+      "title": "昂格莱德航线",
+      "foreignTitle": "Neal Ungerleider Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00310-editable"
+      ],
+      "bounds": [
+        368.44659423828125,
+        1977.0186071395874,
+        1041.9400634765625,
+        2145.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00385",
+      "title": "平海",
+      "foreignTitle": "Pinghai",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00385-editable"
+      ],
+      "bounds": [
+        13332.763875732422,
+        2595.4581405639647,
+        13836.611978759765,
+        2935.0302169799807
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    },
+    {
+      "id": "place-label-00394",
+      "title": "北风暴洋航线",
+      "foreignTitle": "North Arrogance Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00394-editable"
+      ],
+      "bounds": [
+        14909.773254394531,
+        2631.0186071395874,
+        15581.800659179688,
+        2799.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00423",
+      "title": "昂格莱德航线",
+      "foreignTitle": "Neal Ungerleider Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00423-editable"
+      ],
+      "bounds": [
+        19724.44659423828,
+        2704.0186071395874,
+        20397.940063476562,
+        2872.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00455",
+      "title": "雾海",
+      "foreignTitle": "Sea of Mist",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00455-editable"
+      ],
+      "bounds": [
+        2830.5792236328125,
+        2717.1395416259766,
+        3756.1057739257812,
+        3192.348831176758
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    },
+    {
+      "id": "place-label-00479",
+      "title": "大湖",
+      "foreignTitle": "Magnalacus",
+      "kind": "geography",
+      "minZoom": 3.5,
+      "priority": 3,
+      "parts": [
+        "place-label-00479-editable"
+      ],
+      "bounds": [
+        10153.90461730957,
+        2961.8523248672486,
+        10397.516067504883,
+        3075.431405067444
+      ],
+      "sizeTier": 4,
+      "effectiveFontSize": 56
+    },
+    {
+      "id": "place-label-00511",
+      "title": "圣塔洛斯航线",
+      "foreignTitle": "Santalos Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00511-editable"
+      ],
+      "bounds": [
+        4159.861557006836,
+        3634.0186071395874,
+        4599.518173217773,
+        3802.0662755966187
+      ]
+    },
+    {
+      "id": "place-label-00532",
+      "title": "中央风暴洋航线",
+      "foreignTitle": "Central Arrogance Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00532-editable"
+      ],
+      "bounds": [
+        14993.807434082031,
+        3997.0186071395874,
+        15709.669189453125,
+        4165.066275596619
+      ]
+    },
+    {
+      "id": "place-label-00559",
+      "title": "圣特尔莫海",
+      "foreignTitle": "Mare di Sant’Elmo",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-00559-editable"
+      ],
+      "bounds": [
+        8491.21579,
+        4429.48495,
+        9304.91101,
+        4621.79059375
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 131.22
+    },
+    {
+      "id": "place-label-00565",
+      "title": "喀琉珊德海",
+      "foreignTitle": "Kalisande",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-00565-editable"
+      ],
+      "bounds": [
+        10532.433154296876,
+        4375.376742553711,
+        10982.5541015625,
+        4638.186044311524
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 128
+    },
+    {
+      "id": "place-label-00638",
+      "title": "水晶池",
+      "foreignTitle": "Crialago",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-00638-editable"
+      ],
+      "bounds": [
+        9164.010247436443,
+        4847.050141145901,
+        9679.682514450324,
+        5340.254030097484
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 160
+    },
+    {
+      "id": "place-label-00656",
+      "title": "圣特尔莫海航线",
+      "foreignTitle": "Sant’Elmo Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00656-editable"
+      ],
+      "bounds": [
+        7256.1806640625,
+        5013.271484375,
+        7703.8193359375,
+        5181.28271484375
+      ]
+    },
+    {
+      "id": "place-label-00698",
+      "title": "风暴洋",
+      "foreignTitle": "Arrogance",
+      "kind": "geography",
+      "minZoom": 1,
+      "priority": 0,
+      "parts": [
+        "place-label-00698-editable"
+      ],
+      "bounds": [
+        14837.914978027344,
+        5041,
+        16171.085021972656,
+        5792.75
+      ],
+      "sizeTier": 1,
+      "effectiveFontSize": 360
+    },
+    {
+      "id": "place-label-00724",
+      "title": "香佩安航线",
+      "foreignTitle": "Ciampiana Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00724-editable"
+      ],
+      "bounds": [
+        11383.8271484375,
+        5221.271484375,
+        11849.1728515625,
+        5389.28271484375
+      ]
+    },
+    {
+      "id": "place-label-00741",
+      "title": "德洛舍涅海峡",
+      "foreignTitle": "Droshenie Strait",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00741-editable"
+      ],
+      "bounds": [
+        12971.068359375,
+        5362.0146484375,
+        14325.4697265625,
+        5821.998046875
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    },
+    {
+      "id": "place-label-00773",
+      "title": "德洛舍涅航线",
+      "foreignTitle": "Droshenie Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00773-editable"
+      ],
+      "bounds": [
+        12628.470932006836,
+        5776.018607139587,
+        13119.131607055664,
+        5944.066275596619
+      ]
+    },
+    {
+      "id": "place-label-00795",
+      "title": "罗拉克之海",
+      "foreignTitle": "Rolac",
+      "kind": "geography",
+      "minZoom": 1,
+      "priority": 0,
+      "parts": [
+        "place-label-00795-editable"
+      ],
+      "bounds": [
+        10239.772277832031,
+        5845,
+        11763.227722167969,
+        6727.5
+      ],
+      "sizeTier": 1,
+      "effectiveFontSize": 360
+    },
+    {
+      "id": "place-label-00820",
+      "title": "深渊",
+      "foreignTitle": "Abyss",
+      "kind": "geography",
+      "minZoom": 1,
+      "priority": 0,
+      "parts": [
+        "place-label-00820-editable"
+      ],
+      "bounds": [
+        2953.144287109375,
+        5958,
+        4508.855712890625,
+        6881.75
+      ],
+      "sizeTier": 1,
+      "effectiveFontSize": 360
+    },
+    {
+      "id": "place-label-00825",
+      "title": "梅里迪亚洲际航线",
+      "foreignTitle": "Meridia Intercontinental Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00825-editable"
+      ],
+      "bounds": [
+        7838.160247802734,
+        6121.018607139587,
+        8724.22543334961,
+        6289.066275596619
+      ]
+    },
+    {
+      "id": "place-label-00846",
+      "title": "维什支海",
+      "foreignTitle": "Visch Sea",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-00846-editable"
+      ],
+      "bounds": [
+        19791.207122802734,
+        6212.139533996582,
+        20603.034759521484,
+        6648.348823547363
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    },
+    {
+      "id": "place-label-01047",
+      "title": "南风暴洋航线",
+      "foreignTitle": "South Arrogance Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01047-editable"
+      ],
+      "bounds": [
+        16747.883728027344,
+        6710.018607139587,
+        17423.57763671875,
+        6878.066275596619
+      ]
+    },
+    {
+      "id": "place-label-01200",
+      "title": "西梅里迪亚沿岸航线",
+      "foreignTitle": "West Meridia Coastal Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01200-editable"
+      ],
+      "bounds": [
+        10859.953857421875,
+        7449.018607139587,
+        11653.625366210938,
+        7617.066275596619
+      ]
+    },
+    {
+      "id": "place-label-01212",
+      "title": "普列霍诺夫航线",
+      "foreignTitle": "Plekhonov Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01212-editable"
+      ],
+      "bounds": [
+        18210.01853942871,
+        7525.018607139587,
+        18706.464065551758,
+        7693.066275596619
+      ]
+    },
+    {
+      "id": "place-label-01228",
+      "title": "梅里迪亚海",
+      "foreignTitle": "Meridia Sea",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-01228-editable"
+      ],
+      "bounds": [
+        14015.923706054688,
+        7674.720935821533,
+        14700.761047363281,
+        7979.232532501221
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 160
+    },
+    {
+      "id": "place-label-01252",
+      "title": "长湾",
+      "foreignTitle": "Long Bay",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-01252-editable"
+      ],
+      "bounds": [
+        16278.360604095458,
+        7834.326749343872,
+        16862.88863418579,
+        8197.86185585022
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 183.6
+    },
+    {
+      "id": "place-label-01292",
+      "title": "珊瑚内海",
+      "foreignTitle": "Inner Coral Sea",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-01292-editable"
+      ],
+      "bounds": [
+        12512.913267364504,
+        8237.851400127412,
+        13253.648915252685,
+        8495.643815288542
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 136.8
+    },
+    {
+      "id": "place-label-01317",
+      "title": "珊瑚外海",
+      "foreignTitle": "Outer Coral Sea",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-01317-editable"
+      ],
+      "bounds": [
+        12556.405554809571,
+        8740.659308090211,
+        13641.866149902344,
+        9148.673250656127
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 205.2
+    },
+    {
+      "id": "place-label-01337",
+      "title": "威廉明娜航线",
+      "foreignTitle": "Wilhelmina Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01337-editable"
+      ],
+      "bounds": [
+        11356.015625,
+        9059.018607139587,
+        11869.408142089844,
+        9227.066275596619
+      ]
+    },
+    {
+      "id": "place-label-01342",
+      "title": "梅里迪亚洲际航线",
+      "foreignTitle": "Meridia Intercontinental Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01342-editable"
+      ],
+      "bounds": [
+        9784.160247802734,
+        9064.018607139587,
+        10670.22543334961,
+        9232.066275596619
+      ]
+    },
+    {
+      "id": "place-label-01373",
+      "title": "哈特利湾",
+      "foreignTitle": "Hartley Bay",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-01373-editable"
+      ],
+      "bounds": [
+        14083.303970336914,
+        9234.94884223938,
+        14674.036746215821,
+        9530.609279251099
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 144
+    },
+    {
+      "id": "place-label-01398",
+      "title": "南梅里迪亚沿岸航线",
+      "foreignTitle": "South Meridia Coastal Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-01398-editable"
+      ],
+      "bounds": [
+        16324.415710449219,
+        10055.018607139587,
+        17138.048889160156,
+        10223.066275596619
+      ]
+    },
+    {
+      "id": "place-label-00391",
+      "title": "坎波韦拉航线",
+      "foreignTitle": "Campovera Route",
+      "kind": "route",
+      "minZoom": 3,
+      "priority": 3,
+      "parts": [
+        "place-label-00391-editable"
+      ],
+      "bounds": [
+        6865.04638671875,
+        2224.271484375,
+        7356.95361328125,
+        2392.28271484375
+      ],
+      "allowOverlap": true
+    },
+    {
+      "id": "place-label-monteran",
+      "title": "蒙特兰海峡",
+      "foreignTitle": "Monteran Channel",
+      "kind": "geography",
+      "minZoom": 3.5,
+      "priority": 3,
+      "parts": [
+        "place-label-monteran-editable"
+      ],
+      "bounds": [
+        7935.842634812499,
+        1975.047398875,
+        8430.766213,
+        2118.9549212875004
+      ],
+      "avoidMarkers": false,
+      "sizeTier": 4,
+      "effectiveFontSize": 77.616
+    },
+    {
+      "id": "place-label-volen",
+      "title": "伏棱海峡",
+      "foreignTitle": "Volen Strait",
+      "kind": "geography",
+      "minZoom": 3.5,
+      "priority": 3,
+      "parts": [
+        "place-label-volen-editable"
+      ],
+      "bounds": [
+        13597.652460634474,
+        857.2373372611269,
+        14045.405193968569,
+        1240.748502401493
+      ],
+      "sizeTier": 4,
+      "effectiveFontSize": 96
+    },
+    {
+      "id": "place-label-00197",
+      "title": "卡申海",
+      "foreignTitle": "Kashin",
+      "kind": "geography",
+      "minZoom": 3.5,
+      "priority": 3,
+      "parts": [
+        "place-label-00197-editable"
+      ],
+      "bounds": [
+        11509.038083002932,
+        1497.9181090563968,
+        11646.034431889646,
+        1611.003931536865
+      ],
+      "sizeTier": 4,
+      "effectiveFontSize": 55.7568
+    },
+    {
+      "id": "place-label-00086",
+      "title": "库列申海",
+      "foreignTitle": "Kuleshin",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-00086-editable"
+      ],
+      "bounds": [
+        10300.09375,
+        631.7209281921387,
+        10799.572387695312,
+        956.2325859069824
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 160
+    },
+    {
+      "id": "place-label-tanghai",
+      "title": "塘海",
+      "foreignTitle": "Tanghai",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-tanghai-editable"
+      ],
+      "bounds": [
+        12442.070015839521,
+        3784.165514843591,
+        12689.565012216859,
+        3953.951558752711
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 106.4448
+    },
+    {
+      "id": "place-label-chaohai",
+      "title": "潮海",
+      "foreignTitle": "Chaohai",
+      "kind": "geography",
+      "minZoom": 3,
+      "priority": 2,
+      "parts": [
+        "place-label-chaohai-editable"
+      ],
+      "bounds": [
+        13933.662221023927,
+        3989.6191993097837,
+        14241.258233879727,
+        4187.702923520857
+      ],
+      "sizeTier": 3,
+      "effectiveFontSize": 138.24
+    },
+    {
+      "id": "place-label-hengshan",
+      "title": "横山海",
+      "foreignTitle": "Hengshanhai",
+      "kind": "geography",
+      "minZoom": 2,
+      "priority": 1,
+      "parts": [
+        "place-label-hengshan-editable"
+      ],
+      "bounds": [
+        14761.701079345703,
+        1778.188121032715,
+        15486.420502685547,
+        2117.7601974487307
+      ],
+      "sizeTier": 2,
+      "effectiveFontSize": 240
+    }
+  ]
+}

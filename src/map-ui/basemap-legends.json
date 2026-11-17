@@ -1,0 +1,166 @@
+{
+  "elevation": [
+    {
+      "value": -6000,
+      "color": "#08204a"
+    },
+    {
+      "value": -2000,
+      "color": "#1d4f8f"
+    },
+    {
+      "value": -200,
+      "color": "#4a8cc7"
+    },
+    {
+      "value": 0,
+      "color": "#8cc4e0"
+    },
+    {
+      "value": 1,
+      "color": "#3f8f55"
+    },
+    {
+      "value": 300,
+      "color": "#86b061"
+    },
+    {
+      "value": 1000,
+      "color": "#d9cf85"
+    },
+    {
+      "value": 2200,
+      "color": "#b98a55"
+    },
+    {
+      "value": 3800,
+      "color": "#8a6a55"
+    },
+    {
+      "value": 5500,
+      "color": "#f2f0ee"
+    }
+  ],
+  "temperature": [
+    {
+      "value": -30,
+      "color": "#3b1f8f"
+    },
+    {
+      "value": -15,
+      "color": "#3565c9"
+    },
+    {
+      "value": -3,
+      "color": "#7fc3e6"
+    },
+    {
+      "value": 5,
+      "color": "#d8eed2"
+    },
+    {
+      "value": 14,
+      "color": "#f2df7a"
+    },
+    {
+      "value": 22,
+      "color": "#f09a42"
+    },
+    {
+      "value": 30,
+      "color": "#c7352b"
+    }
+  ],
+  "precipitation": [
+    {
+      "value": 0,
+      "color": "#8c5a2b"
+    },
+    {
+      "value": 250,
+      "color": "#d8b26a"
+    },
+    {
+      "value": 600,
+      "color": "#e9e39a"
+    },
+    {
+      "value": 1200,
+      "color": "#7cc16a"
+    },
+    {
+      "value": 2000,
+      "color": "#2f9a8a"
+    },
+    {
+      "value": 3200,
+      "color": "#1c4f9c"
+    }
+  ],
+  "ecology": [
+    {
+      "name": "海洋",
+      "color": "#1d4e74"
+    },
+    {
+      "name": "湖泊",
+      "color": "#3b739a"
+    },
+    {
+      "name": "海冰",
+      "color": "#e9eff3"
+    },
+    {
+      "name": "冰原",
+      "color": "#f3f6f8"
+    },
+    {
+      "name": "苔原",
+      "color": "#8b8a70"
+    },
+    {
+      "name": "针叶林",
+      "color": "#2e4a37"
+    },
+    {
+      "name": "寒漠",
+      "color": "#a49c84"
+    },
+    {
+      "name": "温带荒漠",
+      "color": "#c6b089"
+    },
+    {
+      "name": "草原",
+      "color": "#9f9c62"
+    },
+    {
+      "name": "温带森林",
+      "color": "#46683a"
+    },
+    {
+      "name": "温带雨林",
+      "color": "#2c5634"
+    },
+    {
+      "name": "热带荒漠",
+      "color": "#d9bd8c"
+    },
+    {
+      "name": "稀树草原",
+      "color": "#ab9c5c"
+    },
+    {
+      "name": "热带季雨林",
+      "color": "#607a36"
+    },
+    {
+      "name": "热带雨林",
+      "color": "#224c27"
+    },
+    {
+      "name": "湿地",
+      "color": "#5c9c8e"
+    }
+  ]
+}

@@ -21,13 +21,13 @@ export function regionMeta(row) {
 // Presentation only: keep the empire's political grouping and map geometry intact.
 export function territoryPreviewRows(row, related) {
   if (row.group_id !== '奥兰尼亚帝国') return related
-  if (['克莱曼尼殖民地', '昂格莱德联合拓殖区'].includes(row.sub_group_id)) {
+  if (['克莱曼尼殖民地', '普罗维登提亚联合拓殖区', '昂格莱德联合拓殖区'].includes(row.sub_group_id)) {
     return related.filter(item => item.sub_group_id === row.sub_group_id)
   }
   if (row.title === '北英普顿殖民地') {
     return related.filter(item => item.title === '北英普顿殖民地')
   }
-  if (['本土', '维斯廷自治领'].includes(row.sub_group_id) || row.title === '女王陛下的奥兰尼亚帝国') {
+  if (['本土', '维斯廷自治领'].includes(row.sub_group_id) || ['奥兰尼亚帝国', '女王陛下的奥兰尼亚帝国'].includes(row.title)) {
     return related.filter(item => ['本土', '维斯廷自治领'].includes(item.sub_group_id))
   }
   return related

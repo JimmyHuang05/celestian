@@ -1,0 +1,137 @@
+{
+  "version": 1,
+  "title": "新埃斯特拉（五）",
+  "seed": 253264,
+  "width": 21600,
+  "height": 10800,
+  "minZoom": 0,
+  "maxZoom": 6,
+  "imageUrl": "/mapplus/natural-ridge-v2/terrain-parchment.webp",
+  "projection": "equirect",
+  "latitudeBounds": [
+    -90,
+    90
+  ],
+  "sourceCentralMeridian": 31.685156249999977,
+  "style": "fantasy",
+  "renderWidth": 4096,
+  "renderHeight": 2048,
+  "coordinateSystemSha256": "3babce910057ac7a08d04f4a6d208c3b29886819695f65818594eb7435b60b6d",
+  "imageSha256": "fdd4a6617861d8aecbda114d9588592a2a429c08ccc28a6ccfea5acd5b018c73",
+  "archiveSha256": "7a961dd0b05176be4bdb46e2e6c4565ac1b226639c961070a976295d07f83f91",
+  "worldCheck": "c63b65abc41f",
+  "generator": 57,
+  "worldId": "wmw843zkgf3u76",
+  "sourceSavedAt": "2026-11-08T17:38:25.306Z",
+  "source": "Civ Atlas",
+  "sourceUrl": "https://github.com/guaner-334/civ-atlas",
+  "northIceVisible": false,
+  "bathymetryVisible": false,
+  "textureUrl": "/mapplus/world-253264-estra-v-geo-v1/texture.webp",
+  "saturation": 0.58,
+  "oceanColor": "#e5d9bb",
+  "savedCentralMeridian": -147.04,
+  "coastlineUrl": "/mapplus/natural-ridge-v2/coast.svg",
+  "coastalGeometryUrl": "/mapplus/natural-ridge-v2/coastal-geometry.svg?v=3",
+  "waterwaysUrl": "/mapplus/natural-ridge-v2/waterways-hydrology.svg?v=4",
+  "waterwaysImageUrl": "/mapplus/natural-ridge-v2/waterways-hydrology-8k-shore-clipped.webp",
+  "vectorLakes": true,
+  "coastlineCacheUrl": "/mapplus/natural-ridge-v2/coast.svg",
+  "coastlineCacheSize": [
+    8192,
+    4096
+  ],
+  "compositeImageUrl": "/mapplus/natural-ridge-v2/parchment-hydrology.webp?v=4",
+  "landColorMaskUrl": "/mapplus/natural-ridge-v2/land-color-mask.png",
+  "landColor": "#bba789",
+  "landColorOpacity": 0.5,
+  "forestVisible": false,
+  "coastalRingsVisible": true,
+  "coastalRingsColor": "#81765e",
+  "terrainUrl": "/mapplus/natural-ridge-v2/terrain-parchment.webp",
+  "vectorLayers": {
+    "rivers": {
+      "url": "/mapplus/natural-ridge-v2/rivers-clipped.svg"
+    },
+    "lakes": {
+      "url": "/mapplus/natural-ridge-v2/lakes.svg"
+    },
+    "mountains": {
+      "url": "/mapplus/natural-ridge-v2/mountains.svg"
+    }
+  },
+  "placementImageUrl": "/mapplus/natural-ridge-v2/placement-geo.webp",
+  "placementClimateUrl": "/mapplus/natural-ridge-v2/placement-climate.webp",
+  "placementCurrentsUrl": "/mapplus/new-estra-v-temp0/currents-composite.webp",
+  "currentsUrl": "/mapplus/new-estra-v-temp0/currents-handdrawn.svg",
+  "temperatureOffset": 0,
+  "climateRebuildMode": "local-height-edit",
+  "baseWorldCheck": "b67e7c4b316f",
+  "basemapStyles": {
+    "ecology": {
+      "url": "/mapplus/natural-ridge-v2/style-ecology.webp"
+    },
+    "elevation": {
+      "url": "/mapplus/natural-ridge-v2/style-elevation.webp"
+    },
+    "geo": {
+      "url": "/mapplus/natural-ridge-v2/style-geo.webp"
+    },
+    "temperature": {
+      "url": "/mapplus/natural-ridge-v2/style-temperature.webp"
+    },
+    "precipitation": {
+      "url": "/mapplus/natural-ridge-v2/style-precipitation.webp"
+    },
+    "blank": {
+      "url": "/mapplus/natural-ridge-v2/style-blank.webp"
+    }
+  },
+  "southIceVisible": true,
+  "geographicTiles": {
+    "degrees": 30,
+    "columns": 12,
+    "rows": 6,
+    "url": "/mapplus/tiles-natural-ridge-v2/{variant}/{row}-{col}.webp",
+    "bleedPixels": 2,
+    "precomputed": true,
+    "sourceWidth": 4096,
+    "sourceHeight": 2048,
+    "previewUrl": "/mapplus/tiles-natural-ridge-v2/overviews/{variant}.webp",
+    "baseVariant": "default-terrain-4x-w0-m0",
+    "detail": {
+      "url": "/mapplus/tiles-terrain-seedvr2-4x/{row}-{col}.webp",
+      "sourceWidth": 16384,
+      "sourceHeight": 8192,
+      "columns": 24,
+      "rows": 12,
+      "bleedPixels": 2,
+      "minZoom": 3.65
+    }
+  },
+  "atlasArchiveUrl": "/mapplus/natural-ridge-v2/natural-ridge.civworld",
+  "nativeLakeEdits": [
+    {
+      "name": "水晶池",
+      "cells": 6,
+      "waterLevel": 210.15550231933594,
+      "native": true
+    }
+  ],
+  "terrainEdits": {
+    "sourceCheck": "e0efb80cd18a",
+    "check": "c63b65abc41f",
+    "kind": "discontinuous-low-ridge",
+    "changedCells": 117,
+    "maxRise": 1247.8696116656133
+  },
+  "terrainPyramid": {
+    "url": "/mapplus/terrain-16k-clean-v1/{z}/{x}/{y}.webp",
+    "previewUrl": "/mapplus/terrain-16k-clean-v1/overview.webp",
+    "width": 16384,
+    "height": 8192,
+    "tileSize": 512,
+    "minZoom": 0,
+    "maxZoom": 6
+  }
+}

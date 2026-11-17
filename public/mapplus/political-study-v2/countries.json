@@ -1,0 +1,431 @@
+{
+  "coordinateSystemSha256": "3babce910057ac7a08d04f4a6d208c3b29886819695f65818594eb7435b60b6d",
+  "sourceArchiveSha256": "7a961dd0b05176be4bdb46e2e6c4565ac1b226639c961070a976295d07f83f91",
+  "data": [
+    {
+      "region_id": "political-1",
+      "title": "奥兰尼亚帝国",
+      "group_id": "奥兰尼亚帝国",
+      "is_primary": true,
+      "politicalColor": "#a65e55",
+      "description": "【国界设计草案】保留奥兰尼亚本土与既有海外据点。按用户修订收束东南国界；西侧维斯廷独立，边界西侧城市不再计入帝国。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 58,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        1553,
+        403
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-2",
+      "title": "伊斯塔维拉王国",
+      "group_id": "伊斯塔维拉王国",
+      "is_primary": true,
+      "politicalColor": "#c59347",
+      "description": "【国界设计草案】以洛雷迪亚和既有伊斯塔维拉城市群为核心，连接半岛河谷、农业腹地与属岛；北部交界依山地通行成本收束，避免切断既有城市归属。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 17,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        287,
+        463
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-3",
+      "title": "琥珀王国",
+      "group_id": "琥珀王国",
+      "is_primary": true,
+      "politicalColor": "#b78336",
+      "description": "【国界设计草案】保留琥珀城、丽瓦绮澜、蓬泰科尔沃与马里纳比安卡的归属。与共和国之间采用山麓和河谷间的地形转折，保留同一文化圈分属两国的格局。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 5,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        359,
+        396
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-4",
+      "title": "琥珀共和国",
+      "group_id": "琥珀共和国",
+      "is_primary": true,
+      "politicalColor": "#6d91a0",
+      "description": "【国界设计草案】以新琥珀城与现有共和国港口为核心组织北部腹地。香佩安市沿用地点归属记录，同时保留其自由市身份；这不代表另创一个国家。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 4,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        321,
+        334
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-5",
+      "title": "海岸邦联",
+      "group_id": "海岸邦联",
+      "is_primary": true,
+      "politicalColor": "#508a84",
+      "description": "【国界设计草案】沿用商业邦联的港口体系，优先连接可达的沿海低地与城市腹地；山地内侧不因靠近港口就全部并入邦联。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 11,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        339,
+        526
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-6",
+      "title": "罗兰骑士团国",
+      "group_id": "罗兰骑士团国",
+      "is_primary": true,
+      "politicalColor": "#8e83a8",
+      "description": "【国界设计草案】以瓦尔蒙城、圣奥班和恩典港确定晨曦岛领土，保留骑士团国家的宗教与护航设定。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 3,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        670,
+        505
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-7",
+      "title": "维洛戈里亚帝国",
+      "group_id": "维洛戈里亚帝国",
+      "is_primary": true,
+      "politicalColor": "#7d8b63",
+      "description": "【国界设计草案】以利莫加德、北岬要塞和伏棱确定北方帝国的已知控制点；斯韦特洛加万单列为海外港口腹地。寒冷地区允许更大的交通成本，避免按气温机械截断领土。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 4,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        580,
+        225
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-8",
+      "title": "希斯伯尼亚",
+      "group_id": "希斯伯尼亚",
+      "is_primary": true,
+      "politicalColor": "#b28090",
+      "description": "【国界设计草案】按用户设定，希斯伯尼亚约占半岛陆地四分之一，仍是半岛最大的单一国家；其余约四分之三由另外四国分占。查士赫里忒、克里奥里亚孔和相连河谷构成核心腹地。阿克罗克雷姆保留同盟据点身份，不另计为独立国家。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 2,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        614,
+        456
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-9",
+      "title": "东方帝国",
+      "group_id": "东方帝国",
+      "is_primary": true,
+      "politicalColor": "#8b79a1",
+      "description": "【国界设计草案】以塞利米耶为核心，沿可达的盆地与沿海腹地展开，在高山及气候转折处提高边界权重。缺乏城市锚点的边缘仍属方案推定。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        754,
+        290
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-10",
+      "title": "赫尔铎王国",
+      "group_id": "赫尔铎王国",
+      "is_primary": true,
+      "politicalColor": "#678698",
+      "description": "【国界设计草案】现有设定记载北部峡湾王政，但没有已定位首都。北方峡湾核心位置为本次方案的暂定锚点，整段疆界需要优先复核。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": true,
+      "draftName": false,
+      "scope": "established",
+      "labelPosition": [
+        277,
+        104
+      ],
+      "kind": "country"
+    },
+    {
+      "region_id": "political-11",
+      "title": "北隘小邦",
+      "group_id": "北隘小邦",
+      "is_primary": true,
+      "politicalColor": "#948077",
+      "description": "【国界设计草案】北端山口与山间通道；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        406,
+        213
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-12",
+      "title": "西岭领主领",
+      "group_id": "西岭领主领",
+      "is_primary": true,
+      "politicalColor": "#ad8870",
+      "description": "【国界设计草案】西部高地领主辖地；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        333,
+        250
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-13",
+      "title": "上谷城邦",
+      "group_id": "上谷城邦",
+      "is_primary": true,
+      "politicalColor": "#6f9994",
+      "description": "【国界设计草案】上游盆地与河谷通道；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        395,
+        250
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-14",
+      "title": "东湖诸侯领",
+      "group_id": "东湖诸侯领",
+      "is_primary": true,
+      "politicalColor": "#8295a8",
+      "description": "【国界设计草案】东侧湖岸与跨湖渡运；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        429,
+        259
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-15",
+      "title": "雪岭领主领",
+      "group_id": "雪岭领主领",
+      "is_primary": true,
+      "politicalColor": "#9a85a0",
+      "description": "【国界设计草案】雪山南侧的高地与山口；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        338,
+        283
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-16",
+      "title": "中谷小邦",
+      "group_id": "中谷小邦",
+      "is_primary": true,
+      "politicalColor": "#ada16b",
+      "description": "【国界设计草案】中段河谷农业腹地；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        378,
+        293
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-17",
+      "title": "东岸城邦",
+      "group_id": "东岸城邦",
+      "is_primary": true,
+      "politicalColor": "#739886",
+      "description": "【国界设计草案】东岸出口与内陆通道；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        419,
+        312
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-18",
+      "title": "南隘领主领",
+      "group_id": "南隘领主领",
+      "is_primary": true,
+      "politicalColor": "#b88b80",
+      "description": "【国界设计草案】通往琥珀地区的南部通道；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        367,
+        334
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-19",
+      "title": "下谷城邦",
+      "group_id": "下谷城邦",
+      "is_primary": true,
+      "politicalColor": "#8c9270",
+      "description": "【国界设计草案】下游低地与南部交通节点；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "highlands",
+      "labelPosition": [
+        406,
+        344
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-20",
+      "title": "罗塞塔城邦",
+      "group_id": "罗塞塔城邦",
+      "is_primary": true,
+      "politicalColor": "#b9a071",
+      "description": "【国界设计草案】保留罗塞塔城市名；独立城邦身份为本次拟定。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "peninsula",
+      "labelPosition": [
+        500,
+        393
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-21",
+      "title": "蓝铜矿城邦",
+      "group_id": "蓝铜矿城邦",
+      "is_primary": true,
+      "politicalColor": "#729da0",
+      "description": "【国界设计草案】以蓝铜矿城的矿业和山口商道为腹地；独立城邦身份为本次拟定。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "peninsula",
+      "labelPosition": [
+        559,
+        407
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-22",
+      "title": "北湾小邦",
+      "group_id": "北湾小邦",
+      "is_primary": true,
+      "politicalColor": "#8c9a72",
+      "description": "【国界设计草案】半岛北部海湾周边小邦；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "peninsula",
+      "labelPosition": [
+        625,
+        408
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-23",
+      "title": "西岬领主领",
+      "group_id": "西岬领主领",
+      "is_primary": true,
+      "politicalColor": "#a68d67",
+      "description": "【国界设计草案】西南岬角与沿海通道；地理暂名。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "peninsula",
+      "labelPosition": [
+        468,
+        487
+      ],
+      "kind": "polity"
+    },
+    {
+      "region_id": "political-24",
+      "title": "阿克罗克雷姆同盟据点",
+      "group_id": "阿克罗克雷姆同盟据点",
+      "is_primary": true,
+      "politicalColor": "#778a98",
+      "description": "【国界设计草案】保留大陆同盟据点身份；这是特殊管辖区，不另计为独立国家。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": true,
+      "scope": "peninsula",
+      "labelPosition": [
+        690,
+        381
+      ],
+      "kind": "enclave"
+    },
+    {
+      "region_id": "political-25",
+      "title": "维斯廷",
+      "group_id": "维斯廷",
+      "is_primary": true,
+      "politicalColor": "#788f74",
+      "description": "【国界设计草案】按用户新设定独立；保留现有城市名称、本土语言、行会与海洋文化，具体国号和政体尚未设定。 此版仅为国家级划界；未着色陆地表示归属或控制范围尚未确定，不表示无主地。",
+      "anchorCount": 1,
+      "provisional": false,
+      "draftName": false,
+      "scope": "vestin",
+      "labelPosition": [
+        146,
+        351
+      ],
+      "kind": "independent"
+    }
+  ]
+}

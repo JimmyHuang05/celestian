@@ -1,0 +1,9 @@
+.map-ship{background:none;border:0}.map-ship img{display:block;width:100%;height:100%;object-fit:contain;pointer-events:none}.map-ship.is-selected{outline:1px dashed #8e7249;outline-offset:5px}.ship-editor{position:fixed;left:16px;top:100px;bottom:24px;z-index:1100;width:250px;overflow:auto;padding:14px;background:#ede3c9f5;border:1px solid #aa9674;border-radius:8px;color:#483c2b;font:14px system-ui}.ship-editor h2{margin:0 0 12px;font-size:18px}.ship-picker{display:grid;grid-template-columns:repeat(3,1fr);gap:5px;max-height:44vh;overflow:auto}.ship-editor button{cursor:pointer;padding:7px;border:1px solid #ad9876;border-radius:4px;background:#f2ead8;color:#473d2b;margin:3px 0}.ship-picker button{background:#233c43;color:#e8d3a5}.ship-picker .chosen{outline:3px solid #bd8a3e;outline-offset:-3px}.ship-picker img{width:100%;height:60px;object-fit:contain;display:block}.ship-editor input{display:block;width:100%}.ship-editor a{color:inherit}.ship-editor p{font-size:12px}@media(max-width:600px){.ship-editor{top:auto;bottom:12px;max-height:35vh;width:calc(100% - 60px)}.ship-picker{max-height:110px;grid-template-columns:repeat(6,1fr)}}
+.map-ship.mapplus-world-marker img{transform:translate(-50%,-50%)}
+.map-ship.mapplus-world-marker.is-selected{outline:none}
+.map-ship.mapplus-world-marker.is-selected img{outline:1px dashed #8e7249;outline-offset:5px}
+.ship-editor-heading{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:8px}
+.ship-editor .ship-editor-heading h2{margin:0}
+.ship-editor.is-collapsed{bottom:auto;width:190px;overflow:visible}
+.ship-editor.is-collapsed .ship-editor-heading{margin-bottom:0}
+@media(max-width:600px){.ship-editor.is-collapsed{top:auto;bottom:12px;width:190px}}

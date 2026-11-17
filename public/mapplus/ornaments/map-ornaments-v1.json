@@ -1,0 +1,23 @@
+{
+  "source": "D:\\WorldMap_240705_指北针.png",
+  "sourceSize": [
+    21600,
+    10400
+  ],
+  "crop": [
+    250,
+    7500,
+    9150,
+    10250
+  ],
+  "size": [
+    8900,
+    2750
+  ],
+  "placement": {
+    "left": 0.014,
+    "bottom": 0.024,
+    "width": 0.27,
+    "opacity": 0.86
+  }
+}

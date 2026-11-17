@@ -1,0 +1,40 @@
+{
+  "source": "D:/WorldMap_240705_指北针.png",
+  "crop": [
+    250,
+    7500,
+    9150,
+    10250
+  ],
+  "size": [
+    8900,
+    2750
+  ],
+  "headingBounds": [
+    2922,
+    6339
+  ],
+  "iconGap": 275.0,
+  "legend": [
+    {
+      "zh": "龙族",
+      "en": "Dragons"
+    },
+    {
+      "zh": "人族",
+      "en": "Men"
+    },
+    {
+      "zh": "深渊种",
+      "en": "Devils"
+    },
+    {
+      "zh": "泰坦",
+      "en": "Titans"
+    },
+    {
+      "zh": "以太",
+      "en": "Aether"
+    }
+  ]
+}

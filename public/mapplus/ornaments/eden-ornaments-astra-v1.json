@@ -1,0 +1,37 @@
+{
+  "viewBox": [
+    0,
+    0,
+    1180,
+    430
+  ],
+  "placement": {
+    "width": 0.29,
+    "left": 0.01,
+    "bottom": 0.012
+  },
+  "legend": [
+    {
+      "zh": "龙族",
+      "latin": "Dracones"
+    },
+    {
+      "zh": "人族",
+      "latin": "Homines"
+    },
+    {
+      "zh": "深渊种",
+      "latin": "Abyssales"
+    },
+    {
+      "zh": "泰坦",
+      "latin": "Titanes"
+    },
+    {
+      "zh": "以太",
+      "latin": "Aether"
+    }
+  ],
+  "source": "D:/WorldMap_240705_指北针.png",
+  "design": "Transparent engraved title vignette. Arched motto, original compass and five etched portraits, shared map texture only."
+}

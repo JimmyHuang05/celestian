@@ -1,14 +1,19 @@
+import { normalizeBasemapStyle } from './basemap-styles.js'
+
 export const MAP_PREFERENCES_KEY = 'celestian-map-view-v2'
-export const DEFAULT_LAYERS = Object.freeze({ labels: true, points: true, countries: false, statuses: true })
+export const DEFAULT_LAYERS = Object.freeze({ labels: true, points: true, countries: false, statuses: true, rivers: true, lakes: true, mountains: true, currents: false, routes: true })
 export const POINT_TYPES = ['首都', '主要城市', '城市/城镇', '城市', '要塞', '基地', '港口', '遗迹', '据点', '观测站', '异常', '资源', '其他']
 
 export function normalizePreferences(value) {
-  const result = { layers: { ...DEFAULT_LAYERS }, labelMode: 'auto', type: '', query: '', view: null, selection: null }
+  const result = { layers: { ...DEFAULT_LAYERS }, labelMode: 'auto', basemapStyle: 'default', type: '', query: '', view: null, selection: null }
   if (!value || value.version !== 2) return result
+  if(value.politicalDisplayVersion===1)result.politicalDisplayVersion=1
+  result.basemapStyle = normalizeBasemapStyle(value.basemapStyle)
   if (value.frameVersion === 1) result.frameVersion = 1
   for (const key of Object.keys(DEFAULT_LAYERS)) {
     if (typeof value.layers?.[key] === 'boolean') result.layers[key] = value.layers[key]
   }
+  result.layers.lakes = result.layers.rivers
   if (POINT_TYPES.includes(value.type)) result.type = value.type
   if (Array.isArray(value.type)) result.type = [...new Set(value.type.filter(type => POINT_TYPES.includes(type)))]
   if (value.labelMode === 'all') result.labelMode = 'all'
@@ -25,13 +30,16 @@ export function normalizePreferences(value) {
   return result
 }
 
-export function readPreferences() {
-  try { return normalizePreferences(JSON.parse(localStorage.getItem(MAP_PREFERENCES_KEY))) }
-  catch { return normalizePreferences(null) }
+export function readPreferences(key = MAP_PREFERENCES_KEY, defaults = DEFAULT_LAYERS) {
+  let saved
+  try { saved = JSON.parse(localStorage.getItem(key)) } catch { /* Use the default view. */ }
+  const preferences = normalizePreferences(saved)
+  if (saved?.version !== 2) preferences.layers = { ...defaults }
+  return preferences
 }
 
-export function writePreferences(value) {
-  try { localStorage.setItem(MAP_PREFERENCES_KEY, JSON.stringify({ version: 2, ...value })) }
+export function writePreferences(value, key = MAP_PREFERENCES_KEY) {
+  try { localStorage.setItem(key, JSON.stringify({ version: 2, ...value })) }
   catch { /* Browsing still works when persistent storage is unavailable. */ }
 }
 

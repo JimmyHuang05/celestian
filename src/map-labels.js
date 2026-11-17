@@ -2,7 +2,7 @@ import { visibleLabels } from './map-ui/label-visibility.js'
 
 export function attachLabelDisplay(map, svg, index, metadata, options = {}) {
   const elements = new Map()
-  const parts = new Map([...svg.querySelectorAll('path[id], g[data-map-text][id]')].map(part => [part.id, part]))
+  const parts = new Map([...svg.querySelectorAll('path[id], g[data-map-text][id]')].filter(part => !part.closest('defs') && !(part.tagName.toLowerCase()==='path' && part.closest('g[data-map-text]'))).map(part => [part.id, part]))
   const rows = index?.data
   // Fail open to the complete original lettering if an index and artwork disagree.
   const used = new Set()
@@ -20,7 +20,7 @@ export function attachLabelDisplay(map, svg, index, metadata, options = {}) {
     svg.append(group); elements.set(row.id, group)
   }
   const lineBounds = new Map()
-  let destroyed = false
+  let destroyed = false, refreshFrame = 0
   function measureLines() {
     if (destroyed) return
     const matrix = svg.getCTM()
@@ -38,14 +38,23 @@ export function attachLabelDisplay(map, svg, index, metadata, options = {}) {
     refresh()
   }
   let mode = options.mode || 'auto'
-  function refresh() {
+  function applyVisibility() {
+    refreshFrame = 0
+    if (destroyed) return
     const zoom = map.getZoom(), scale = 2 ** (zoom - metadata.maxZoom)
     const visible = visibleLabels(rows.map(row => ({ ...row, box: row.bounds.map(n => n * scale), boxes: lineBounds.get(row.id)?.map(box => box.map(n => n * scale)) })), zoom, { mode, obstacles: options.obstacles?.() || [] })
-    for (const [id, group] of elements) group.dataset.visible = String(visible.has(id))
+    for (const [id, group] of elements) {
+      const value = String(visible.has(id))
+      if (group.dataset.visible !== value) group.dataset.visible = value
+    }
   }
-  // Only visibility fades; Leaflet owns the shared transform on every animation frame.
+  function refresh() {
+    // zoomend and mapmarkerschange occur together; decide visibility once per frame.
+    if (!destroyed && !refreshFrame) refreshFrame = requestAnimationFrame(applyVisibility)
+  }
+  // Leaflet owns the shared transform; hidden labels do not paint during zoom.
   map.on('zoomend mapmarkerschange', refresh)
   refresh()
   document.fonts.ready.then(measureLines)
-  return { indexed: true, refresh, configure(value) { mode = value; refresh() }, destroy() { destroyed = true; map.off('zoomend mapmarkerschange', refresh) } }
+  return { indexed: true, refresh, configure(value) { if (mode !== value) { mode = value; refresh() } }, destroy() { destroyed = true; cancelAnimationFrame(refreshFrame); map.off('zoomend mapmarkerschange', refresh) } }
 }
