@@ -16,6 +16,7 @@ import ASSETS_BASE from '../constants.js'
 import { openCharacterProfile } from '../profile-navigation.js'
 import useGalaxyArrival from '../components/encyclopedia/useGalaxyArrival.js'
 import { openMusicPage } from '../music-navigation.js'
+import { warmMapPlus } from '../mapplus-startup.js'
 
 const desktopNodes = [
   { id: 'aeons', layer: 0, title: '神', subtitle: '神祇', icon: '/images/icons/aeons.svg', current: 0, total: 14, alien: 'A E O N S', pos: { top: '55%', left: '50%' }, scale: 1.3 },
@@ -63,6 +64,16 @@ function EncyclopediaPage({ onArrivalReady }) {
   const [panelStyle, setPanelStyle] = useState(null)
 
   const hasEverHadEntryId = useRef(false)
+
+  useEffect(() => {
+    if (nodeId || arrival.phase) return
+    if (!window.requestIdleCallback) {
+      const timer = setTimeout(warmMapPlus, 1000)
+      return () => clearTimeout(timer)
+    }
+    const idle = window.requestIdleCallback(warmMapPlus)
+    return () => window.cancelIdleCallback(idle)
+  }, [nodeId, arrival.phase])
 
   useEffect(() => {
     if (entryId) {

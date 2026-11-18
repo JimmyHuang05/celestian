@@ -1,45 +1,37 @@
-import { stableImageOverlay, stableSvgOverlay } from './map-stable-svg.js'
+import { stableSvgOverlay } from './map-stable-svg.js'
 import {coastalGeometryText} from './map-coastal-resource.js'
+import { rasterizeMapSVG } from './map-svg-raster.js'
 
 const namespace = 'http://www.w3.org/2000/svg'
 let nextId = 0
 
-export function createMapPlusCoastalLayer(L, map, bounds, geometryUrl, signal, waterwaysImageUrl) {
-  let geometry, overlay
+export function createMapPlusCoastalLayer(L, map, bounds, geometryUrl, signal) {
+  let coast, activeCoast, generation = 0
   const prefix = `mapplus-coast-${++nextId}`
-  // Isolate the coastline mask and the world-sized water image from the tiles.
+  // Isolate the coastline mask from the raster tile surfaces.
   map.createPane('mapPlusCoast').style.zIndex = '202'
-  map.createPane('mapPlusWater').style.zIndex = '203'
 
-  function replace(layer) {
-    if (overlay) map.removeLayer(overlay)
-    overlay = layer?.addTo(map) ?? null
+  function replace(current, next) {
+    if (current === next) return current
+    if (current) map.removeLayer(current)
+    return next?.addTo(map)
   }
 
-  async function prepare(variant) {
-    const water = variant.endsWith('-w1-m0') ? 'w1' : 'w0'
-    const waterLayer = water === 'w1' && waterwaysImageUrl ? prepareWaterImage() : null
-    const coastLayer = geometryUrl && variant.startsWith('default-') ? prepareCoast() : null
-    const layers = (await Promise.all([coastLayer, waterLayer])).filter(Boolean)
-    if (!signal.aborted && layers.length) return L.layerGroup(layers)
-  }
-
-  async function prepareWaterImage() {
-    const image = new Image()
-    image.alt = ''
-    image.src = waterwaysImageUrl
-    await image.decode()
-    return stableImageOverlay(L, image, bounds, {
-      pane: 'mapPlusWater', interactive: false, className: 'mapplus-waterways-image',
-    })
+  function configure(variant, onError) {
+    const token = ++generation
+    const coastLayer = geometryUrl && variant.startsWith('default-')
+      ? coast ??= prepareCoast().catch(error => { coast = null; throw error })
+      : null
+    const isCurrent = () => !signal.aborted && token === generation
+    const reportError = () => { if (isCurrent()) onError() }
+    if (coastLayer) coastLayer.then(layer => {
+      if (isCurrent()) activeCoast = replace(activeCoast, layer)
+    }, reportError)
+    else activeCoast = replace(activeCoast, null)
   }
 
   async function prepareCoast() {
-    geometry ??= coastalGeometryText(geometryUrl).catch(error => {
-      geometry = null
-      throw error
-    })
-    const source = await geometry
+    const source = await coastalGeometryText(geometryUrl)
     if (signal.aborted) return
     const markup = source.replaceAll('mapplus-land-shape', `${prefix}-shape`)
       .replaceAll('mapplus-land-clip', `${prefix}-clip`)
@@ -52,9 +44,15 @@ export function createMapPlusCoastalLayer(L, map, bounds, geometryUrl, signal, w
     const outline = svg.querySelector('.mapplus-coast-outline')
     outline.setAttribute('stroke-width', '.68')
     outline.setAttribute('mask', `url(#${prefix}-clip)`)
-    return stableSvgOverlay(L, svg, bounds, { pane: 'mapPlusCoast', interactive: false })
+    // Draw the intricate clipped coast once so zoom does not rerasterize it
+    // at each scale. The source geometry stays available to editors.
+    const surface = await rasterizeMapSVG(svg, 4096, 2048).catch(() => svg)
+    if (signal.aborted) return
+    return stableSvgOverlay(L, surface, bounds, { pane: 'mapPlusCoast', interactive: false })
   }
 
-  signal.addEventListener('abort', () => replace(null), { once: true })
-  return { prepare, replace }
+  signal.addEventListener('abort', () => {
+    replace(activeCoast, null)
+  }, { once: true })
+  return { configure }
 }

@@ -1,7 +1,9 @@
 import { normalizeBasemapStyle } from './map-ui/basemap-styles.js'
 import { MAPPLUS_WONDERS_ENABLED, resolveWonders } from './map-landmarks.js'
 import { createMapPlusCoastalLayer } from './mapplus-coastal-layer.js'
+import { createMapPlusWaterLayer } from './mapplus-water-layer.js'
 import { stableImageOverlay, anchorWorldTileLayer } from './map-stable-svg.js'
+import { mapPlusOverviewUrl, mapPlusReleaseWater } from './mapplus-startup.js'
 
 // Keep decoded 30-degree tiles for the current style (72 tiles, ~33 MiB RGBA).
 // A small overview covers newly exposed areas while detail tiles decode.
@@ -18,7 +20,9 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
   const overviewPane = map.createPane('mapPlusOverview')
   overviewPane.style.zIndex = '199'
   overviewPane.style.willChange = 'transform'
-  const coastalLayer = createMapPlusCoastalLayer(L, map, extent, metadata.coastalGeometryUrl, signal, metadata.waterwaysImageUrl)
+  const coastalLayer = createMapPlusCoastalLayer(L, map, extent, metadata.coastalGeometryUrl, signal)
+  const waterPyramid = mapPlusReleaseWater?.source === metadata.waterwaysImageUrl ? mapPlusReleaseWater : null
+  const waterLayer = createMapPlusWaterLayer(L, map, extent, metadata, waterPyramid, signal)
   let variant, disposed = false, pending = 0, queue = [], frame = 0, generation = 0
   let preview = null, readyVariant = null, awaitingPreview = false
   function mount(item) {
@@ -130,12 +134,13 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
       image = new Image()
       image.decoding = 'async'
       image.fetchPriority = 'high'
-      image.src = pyramid && style === 'default' ? pyramid.previewUrl : grid.previewUrl.replace('{variant}', rasterVariant(next))
+      image.src = mapPlusOverviewUrl(metadata, style, layers.rivers)
       overviewReady = image.decode()
     }
     // Fetch auxiliary layers concurrently, but never hold the overview/tiles
     // behind a slow coastline SVG or water-image decode.
-    const coastReady=coastalLayer.prepare(next).then(value=>({value}),error=>({error}))
+    coastalLayer.configure(next, onError)
+    waterLayer.configure(layers.rivers !== false, onError)
     const [base] = await Promise.allSettled([overviewReady])
     if (disposed || generation !== token) return
     // Show the overview immediately; full-quality auxiliaries arrive afterward.
@@ -144,11 +149,6 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
       preview = stableImageOverlay(L, image, extent, { pane: 'mapPlusOverview', className: 'mapplus-overview', interactive: false }).addTo(map)
       if (previous) map.removeLayer(previous)
     }
-    coastReady.then(({value,error})=>{
-      if(disposed||generation!==token)return
-      coastalLayer.replace(value||null)
-      if(error)onError()
-    })
     retirePrevious()
     if (pyramidLayer && style !== 'default') { map.removeLayer(pyramidLayer); pyramidLayer = null }
     if (pyramid && style === 'default' && !pyramidLayer) {

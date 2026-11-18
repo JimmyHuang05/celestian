@@ -33,6 +33,7 @@ export const COUNTRY_FLAGS = Object.freeze({
   'custom-isfar':'/flags/isfar-ivory-lion-v2.webp', // 伊斯法尔崇高国
   'political-1':'/flags/alania-imperial-v3.webp', // 奥兰尼亚帝国
   'political-2':'/flags/estavira-royal-tides-v2.webp', // 伊斯塔维拉王国
+  'custom-san-telmo':'/flags/estavira-royal-tides-v2.webp',
   'political-3':'/flags/ambra-kingdom-pannovia-colors-v13.webp', // 琥珀王国
   'political-4':'/flags/ambra-republic-pannovia-colors-v11.webp', // 琥珀共和国
   'political-5':'/flags/coast-confederation-v2.webp', // 海岸邦联

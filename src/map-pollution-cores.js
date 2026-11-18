@@ -30,8 +30,8 @@ const hazards = {
   'eastern-bay': { land: '约 2,800,000 平方公里', casualties: '约 250–430 万人' },
   'far-north-east': { land: '约 830,000 平方公里', casualties: '约 30–55 万人' },
   'orthys-ocean': { land: '约 830,000 平方公里', casualties: '约 35–70 万人' },
-  'proerth-ocean': { land: '暂无确认受污染陆地', casualties: '约 8 千–2 万人' },
-  'southern-islands': { land: '推估 120,000–250,000 平方公里', casualties: '约 14–30 万人' },
+  'proerth-ocean': { land: '约 8,630,000 平方公里（圣维达尔）', casualties: '外海约 8 千–2 万人，陆地待核' },
+  'southern-islands': { land: '阿切莱已测约 125,000 平方公里', casualties: '约 14–30 万人' },
   'southern-ice': { land: '推估 400,000–900,000 平方公里', casualties: '约 800–2,000 人' },
   'monte-sombra': { land: '约 560,000 平方公里（灰岛全境）', casualties: '约 12–25 万人' },
 }

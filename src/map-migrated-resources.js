@@ -7,17 +7,13 @@ import { MAP_ROOT } from './map-assets.js'
 import { MAPPLUS_WONDERS_ENABLED, WONDER_KEY } from './map-landmarks.js'
 import './map-text-overlay.css'
 import { curveSeaLabel } from './map-curved-sea-label.js'
+import { mapPlusSource } from './mapplus-startup.js'
 export const PLACEMENT_KEYS = ['celestian-placement-new-estra-20cbce0ed04d', 'celestian-text-placement-v1', ...(MAPPLUS_WONDERS_ENABLED ? [WONDER_KEY] : [])]
 const valid = p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite) && p[0] >= -1024 && p[0] <= 0 && p[1] >= 0 && p[1] <= 2048
 const read = placementEntries
-async function json(name, signal) {
-  const root = import.meta.env.DEV ? MAP_ROOT : '/mapplus/source-v20261113'
-  const r = await fetch(`${root}/${name}.json`, { signal })
-  if (!r.ok) throw new Error('地图迁移资料加载失败')
-  return r.json()
-}
 export async function migratedMarkers(signal) {
-  const source = await json('markers', signal), entries = await read(PLACEMENT_KEYS[0])
+  const [source, entries] = await Promise.all([mapPlusSource('markers', MAP_ROOT), read(PLACEMENT_KEYS[0])])
+  signal?.throwIfAborted()
   // Adapt to the original map's marker coordinate contract; keep source data intact.
   return source.data.map(newWorldMarker).filter(row => valid(entries[row.id])).map(row => ({ ...row,
     sourcePosition: { lat: row.lat, lng: row.lng },
@@ -27,9 +23,10 @@ export async function migratedMarkers(signal) {
 
 export async function migratedLabels(metadata, signal) {
   const [source, entries] = await Promise.all([
-    json('labels-index', signal),
+    mapPlusSource('labels-index', MAP_ROOT),
     read(PLACEMENT_KEYS[1]),
   ])
+  signal?.throwIfAborted()
   const latestLabelZoom = source.data.find(row => row.id === 'place-label-00196')?.minZoom ?? 3
   const ns = 'http://www.w3.org/2000/svg', svg = document.createElementNS(ns, 'svg')
   svg.setAttribute('viewBox', `0 0 ${metadata.width} ${metadata.height}`)

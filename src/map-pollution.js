@@ -1,8 +1,8 @@
-import {ashIslandPollution, initialPollution, northernShorePollution} from './pollution-1818.js'
+import {acelaiPollution, ashIslandPollution, initialPollution, northernShorePollution, sanVidalPollution} from './pollution-1818.js'
 import clipping from 'polygon-clipping'
 import {coastalGeometryText} from './map-coastal-resource.js'
 
-const storageKey = 'celestian-pollution-v9'
+const storageKey = 'celestian-pollution-v11'
 const ridgeCountries = ['custom-tatria', 'custom-pannovia', 'political-4']
 const previousVersions = [
   ['celestian-pollution-v6', new Set(['political-3'])],
@@ -28,9 +28,13 @@ export function readPollution() {
   try {
     let entries = initialPollution
     const saved = localStorage.getItem(storageKey)
-    const previousMap = saved === null ? localStorage.getItem('celestian-pollution-v8') : null
-    const olderMap = saved === null && previousMap === null ? localStorage.getItem('celestian-pollution-v7') : null
+    const sanVidalMap = saved === null ? localStorage.getItem('celestian-pollution-v10') : null
+    const ashIslandMap = saved === null && sanVidalMap === null ? localStorage.getItem('celestian-pollution-v9') : null
+    const previousMap = saved === null && sanVidalMap === null && ashIslandMap === null ? localStorage.getItem('celestian-pollution-v8') : null
+    const olderMap = saved === null && sanVidalMap === null && ashIslandMap === null && previousMap === null ? localStorage.getItem('celestian-pollution-v7') : null
     if (saved !== null) entries = JSON.parse(saved)
+    else if (sanVidalMap !== null) entries = JSON.parse(sanVidalMap)
+    else if (ashIslandMap !== null) entries = JSON.parse(ashIslandMap)
     else if (previousMap !== null) entries = [...JSON.parse(previousMap), ashIslandPollution]
     else if (olderMap !== null) entries = [...JSON.parse(olderMap), ...northernShorePollution, ashIslandPollution]
     else {
@@ -46,9 +50,18 @@ export function readPollution() {
         break
       }
     }
+    if (saved === null && entries !== initialPollution) {
+      for (const addition of [sanVidalPollution, acelaiPollution]) {
+        if (!entries.some(entry => entry.country === addition.country)) entries.push(addition)
+      }
+    }
     return entries.filter(entry => typeof entry.country === 'string' && entry.points?.length >= 3 &&
       entry.points.every(p => Array.isArray(p) && p.length === 2 && p.every(Number.isFinite)))
   } catch { return [] }
+}
+
+export function isDefaultPollution(entries) {
+  return entries.length === initialPollution.length && entries.every((entry, index) => entry === initialPollution[index])
 }
 
 const outline = points => 'M' + points.map(point => point.join(',')).join('L')
@@ -71,9 +84,7 @@ export async function pollutionCoast(url) {
   return {shape, mask}
 }
 
-export function pollutionArtwork(territories, entries = readPollution(), {inset = false, coast} = {}) {
-  const svg = element('svg', {viewBox:'0 0 2048 1024', 'aria-hidden':'true', 'pointer-events':'none'})
-  const paths = new Map([...territories.querySelectorAll('path[data-region-id]')].map(path => [path.dataset.regionId, path.getAttribute('d')]))
+export function pollutionGeometry(paths, entries) {
   const countries = new Map()
   const affected = []
   for (const entry of entries) {
@@ -88,8 +99,28 @@ export function pollutionArtwork(territories, entries = readPollution(), {inset 
       console.warn('Unable to render pollution area', entry.country, error)
     }
   }
-  const merged = affected.length ? clipping.union(...affected) : []
-  const d = merged.flatMap(area => area.map(ring => outline(ring.slice(0, -1)) + 'Z')).join('')
+  return affected.length ? clipping.union(...affected) : []
+}
+
+export function pollutionPath(geometry, compact = false) {
+  return geometry.flatMap(area => area.map(ring => outline(ring.slice(0, -1).map(point =>
+    compact ? point.map(value => Math.round(value * 100) / 100) : point,
+  )) + 'Z')).join('')
+}
+
+export const pollutionWashLayers = [
+  {blur:14, opacity:.11},
+  {blur:4, spread:4, opacity:.23},
+  {blur:8, spread:-8, opacity:.13},
+  {blur:6, spread:-21, opacity:.19},
+]
+export const pollutionWashOpacity = .75
+export const pollutionWashColor = '#9e4231'
+
+export function pollutionArtwork(territories, entries = readPollution(), {inset = false, coast} = {}) {
+  const svg = element('svg', {viewBox:'0 0 2048 1024', 'aria-hidden':'true', 'pointer-events':'none'})
+  const paths = new Map([...territories.querySelectorAll('path[data-region-id]')].map(path => [path.dataset.regionId, path.getAttribute('d')]))
+  const d = pollutionPath(pollutionGeometry(paths, entries))
   if (d && inset) {
     svg.append(element('path', {
       d, 'data-pollution-wash':'', fill:'#e18477', 'fill-opacity':'.34', 'fill-rule':'evenodd',
@@ -104,13 +135,7 @@ export function pollutionArtwork(territories, entries = readPollution(), {inset 
     // A slightly expanded, softened base keeps level 8 visible along
     // the recorded edge, including narrow strips. The halo carries 9–10
     // beyond it, while the eroded layers concentrate the stronger pigment.
-    const layers = [
-      {blur:14, opacity:'.11'},
-      {blur:4, spread:4, opacity:'.23'},
-      {blur:8, spread:-8, opacity:'.13'},
-      {blur:6, spread:-21, opacity:'.19'},
-    ]
-    const wash = element('g', {opacity:'.75'})
+    const wash = element('g', {opacity:pollutionWashOpacity})
     svg.append(defs, wash)
     // Mask the finished blur so it cannot bleed past the shore.
     if (coast) {
@@ -122,7 +147,7 @@ export function pollutionArtwork(territories, entries = readPollution(), {inset 
       defs.append(shape, mask)
       wash.setAttribute('mask', 'url(#' + mask.id + ')')
     }
-    layers.forEach(({blur, spread, opacity}, index) => {
+    pollutionWashLayers.forEach(({blur, spread, opacity}, index) => {
       const filterId = id + '-' + index
       const filter = element('filter', {
         id:filterId, filterUnits:'userSpaceOnUse', x:-54, y:-54, width:2156, height:1132,
@@ -134,7 +159,7 @@ export function pollutionArtwork(territories, entries = readPollution(), {inset 
       filter.append(element('feGaussianBlur', {stdDeviation:blur}))
       defs.append(filter)
       wash.append(element('path', {
-        d, 'data-pollution-wash':'', fill:'#9e4231',
+        d, 'data-pollution-wash':'', fill:pollutionWashColor,
         'fill-opacity':opacity, 'fill-rule':'evenodd', filter:'url(#' + filterId + ')',
       }))
     })
@@ -142,29 +167,24 @@ export function pollutionArtwork(territories, entries = readPollution(), {inset 
   return svg
 }
 
-export function maskPollutedBorders(territories, artwork) {
+export function maskPollutedBorders(territories, pathData) {
   borderMasks.get(territories)?.()
-  const pollution = artwork?.querySelector('[data-pollution-wash]')
-  if (!pollution) return
+  if (!pathData) return
 
   const id = 'pollution-border-mask-' + ++nextMask
   const mask = element('mask', {id, maskUnits:'userSpaceOnUse', x:0, y:0, width:2048, height:1024})
   mask.append(
     element('rect', {width:2048, height:1024, fill:'white'}),
-    element('path', {d:pollution.getAttribute('d'), fill:'black', 'fill-rule':'evenodd'}),
+    element('path', {d:pathData, fill:'black', 'fill-rule':'evenodd'}),
   )
   const defs = element('defs')
   defs.append(mask)
   territories.prepend(defs)
-  const paths = [...territories.querySelectorAll('path[data-region-id]')]
-  const previous = paths.map(path => path.getAttribute('mask'))
-  // Unlike clipping, an SVG mask keeps the territory's pointer hit area.
-  paths.forEach(path => path.setAttribute('mask', 'url(#' + id + ')'))
+  // Mask only the visible highlight. Transparent paths remain hit targets
+  // without requiring the browser to composite a mask for every country.
+  territories.style.setProperty('--map-pollution-border-mask', 'url(#' + id + ')')
   borderMasks.set(territories, () => {
-    paths.forEach((path, index) => {
-      if (previous[index] === null) path.removeAttribute('mask')
-      else path.setAttribute('mask', previous[index])
-    })
+    territories.style.removeProperty('--map-pollution-border-mask')
     defs.remove()
     borderMasks.delete(territories)
   })

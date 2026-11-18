@@ -7,6 +7,7 @@ import { gzipSync } from 'node:zlib'
 import oldPreview from './scripts/old-preview.js'
 import devNavigation from './scripts/dev-navigation.js'
 import retiredEditor from './scripts/retired-editor.js'
+import mapPlusRelease from './scripts/mapplus-release.js'
 
 function layeredMapPreview() {
   const assets = new Map([
@@ -145,6 +146,9 @@ function optimizeMapEntry() {
       order: 'post',
       handler(html, { path, bundle }) {
         if (path !== '/index.html') return html
+        const atlasCSS=readFileSync(new URL('./src/fonts/atlas.css',import.meta.url),'utf8')
+        const atlasFonts=[...atlasCSS.matchAll(/url\("([^\"]*(?:atlas-zh-names|atlas-en)[^\"]*\.woff2)"\)/g)].map(m=>m[1])
+        html=html.replace('</head>',`<script>if(/^\\/mapplus(?:\\/|$)/.test(location.pathname)){for(const href of ${JSON.stringify(atlasFonts)}){const l=document.createElement('link');l.rel='preload';l.as='font';l.type='font/woff2';l.crossOrigin='anonymous';l.href=href;document.head.append(l)}}</script></head>`)
         const emblems = Object.keys(bundle || {}).filter(file => /^assets\/node-emblem-.+\.svg$/.test(file))
         const homeBoot = `<script>if (/^\\/(?:encyclopedia\\/?)?$/.test(location.pathname)) {
           window.__celestianNodeEmblems = {}
@@ -197,6 +201,7 @@ export default defineConfig({
   },
   plugins: [
     layeredMapPreview(),
+    mapPlusRelease(),
     optimizeMapEntry(),
     retiredEditor(),
     devNavigation(),

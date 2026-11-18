@@ -29,7 +29,7 @@ function worldCamera(map) {
   function fly(surface) {
     surface.animation?.cancel()
     sync(surface)
-    if (!flight || surface.element.style.display === 'none') return
+    if (!flight || surface.element.style.display === 'none' || !surface.element.isConnected) return
     surface.animation = surface.element.animate(
       [{ transform: surface.transform(flight.start) }, { transform: surface.transform(frame) }],
       zoomTiming,

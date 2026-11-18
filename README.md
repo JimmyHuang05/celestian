@@ -101,3 +101,7 @@ The atlas uses data and tiles from the checkout. Live encyclopedia entries use a
 ### Release
 
 GitHub source control and production deployment are separate workflows. Validate the build and its matching map assets together. Keep original artwork, server snapshots, and rollback bundles in the project archive. Keep dependencies, build outputs, and credentials outside Git. See the [release records](docs/releases/README.md#english).
+
+包含 MapPlus 素材的生产构建还需要 Python 3 和 Pillow（`python -m pip install Pillow`）。构建会从当前政区草稿、国家资料和水系原图生成带内容哈希的浏览数据、污染遮罩与水系瓦片。发布时随构建目录完整上传 `assets/`，包括水系瓦片子目录。如果 Python 命令名不同，可以通过 `MAPPLUS_PYTHON` 指定。
+
+Production builds with MapPlus assets require Python 3 and Pillow. Set MAPPLUS_PYTHON if the Python command differs. Ship the entire generated assets directory, including the water tile subdirectories.

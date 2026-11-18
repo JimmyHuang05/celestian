@@ -7,6 +7,7 @@ import scenePreviews from './scene-previews.json'
 import useMapCopy from '../use-map-copy.js'
 import { countryCultureProfile } from '../mapplus-culture.js'
 import { countryHistories, countryHistoryTimelines } from '../map-country-histories.js'
+import { countrySituation1818 } from '../map-country-1818.js'
 import { countryFlagUrl } from '../map-country-flags.js'
 import { pollutionArtwork, watchPollution } from '../map-pollution.js'
 import { markerIcon, pollutionMarkerGrade } from '../map-markers.js'
@@ -16,6 +17,7 @@ const names = ['摘要', '半屏', '展开']
 
 const countryOverviewFields = [
   ['capital', '首都'],
+  ['temporarySeat', '临时政府'],
   ['government', '政治体制'],
   ['monarch', '国家领袖'],
   ['rulingParty', '执政党派'],
@@ -69,7 +71,6 @@ function TerritoryOutline({ preview }) {
 }
 
 function PollutionCoreReport({ core }) {
-  const [showEstimateNote, setShowEstimateNote] = useState(false)
   const crop = { '--core-map-x': `${-core.x / 2048 * 100}%`, '--core-map-y': `${-core.y / 1024 * 100}%` }
   const [grade, gradeName] = POLLUTION_STYLES[core.level].label.split(' · ')
   return <section className="map-core-report" aria-label="污染记录">
@@ -78,21 +79,17 @@ function PollutionCoreReport({ core }) {
       <span aria-hidden="true" dangerouslySetInnerHTML={{ __html: markerIcon('污染原点', undefined, pollutionMarkerGrade(core)) }} />
     </div>
     <dl className="map-core-report__record">
-      <div><dt>爆发记录</dt><dd>{core.year ? <time dateTime={String(core.year)}>{core.year} 年</time> : <strong>年份待定</strong>}<span>{core.event}</span></dd></div>
+      <div><dt>形成时间</dt><dd>{core.year ? <time dateTime={String(core.year)}>{core.year} 年</time> : <strong>年份待定</strong>}<span>{core.event}</span></dd></div>
       <div className="map-core-report__severity">
-        <dt>污染等级</dt>
+        <dt>侵蚀等阶</dt>
         <dd><strong>{core.beyondScale ? 'V+' : grade}</strong><span>{core.beyondScale ? '无法计算' : gradeName}</span></dd>
       </div>
     </dl>
     <section aria-label="已知危害">
       <div className="map-description-heading">已知危害</div>
       <div className="map-country-overview map-core-report__hazards"><dl>
-        <div><dt>受污染陆地</dt><dd>{core.hazard.land}</dd></div>
-        <div><dt>累计死伤 <span className="map-core-report__hint">
-          <button type="button" aria-label="估算说明" aria-describedby="pollution-estimate-note"
-            onClick={() => setShowEstimateNote(open => !open)} onBlur={() => setShowEstimateNote(false)}>ⓘ</button>
-          <span id="pollution-estimate-note" role="tooltip" data-open={showEstimateNote}>截至 1818 年的估算，死伤人数未计入失踪者。</span>
-        </span></dt><dd>{core.hazard.casualties}</dd></div>
+        <div><dt>恶土化面积</dt><dd>{core.hazard.land}</dd></div>
+        <div><dt>累计死伤</dt><dd>{core.hazard.casualties}</dd></div>
       </dl></div>
     </section>
     <section className="map-country-history" aria-label="已知情报">
@@ -103,7 +100,7 @@ function PollutionCoreReport({ core }) {
 }
 
 function HistoryTimeline({ events }) {
-  return <ol className="map-history-timeline">{events.map(event => <li key={event.date}>
+  return <ol className="map-history-timeline">{events.map(event => <li key={event.date + ' ' + event.title}>
     <div className="map-history-timeline__heading">
       <span className="map-history-timeline__date">{event.date}</span>
       {event.title && <h3 className="map-history-timeline__title">{event.title}</h3>}
@@ -115,8 +112,12 @@ function HistoryTimeline({ events }) {
 export default function MapDetail({ row: sourceRow, localCopy = false, closing, size, onSize, onClose, onTerritoryView, onShare }) {
   const copy = useMapCopy(localCopy)
   const row = copy.row(localCopy && sourceRow.isRegion ? countryCultureProfile(sourceRow) : sourceRow)
-  const history = row.isRegion && countryHistories[row.group_id || row.title]
-  const historyTimeline = row.isRegion && countryHistoryTimelines[row.group_id || row.title]
+  const country = row.group_id || row.title
+  const history = row.isRegion && countryHistories[country]
+  const historyTimeline = row.isRegion && countryHistoryTimelines[country]
+  const situation = localCopy && row.isRegion && countrySituation1818[country]?.[0]
+  const description = [row.description, situation].filter(Boolean).join('\n\n')
+  const overview = row.countryOverview
   const flag = row.isRegion && countryFlagUrl(row)
   const panel = useRef(null)
   const drag = useRef(null)
@@ -185,13 +186,19 @@ export default function MapDetail({ row: sourceRow, localCopy = false, closing, 
         <div className="map-marker-detail__body">
           {localCopy && !row.pollutionCore && <div className="map-description-heading">简介</div>}
           {flag && <figure className="map-detail-country-flag"><img src={flag} alt={`${row.group_id || row.title}国旗`} /></figure>}
-          {row.pollutionCore ? <PollutionCoreReport core={row.pollutionCore} /> : <div className="map-marker-detail__description">{(row.description || '这里的故事，尚待补录。').split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>}
+          {row.pollutionCore ? <PollutionCoreReport core={row.pollutionCore} /> : <div className="map-marker-detail__description">{(description || '这里的故事，尚待补录。').split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>}
           {(row.countryOverview || (row.isRegion && row.is_primary)) && <section className="map-country-overview" aria-label="国家概况">
             <dl>
-              {countryOverviewFields.map(([key, label]) => <div key={key}>
-                <dt>{label}</dt>
-                <dd>{row.countryOverview?.[key] || <span>待定</span>}</dd>
-              </div>)}
+              {countryOverviewFields.filter(([key]) =>
+                (key !== 'temporarySeat' || overview?.temporarySeat) &&
+                (key !== 'rulingParty' || !overview?.hideRulingParty)
+              ).map(([key, label]) => {
+                const isCouncilSeat = key === 'capital' && overview?.councilSeat
+                return <div key={key}>
+                  <dt>{isCouncilSeat ? '议事地点' : (key === 'capital' ? overview?.seatLabel : key === 'monarch' ? overview?.leaderLabel : null) ?? label}</dt>
+                  <dd>{(isCouncilSeat ? overview.councilSeat : overview?.[key]) || <span>待定</span>}</dd>
+                </div>
+              })}
             </dl>
           </section>}
           {row.preview && <figure className="map-region-preview"><figcaption>领土略图</figcaption><TerritoryOutline preview={row.preview} />

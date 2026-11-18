@@ -4,7 +4,7 @@ const requests=new Map()
 // leaving the page must not abort another consumer's in-flight request.
 export function coastalGeometryText(url=COASTAL_GEOMETRY_URL){
  const key=url.split('?')[0]===COASTAL_GEOMETRY_URL.split('?')[0]?COASTAL_GEOMETRY_URL:url
- if(!requests.has(key))requests.set(key,fetch(key).then(r=>{
+ if(!requests.has(key))requests.set(key,fetch(key,{priority:'low'}).then(r=>{
   if(!r.ok)throw Error(`Coastal geometry returned ${r.status}`)
   return r.text()
  }).catch(e=>{requests.delete(key);throw e}))

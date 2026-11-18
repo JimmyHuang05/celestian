@@ -1,6 +1,7 @@
 import { pollutionStyle, statusLabel, countryLegend, focusRegionIDs, SPECIAL_STATUSES, territoryPreviewRows } from './map-ui/region-presentation.js'
 import { softenCoast } from './map-coast-display.js'
 import { countryFlagHover } from './map-country-flags.js'
+import { stableSvgOverlay } from './map-stable-svg.js'
 
 const special = new Set(SPECIAL_STATUSES)
 const color = value => /^#[0-9a-f]{6}$/i.test(value || '') ? value : '#d4b58e'
@@ -99,7 +100,8 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
   svg.style.pointerEvents = 'none'; svg.removeAttribute('aria-hidden')
   svg.classList.add('map-territories')
   if (options.political) svg.classList.add('map-territories--political')
-  const layer = L.svgOverlay(svg, bounds, { interactive: true, pane: 'territoriesPane' }).addTo(map)
+  const overlayOptions = { interactive: true, pane: 'territoriesPane' }
+  const layer = (options.political ? stableSvgOverlay(L, svg, bounds, overlayOptions) : L.svgOverlay(svg, bounds, overlayOptions)).addTo(map)
   // MapPlus already clips the entire layer to its own coast below. Avoid
   // rasterizing the old, blurred full-map mask inside that clip on every pan.
   const removeCoastDisplay = options.coastline || options.political ? () => {} : softenCoast(svg, map)
@@ -179,7 +181,8 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
     const specialVisible = settings.statuses && special.has(row?.status)
     const active = selected.has(id), over = hovered === path
     if (options.political) {
-      const visible = settings.countries || active || over
+      const visible = active || over
+      path.style.mask = visible ? 'var(--map-pollution-border-mask, none)' : ''
       const disputes = svg.querySelector('[data-political-disputes]')
       if (disputes) disputes.style.display = 'none'
       const liveBorder = svg.querySelector('[data-live-border]')
@@ -188,9 +191,9 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
       if (brush) brush.style.display = visible ? '' : 'none'
       const ink = '#8c7049'
       const flagVisible = flags.show(path, row, visible)
-      path.style.fill = flagVisible ? 'transparent' : visible && (active || over) ? (active ? '#9c805873' : ink + '30') : 'transparent'
-      path.style.stroke = visible ? ink + (active || over ? 'B0' : '90') : 'transparent'
-      path.style.strokeWidth = active || over ? '1.05' : '.5'
+      path.style.fill = flagVisible || !visible ? 'transparent' : active ? '#9c805873' : ink + '30'
+      path.style.stroke = visible ? ink + 'B0' : 'transparent'
+      path.style.strokeWidth = '1.05'
       path.style.strokeLinejoin = 'round'
       path.style.strokeDasharray = row?.provisional ? '2 1.4' : ''
       path.style.pointerEvents = row ? 'all' : 'none'

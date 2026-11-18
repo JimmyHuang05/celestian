@@ -1,19 +1,40 @@
 let sampleRequest
-export async function estimateCountries(svg,rows,draft,sha){
- sampleRequest??=fetch('/mapplus/country-demography.json').then(r=>{if(!r.ok)throw Error('人口估算数据无法加载');return r.json()}).catch(e=>{sampleRequest=null;throw e})
- const model=await sampleRequest
+export function countryDemography(){
+ sampleRequest??=fetch('/mapplus/country-demography.json',{priority:'low'}).then(r=>{if(!r.ok)throw Error('人口估算数据无法加载');return r.json()}).catch(e=>{sampleRequest=null;throw e})
+ return sampleRequest
+}
+function indexRing(points){
+ let left=Infinity,top=Infinity,right=-Infinity,bottom=-Infinity
+ for(const [x,y] of points){
+  left=Math.min(left,x);top=Math.min(top,y);right=Math.max(right,x);bottom=Math.max(bottom,y)
+ }
+ return {points,left,top,right,bottom}
+}
+function contains({points,left,top,right,bottom},x,y){
+ if(x<left||x>right||y<top||y>bottom)return false
+ let inside=false
+ for(let i=0,j=points.length-1;i<points.length;j=i++){
+  const [ax,ay]=points[j],[bx,by]=points[i]
+  if(ax===bx&&ay===by)continue
+  if((x-ax)*(by-ay)===(y-ay)*(bx-ax)&&x>=Math.min(ax,bx)&&x<=Math.max(ax,bx)&&y>=Math.min(ay,by)&&y<=Math.max(ay,by))return true
+  if((ay>y)!==(by>y)&&x<(bx-ax)*(y-ay)/(by-ay)+ax)inside=!inside
+ }
+ return inside
+}
+export function estimateCountries(geometry,rows,draft,sha,model){
  if(model.coordinateSystemSha256!==sha)throw Error('人口估算数据与地图坐标不匹配')
  const reference=rows.find(c=>c.region_id==='political-1')
- // SVG hit testing requires a rendered viewport in Chromium. Keep this copy
- // offscreen while sampling, independent of whether the map layer is mounted.
- const sampling=svg.cloneNode(true);sampling.style.cssText='position:fixed;left:-10000px;top:0;width:2048px;height:1024px;visibility:hidden;pointer-events:none';document.body.append(sampling)
- const scores=new Map(),point=sampling.createSVGPoint()
- try{
+ const scores=new Map()
+ const byID=new Map(geometry.map(({id,polygons})=>[id,polygons.flat().map(indexRing)]))
  for(const row of rows){
   if(!(row.liveArea>0))continue
-  const path=sampling.querySelector(`[data-region-id="${row.region_id}"]`)
+  const rings=byID.get(row.region_id)
   let total=0,weight=0
-  for(const [x,y,w,score] of model.samples){point.x=x;point.y=y;if(path.isPointInFill(point)){total+=w*score;weight+=w}}
+  for(const [x,y,w,score] of model.samples){
+   let inside=false
+   for(const ring of rings)if(contains(ring,x,y))inside=!inside
+   if(inside){total+=w*score;weight+=w}
+  }
   if(!weight){
    // Very small islands may fall between native mesh samples. Use their nearest
    // land sample rather than implying a zero population.
@@ -23,7 +44,6 @@ export async function estimateCountries(svg,rows,draft,sha){
   }
   scores.set(row.region_id,total/weight)
  }
- }finally{sampling.remove()}
  for(const row of rows){
   row.countryOverview={...row.countryOverview}
   if(!row.liveArea||!reference?.liveArea){delete row.countryOverview.territory;delete row.countryOverview.population;continue}

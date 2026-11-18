@@ -3,7 +3,11 @@ import {snapToCoast} from './coast-snap.js'
 import {createCoastalGraph} from './coastal-region-graph.js'
 import {coastalGeometryText} from './map-coastal-resource.js'
 let rebuildCoastal
-export function rebuildCoastalRegions(d){if(!rebuildCoastal)throw Error('海岸线尚未加载');return rebuildCoastal(d)}
+export function rebuildCoastalRegions(d){
+ if(!land)throw Error('海岸线尚未加载')
+ rebuildCoastal??=createCoastalGraph(land)
+ return rebuildCoastal(d)
+}
 export const snapOceanNode=point=>land?snapToCoast(point,land):point
 let land, loading
 const cache=new Map()
@@ -29,13 +33,18 @@ export async function preparePoliticalCoast(){
  if(land)return
  loading??=coastalGeometryText().then(source=>{
   const doc=new DOMParser().parseFromString(source,'image/svg+xml')
-  const rings=flattenCoast(doc.querySelector('#mapplus-land-shape').getAttribute('d'))
+  const path=doc.querySelector('#mapplus-land-shape').getAttribute('d')
   const offsets=[...doc.querySelectorAll('#mapplus-land-clip use')].map(n=>Number(n.getAttribute('transform').match(/translate\(([-\d.]+)/)[1]))
-  // Each enclosed outline is filled independently: inland lakes remain claimable.
-  land=offsets.flatMap(dx=>rings.map(r=>{const points=r.map(([x,y])=>[x+dx,y]);return {points,box:bbox(points)}})).filter(r=>r.box[2]>=0&&r.box[0]<=2048)
-  rebuildCoastal=createCoastalGraph(land)
+  setPoliticalCoast(path,offsets)
  }).catch(e=>{loading=null;throw e})
  await loading
+}
+export function setPoliticalCoast(path,offsets){
+ const rings=flattenCoast(path)
+ // Each enclosed outline is filled independently: inland lakes remain claimable.
+ land=offsets.flatMap(dx=>rings.map(r=>{const points=r.map(([x,y])=>[x+dx,y]);return {points,box:bbox(points)}})).filter(r=>r.box[2]>=0&&r.box[0]<=2048)
+ rebuildCoastal=null
+ cache.clear()
 }
 export function coastalPolygons(rings,key,geometry=rings.map(r=>[r])){
  if(!rings.length)return []

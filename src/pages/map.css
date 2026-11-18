@@ -125,10 +125,6 @@
 .map-core-report__severity strong {color:#e19a82}
 .map-core-report__record dd span {display:block;margin-top:1px;font-size:12px;color:#b8aa94}
 .map-core-report__severity dd span {color:#e19a82}
-.map-core-report__hint {position:relative;display:inline-block}
-.map-core-report__hint button {padding:0 2px;border:0;background:none;color:#c3ae89;font:inherit;cursor:help}
-.map-core-report__hint [role=tooltip] {position:absolute;z-index:2;top:100%;left:0;width:185px;padding:7px 9px;border:1px solid #b49b6d55;border-radius:4px;background:#20262a;color:#e1d9ca;font-size:12px;line-height:1.55;visibility:hidden}
-.map-core-report__hint:is(:hover,:focus-within) [role=tooltip],.map-core-report__hint [data-open=true] {visibility:visible}
 .map-marker-detail h2 {margin:0;font:700 28px/1.4 var(--font-body);letter-spacing:.04em;color:#d1bb8d;overflow-wrap:anywhere}
 .map-marker-detail h2.map-country-title {font-weight:700}
 .map-marker-detail__foreign {font:400 13px/1.8 var(--font-display);letter-spacing:.08em;color:#a99c82;margin-top:3px}

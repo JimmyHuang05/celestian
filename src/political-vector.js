@@ -24,14 +24,29 @@ export function ringArea(points){
  for(let i=0;i<points.length;i++){const a=points[i],b=points[(i+1)%points.length];sum+=(b[0]-a[0])*(Math.sin(Math.PI/2-a[1]*Math.PI/1024)+Math.sin(Math.PI/2-b[1]*Math.PI/1024))}
  return Math.abs(sum)*1024/(2*Math.PI)
 }
-export function vectorSVG(d,countries){
- const paths=countries.map(c=>{
+export function politicalGeometry(d,countries){
+ return countries.map(c=>{
  const rings=d.rings.filter(r=>r.country===c.region_id)
  const polygons=coastalPolygons(rings.map(r=>r.nodes.map(id=>d.nodes[id])),c.region_id,countryPolygons(d,c.region_id))
  c.liveArea=polygons.reduce((sum,p)=>sum+p.reduce((n,r,i)=>n+(i?-1:1)*ringArea(r),0),0)
- const path=polygons.flat().map(r=>r.map((p,i)=>`${i?'L':'M'}${p.join(',')}`).join(' ')+'Z').join(' ')
  const color=/^#[0-9a-f]{6}$/i.test(c.politicalColor)?c.politicalColor:'#888888'
- return `<path id="${c.region_id}" data-region-id="${c.region_id}" fill-rule="evenodd" fill="${color}" fill-opacity="0.28" stroke="${color}" stroke-width="0.55" d="${path}"/>`
+ return {id:c.region_id,color,polygons}
+ })
+}
+export function politicalSVG(geometry, compact=false){
+ const paths=geometry.map(({id,color,polygons})=>{
+ const path=polygons.flat().map(r=>{
+  if(!compact)return r.map((p,i)=>`${i?'L':'M'}${p.join(',')}`).join(' ')+'Z'
+  // Keep shared vertices coincident. At maximum zoom this grid is ~0.1 CSS px.
+  const points=r.map(p=>p.map(n=>Math.round(n*100)/100).join(','))
+  const unique=points.filter((p,i)=>i===0||p!==points[i-1])
+  if(unique.length>1&&unique[0]===unique.at(-1))unique.pop()
+  return unique.length>=3?`M${unique.join('L')}Z`:''
+ }).join(compact?'':' ')
+ return `<path id="${id}" data-region-id="${id}" fill-rule="evenodd" fill="${color}" fill-opacity="0.28" stroke="${color}" stroke-width="0.55" d="${path}"/>`
  }).join('')
  return `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2048 1024">${paths}</svg>`
+}
+export function vectorSVG(d,countries){
+ return politicalSVG(politicalGeometry(d,countries))
 }

@@ -14,6 +14,48 @@
 
     <link rel="icon" type="image/png" href="/data/images/icons/favicon.png">
     <script>
+      if (/^\/mapplus\/?$/.test(location.pathname)) {
+        const release = /* mapplus-boot-release */ null
+        window.__celestianMapPlusManifest = release ? Promise.resolve(release.manifest) : fetch('/mapplus/manifest.json', { priority: 'high' })
+          .then(response => response.ok ? response.json() : null)
+          .catch(() => null)
+        const preloadImage = url => {
+          const link = document.createElement('link')
+          link.rel = 'preload'
+          link.as = 'image'
+          link.fetchPriority = 'high'
+          link.href = url
+          document.head.append(link)
+        }
+        if (release) {
+          if (release.detail) {
+            const detail = document.createElement('link')
+            detail.rel = 'modulepreload'
+            detail.crossOrigin = 'anonymous'
+            detail.href = release.detail
+            document.head.append(detail)
+          }
+          window.__celestianMapPlusPolitics = fetch(release.politics, { priority: 'high' })
+            .then(response => response.ok ? response.json() : null)
+            .catch(() => null)
+          const shared = new URLSearchParams(location.search)
+          let rivers = true
+          try {
+            const saved = JSON.parse(localStorage.getItem('celestian-mapplus-view-v2'))
+            if (saved?.version === 2) rivers = saved.layers?.rivers !== false
+          } catch { /* Use the default water layer. */ }
+          if (shared.has('map')) rivers = shared.get('layers')?.[4] !== '0'
+          if (rivers) preloadImage(release.water.preview)
+          if (release.pollution) preloadImage(release.pollution)
+        }
+        window.__celestianMapPlusManifest.then(metadata => {
+          try {
+            if (localStorage.getItem('celestian-mapplus-view-v2') || new URLSearchParams(location.search).has('map')) return
+          } catch { /* The default overview still loads when the map mounts. */ return }
+          if (!metadata?.terrainPyramid?.previewUrl) return
+          preloadImage(metadata.terrainPyramid.previewUrl)
+        })
+      }
       if (/^\/map\/?$/.test(location.pathname)) {
         document.documentElement.dataset.mapBoot = 'true'
         const root = '/map/world-240705-base-v2'

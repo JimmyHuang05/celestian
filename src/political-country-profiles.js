@@ -3,6 +3,9 @@ export async function countryProfiles(countries,signal){
  const response=await fetch('/map/world-240705-base-v2/legacy-region-metadata.json',{signal})
  if(!response.ok)throw Error('国家资料暂时无法加载')
  const {data}=await response.json()
+ return buildCountryProfiles(countries,data)
+}
+export function buildCountryProfiles(countries,data){
  const profiles=legacyIDs.map((id,i)=>({...countries.find(c=>c.region_id===`political-${i+1}`),...data.find(c=>c.region_id===id),region_id:`political-${i+1}`,legacyRegionId:id,is_primary:true,is_sub_primary:false,sub_group_id:null}))
  profiles[0].countryOverview={capital:'翡兰珀',government:'君主制帝国',monarch:'伊莎贝拉二世',territory:'约 9,500,000 平方公里',population:'约 13700 万人',ethnicity:'奥兰人',religion:''}
  const overviews=[null,{capital:'洛雷迪亚',government:'君主制王国'},

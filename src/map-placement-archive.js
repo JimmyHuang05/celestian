@@ -5,8 +5,10 @@ export async function archiveLocalPlacements(){
  if(import.meta.env.DEV&&Object.keys(data).length){const handshake=await fetch('/__mapplus/archive',{cache:'no-store'});if(!handshake.ok)throw Error('定位保存接口暂不可用');const {token}=await handshake.json();const response=await fetch('/__mapplus/archive',{method:'POST',headers:{'Content-Type':'application/json','X-Placement-Token':token},body:JSON.stringify(data)});if(!response.ok)throw Error('定位保存到项目失败')}
 }
 export async function readProjectPlacements(){const response=await fetch('/mapplus/placements.json',{cache:'no-store'});if(!response.ok)return {};try{return await response.json()}catch{return {}}}
+let placementRequest
 export async function placementEntries(key){
- const saved=await readProjectPlacements().catch(()=>({}))
+ placementRequest ??= readProjectPlacements().catch(()=>({})).finally(()=>{placementRequest=null})
+ const saved=await placementRequest
  if(import.meta.env.DEV||saved[key])return saved[key]||{}
  try{const local=JSON.parse(localStorage.getItem(key));return {...saved[key],...local}}catch{return saved[key]||{}}
 }

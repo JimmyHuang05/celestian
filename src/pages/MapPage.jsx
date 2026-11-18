@@ -10,8 +10,10 @@ import { soundIcon } from '../page-actions.js'
 import { MAP_ROOT, MAP_TILE_ROOT, fetchMapLabels, fetchLegacyRegions } from '../map-assets.js'
 import { attachMarkers } from '../map-markers.js'
 import { pollutionCoreMarkers } from '../map-pollution-cores.js'
+import { sanVidalMarkers } from '../san-vidal-places.js'
+import { southernSettlementMarkers } from '../map-southern-nations.js'
 import { attachRegions, focusMap, moveMap } from '../map-regions.js'
-import { loadPoliticalStudy } from '../map-political-study.js'
+import { loadPoliticalStudy, parsePoliticalSVG } from '../map-political-study.js'
 import { watchPoliticalDraft } from '../political-live.js'
 import { indexRegions } from '../map-ui/search.js'
 import MapSearch from '../map-ui/MapSearch.jsx'
@@ -19,7 +21,8 @@ import MapControls from '../map-ui/MapControls.jsx'
 import MapShare from '../map-ui/MapShare.jsx'
 import { attachLabelDisplay } from '../map-labels.js'
 import { stableSvgOverlay } from '../map-stable-svg.js'
-import { maskPollutedBorders, pollutionArtwork, pollutionCoast, watchPollution } from '../map-pollution.js'
+import { watchPollution } from '../map-pollution.js'
+import { attachMapPlusPollution } from '../mapplus-pollution-layer.js'
 import { attachMapFrame, coverMap, frameZoom } from '../map-frame.js'
 import { attachMapPlusLayers } from '../mapplus-layers.js'
 import MapStudyRoutes from '../studies/MapStudyRoutes.jsx'
@@ -29,13 +32,14 @@ import MapOceanRelief from '../studies/MapOceanRelief.jsx'
 import { WONDER_KEY, resolveWonders } from '../map-landmarks.js'
 import { placementEntries } from '../map-placement-archive.js'
 import { buildMapShare, readMapShare } from '../map-ui/share.js'
+import { MAPPLUS_PREFERENCES_KEY, mapPlusManifest, mapPlusReleasePolitics, mapPlusReleasePollution } from '../mapplus-startup.js'
 import { DEFAULT_LAYERS, MAP_PREFERENCES_KEY, normalizePreferences, readPreferences, writePreferences, serializeView, restoreView } from '../map-ui/preferences.js'
 
-const MapDetail = lazy(() => import('../map-ui/MapDetail.jsx'))
-const MAPPLUS_DEFAULT_LAYERS = { ...DEFAULT_LAYERS, countries: false }
+const loadMapDetail = () => import('../map-ui/MapDetail.jsx')
+const MapDetail = lazy(loadMapDetail)
 export default function MapPage({ mapPlus = false }) {
   const { enabled, toggleMusic } = useBackgroundMusic()
-  const preferencesKey = mapPlus ? 'celestian-mapplus-view-v2' : MAP_PREFERENCES_KEY
+  const preferencesKey = mapPlus ? MAPPLUS_PREFERENCES_KEY : MAP_PREFERENCES_KEY
   const title = mapPlus ? '新世界地图' : '海陆图志'
   const container = useRef(null)
   const viewer = useRef(null)
@@ -45,17 +49,13 @@ export default function MapPage({ mapPlus = false }) {
   const history = useRef([])
   const [incoming] = useState(() => readMapShare(window.location.search))
   const [initial] = useState(() => {
-    const value = incoming ? incoming.error ? normalizePreferences(null) : incoming : readPreferences(preferencesKey, mapPlus ? MAPPLUS_DEFAULT_LAYERS : DEFAULT_LAYERS)
-    if (mapPlus && !incoming && value.politicalDisplayVersion !== 1) {
-      value.layers.countries = false
-      value.politicalDisplayVersion = 1
-    }
+    const value = incoming ? incoming.error ? normalizePreferences(null) : incoming : readPreferences(preferencesKey)
+    if (mapPlus) value.layers.countries = false
     return value
   })
   const settings = useRef(initial)
   const [status, setStatus] = useState(`正在展开${title}…`)
   const [failed, setFailed] = useState(false)
-  const [boot, setBoot] = useState({ loaded: 0, total: 1, terrain: false, labels: false, points: false })
   const [attempt, setAttempt] = useState(0)
   const [layers, setLayers] = useState(initial.layers)
   const [labelMode, setLabelMode] = useState(initial.labelMode)
@@ -117,29 +117,38 @@ export default function MapPage({ mapPlus = false }) {
   useEffect(() => {
     settings.current = { ...settings.current, layers, labelMode, basemapStyle, type, query }
     writePreferences(settings.current, preferencesKey)
+  }, [layers, labelMode, basemapStyle, type, query, preferencesKey])
+
+  useEffect(() => {
     viewer.current?.points?.configure({ points: layers.points, type })
     viewer.current?.territories?.configure(layers)
     viewer.current?.refreshPollution?.()
-    if (layers.countries || searchOpen) viewer.current?.loadTerritories?.()
     const svg = viewer.current?.labels?.getElement()
     if (svg) svg.dataset.visible = String(layers.labels)
     viewer.current?.labelDisplay?.configure(labelMode)
     viewer.current?.terrainLayers?.configure(layers, basemapStyle)
-  }, [layers, labelMode, basemapStyle, type, query, preferencesKey, searchOpen])
+  }, [layers, labelMode, basemapStyle, type])
+
+  useEffect(() => {
+    if (layers.countries || searchOpen) viewer.current?.loadTerritories?.()
+  }, [layers.countries, searchOpen])
 
   useEffect(() => {
     const controller = new AbortController()
     let map, observer
+    if (mapPlus) void loadMapDetail().catch(() => {})
     const markerRequest = mapPlus ? migratedMarkers(controller.signal).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return [] }) : fetch(`${MAP_ROOT}/markers.json`, { signal: controller.signal })
       .then(response => { if (!response.ok) throw new Error('地点数据暂时无法加载'); return response.json() })
       .then(payload => { if (!Array.isArray(payload.data)) throw new Error('地点数据格式无效'); return payload.data })
       .catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return [] })
     async function open() {
       try {
-        let metadata = !mapPlus && attempt === 0 ? await window.__celestianMapManifest : null
+        let metadata = mapPlus
+          ? await mapPlusManifest({ fresh: attempt > 0 })
+          : attempt === 0 ? await window.__celestianMapManifest : null
         if (controller.signal.aborted) return
         if (!metadata) {
-          const response = await fetch(mapPlus ? '/mapplus/manifest.json' : `${MAP_ROOT}/manifest.json`, { signal: controller.signal, priority: 'high' })
+          const response = await fetch(`${MAP_ROOT}/manifest.json`, { signal: controller.signal, priority: 'high' })
           if (!response.ok) throw new Error('地图暂时无法打开，请重试。')
           metadata = await response.json()
         }
@@ -154,7 +163,6 @@ export default function MapPage({ mapPlus = false }) {
           zoomAnimation: !reduced, fadeAnimation: !reduced, inertia: !reduced,
         })
         map.fitBounds(bounds, { animate: false })
-        map.on('mapplusloadprogress', event => setBoot(value => ({ ...value, loaded: event.loaded, total: event.total })))
         const reportBasemapError = () => { setFailed(true); setStatus('部分地图未能加载，请重试。') }
         const frame = attachMapFrame(L, map, metadata, controller.signal, {openCorners:mapPlus})
         map.options.worldBounds = frame.bounds
@@ -185,7 +193,7 @@ export default function MapPage({ mapPlus = false }) {
           const basemap = originalResolution
             ? { ...metadata, geographicTiles: { ...metadata.geographicTiles, detail: undefined } }
             : metadata
-          terrainLayers = attachMapPlusLayers(L, map, bounds, basemap, settings.current.layers, controller.signal, () => { setStatus(''); setFailed(false); setBoot(value => ({ ...value, terrain: true })) }, reportBasemapError, settings.current.basemapStyle, row => {
+          terrainLayers = attachMapPlusLayers(L, map, bounds, basemap, settings.current.layers, controller.signal, () => { setStatus(''); setFailed(false) }, reportBasemapError, settings.current.basemapStyle, row => {
             rememberView()
             viewer.current?.points?.clear(); viewer.current?.territories?.clear()
             openDetail(row)
@@ -270,6 +278,14 @@ export default function MapPage({ mapPlus = false }) {
               .then(r => { if (!r.ok) throw Error(); return r.json() })
           }).catch(() => null),
         ]).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message); return null })
+        async function openPolitics(liveDraft) {
+          const snapshot = !liveDraft && await mapPlusReleasePolitics()?.catch(() => null)
+          controller.signal.throwIfAborted()
+          if (!snapshot) return loadPoliticalStudy(metadata, controller.signal, liveDraft)
+          if (snapshot.coordinateSystemSha256 !== metadata.coordinateSystemSha256) throw Error('政区资料与当前地图坐标不匹配。')
+          return [parsePoliticalSVG(snapshot.svg), snapshot.records, snapshot.pollutionBorder]
+        }
+        const initialPolitical = mapPlus ? openPolitics().then(data => ({ data }), error => ({ error })) : null
         map.createPane('mapLabelsPane').style.zIndex = '610'
         // Draw the base immediately. A slow or unavailable annotation layer must not block exploration.
         const installLabels = data => {
@@ -293,94 +309,84 @@ export default function MapPage({ mapPlus = false }) {
           await new Promise(resolve => requestAnimationFrame(resolve))
           await document.fonts.ready
           if(mapPlus&&!controller.signal.aborted)document.documentElement.classList.add('atlas-fonts-ready')
-          if (!controller.signal.aborted && data) setBoot(value => ({ ...value, labels: true }))
         }).catch(error => { if (!controller.signal.aborted) setMarkerError(error.message || '地图文字暂时无法加载，请重试。') })
-        const rows = await markerRequest
-        if (controller.signal.aborted) return
         let points
-        const installPoints = sourceRows => {
-        const rows = mapPlus ? [...sourceRows, ...pollutionCoreMarkers] : sourceRows
-        points?.destroy()
-        if (points) map.removeLayer(points.layer)
-        points = attachMarkers(L, map, rows, metadata, row => {
-          viewer.current?.territories?.clear(); openDetail(row)
-        }, (position, zoom) => focusMap(map, position, zoom), { beforeNavigate: rememberView, sharedCamera: mapPlus,
-          settings: { points: settings.current.layers.points, type: settings.current.type } })
-        viewer.current.points = points
-        viewer.current.labelDisplay?.refresh()
-        setMarkerRows(rows)
-        }
-        installPoints(rows)
-        setBoot(value => ({ ...value, points: true }))
         let currentLandmarks = []
-        const loadLandmarks = terrainLayers?.configureLandmarks
-          ? async () => resolveWonders(await placementEntries(WONDER_KEY))
-          : null
-        if (mapPlus) {
-          if (loadLandmarks) {
-            currentLandmarks = await loadLandmarks()
-            if (controller.signal.aborted) return
-            terrainLayers.configureLandmarks(currentLandmarks)
-          }
-          let revision = 0
-          watchMigratedResources(controller.signal, async () => {
-            const version = ++revision
-            try {
-              const [nextRows, nextLabels, nextLandmarks] = await Promise.all([migratedMarkers(controller.signal), migratedLabels(metadata, controller.signal), loadLandmarks?.()])
-              if (controller.signal.aborted || version !== revision) return
-              installPoints(nextRows); installLabels(nextLabels)
-              if (nextLandmarks) {
-                currentLandmarks = nextLandmarks
-                terrainLayers.configureLandmarks(currentLandmarks)
-              }
-            } catch (error) { if (!controller.signal.aborted) setMarkerError(error.message) }
-          })
+        const installPoints = sourceRows => {
+          const rows = mapPlus ? [...sourceRows, ...pollutionCoreMarkers, ...sanVidalMarkers, ...southernSettlementMarkers] : sourceRows
+          points?.destroy()
+          if (points) map.removeLayer(points.layer)
+          points = attachMarkers(L, map, rows, metadata, row => {
+            viewer.current?.territories?.clear(); openDetail(row)
+          }, (position, zoom) => focusMap(map, position, zoom), { beforeNavigate: rememberView, sharedCamera: mapPlus,
+            settings: { points: settings.current.layers.points, type: settings.current.type } })
+          viewer.current.points = points
+          viewer.current.labelDisplay?.refresh()
+          setMarkerRows(rows)
         }
-        const remembered = settings.current.selection
-        if (remembered?.kind === 'point') {
-          const landmark = mapPlus && currentLandmarks.find(row => row.position && row.id === remembered.id)
-          if (landmark) openDetail(landmark)
-          else if (points.markers.has(remembered.id)) points.select(remembered.id, { navigate: false })
-          else { settings.current.selection = null; if (incoming) setNotice('链接中的地点已不存在，仍可浏览分享时的视野。') }
+        async function openPoints() {
+          const rows = await markerRequest
+          if (controller.signal.aborted) return
+          installPoints(rows)
+          const loadLandmarks = terrainLayers?.configureLandmarks
+            ? async () => resolveWonders(await placementEntries(WONDER_KEY))
+            : null
+          if (mapPlus) {
+            if (loadLandmarks) {
+              currentLandmarks = await loadLandmarks()
+              if (controller.signal.aborted) return
+              terrainLayers.configureLandmarks(currentLandmarks)
+            }
+            let revision = 0
+            watchMigratedResources(controller.signal, async () => {
+              const version = ++revision
+              try {
+                const [nextRows, nextLabels, nextLandmarks] = await Promise.all([migratedMarkers(controller.signal), migratedLabels(metadata, controller.signal), loadLandmarks?.()])
+                if (controller.signal.aborted || version !== revision) return
+                installPoints(nextRows); installLabels(nextLabels)
+                if (nextLandmarks) {
+                  currentLandmarks = nextLandmarks
+                  terrainLayers.configureLandmarks(currentLandmarks)
+                }
+              } catch (error) { if (!controller.signal.aborted) setMarkerError(error.message) }
+            })
+          }
+          const remembered = settings.current.selection
+          if (remembered?.kind === 'point') {
+            const landmark = mapPlus && currentLandmarks.find(row => row.position && row.id === remembered.id)
+            if (landmark) openDetail(landmark)
+            else if (points.markers.has(remembered.id)) points.select(remembered.id, { navigate: false })
+            else { settings.current.selection = null; if (incoming) setNotice('链接中的地点已不存在，仍可浏览分享时的视野。') }
+          }
         }
         map.on('click', () => { closeMarker(); setSearchOpen(false) })
         let regionTask, regionRevision = 0, livePoliticalDraft
-        const coastTask = mapPlus ? pollutionCoast(metadata.coastalGeometryUrl).catch(error => {
-          console.warn('Unable to load pollution coastline', error)
-          return null
-        }) : null
         const loadTerritories = (refresh = false) => {
           if (regionTask && !refresh) return regionTask
           const revision = ++regionRevision
           regionTask = (async () => {
-            const [regionsSVG, records] = mapPlus
-              ? await loadPoliticalStudy(metadata, controller.signal, livePoliticalDraft)
+            const [regionsSVG, records, defaultBorder] = mapPlus
+              ? await (revision === 1 ? initialPolitical.then(({ data, error }) => {
+                if (error) throw error
+                return data
+              }) : openPolitics(livePoliticalDraft))
               : await Promise.all([fetchLegacyRegions(overlayFetch.signal, overlayFetch.priority), fetchRegionMetadata().then(payload => payload.data)])
-            const coast = mapPlus ? await coastTask : null
             if (controller.signal.aborted || revision !== regionRevision) return
             let updatingSelection = Boolean(viewer.current.territories)
             viewer.current.territories?.destroy()
             const territories = attachRegions(L, map, regionsSVG, records, bounds, row => {
               if (updatingSelection) setActiveMarker(row)
-              else { points.clear(); openDetail(row) }
+              else { points?.clear(); openDetail(row) }
             }, { beforeNavigate: rememberView, settings: settings.current.layers, political: mapPlus })
             viewer.current.territories = territories
             if (mapPlus) {
-              viewer.current.pollutionLayer?.remove()
-              const pane = map.getPane('mapPollutionPane') || map.createPane('mapPollutionPane')
-              pane.style.zIndex = '639'
-              pane.style.pointerEvents = 'none'
-              viewer.current.refreshPollution = () => {
-                viewer.current.pollutionLayer?.remove()
-                const artwork = coast && settings.current.layers.statuses !== false ? pollutionArtwork(regionsSVG, undefined, { coast }) : null
-                maskPollutedBorders(regionsSVG, artwork)
-                if (artwork) {
-                  viewer.current.pollutionLayer = stableSvgOverlay(L, artwork, bounds, {
-                    pane:'mapPollutionPane', interactive:false,
-                  }).addTo(map)
-                }
-              }
-              viewer.current.refreshPollution()
+              viewer.current.pollution?.destroy()
+              const pollution = attachMapPlusPollution(L, map, bounds, regionsSVG, {
+                defaultBorder, previewUrl: mapPlusReleasePollution, coastUrl: metadata.coastalGeometryUrl, signal: controller.signal,
+              })
+              viewer.current.pollution = pollution
+              viewer.current.refreshPollution = force => pollution.configure(settings.current.layers.statuses !== false, force)
+              void viewer.current.refreshPollution()
             }
             setLegend(territories.legend)
             const validIDs = new Set([...regionsSVG.querySelectorAll('[data-region-id]')].map(path => path.dataset.regionId))
@@ -401,7 +407,7 @@ export default function MapPage({ mapPlus = false }) {
         }
         viewer.current.loadTerritories = loadTerritories
         if (mapPlus) {
-          watchPollution(() => viewer.current?.refreshPollution?.(), controller.signal)
+          watchPollution(() => viewer.current?.refreshPollution?.(true), controller.signal)
           let timer
           const stop = watchPoliticalDraft(draft => {
             livePoliticalDraft = draft
@@ -411,6 +417,7 @@ export default function MapPage({ mapPlus = false }) {
           controller.signal.addEventListener('abort', () => {clearTimeout(timer);stop()}, {once:true})
         }
         loadTerritories()
+        await openPoints()
       } catch (error) {
         if (controller.signal.aborted) return
         setFailed(true)
@@ -423,6 +430,7 @@ export default function MapPage({ mapPlus = false }) {
         viewer.current.saveView?.()
         viewer.current.points?.destroy()
         viewer.current.territories?.destroy()
+        viewer.current.pollution?.destroy()
         viewer.current.labelDisplay?.destroy()
       }
       controller.abort()
@@ -435,7 +443,6 @@ export default function MapPage({ mapPlus = false }) {
   }, [attempt, openDetail, closeMarker, rememberView, incoming, mapPlus, preferencesKey])
 
   function retry() {
-    setBoot({ loaded: 0, total: 1, terrain: false, labels: false, points: false })
     clearTimeout(closeTimer.current)
     setFailed(false); setMarkerError(''); setActiveMarker(null); setClosing(false)
     setMarkerRows([]); setRegionRows([]); setStatus(`正在展开${title}…`); setAttempt(value => value + 1)
@@ -459,7 +466,7 @@ export default function MapPage({ mapPlus = false }) {
     moveMap(map, previous.center, previous.zoom)
   }
   function resetView() {
-    closeMarker(); setSearchOpen(false); setLayers({ ...(mapPlus ? MAPPLUS_DEFAULT_LAYERS : DEFAULT_LAYERS) }); setLabelMode('auto'); setBasemapStyle('default'); setType(''); setQuery('')
+    closeMarker(); setSearchOpen(false); setLayers({ ...DEFAULT_LAYERS }); setLabelMode('auto'); setBasemapStyle('default'); setType(''); setQuery('')
     history.current = []; setCanGoBack(false)
     if (!viewer.current) return
     const { map, frame } = viewer.current
@@ -482,7 +489,7 @@ export default function MapPage({ mapPlus = false }) {
 
   return (
     <main id="map-app" className="tiled-map" data-atlas-fonts={mapPlus ? 'true' : undefined} data-basemap-style={mapPlus ? basemapStyle : 'default'} data-sheet={activeMarker ? sheetSize : 'closed'}>
-      <div ref={container} className="tiled-map__canvas" aria-label="世界地图，可拖动和缩放" />
+      <div ref={container} className="tiled-map__canvas" style={{ position: 'absolute', inset: 0 }} aria-label="世界地图，可拖动和缩放" />
       {mapPlus && <MapStudyRoutes viewer={routeViewer} visible={layers.routes!==false} />}
       {mapPlus && <MapShips viewer={routeViewer} />}
       {mapPlus && <MapCottonTexture viewer={routeViewer} />}

@@ -5,6 +5,12 @@ import {countryGovernments} from './map-country-governments.js'
 // Existing cultural prototypes retained; missing rulers and local religious
 // traditions are authored additions documented in docs/mapplus-culture-update.md.
 export const countryCulture={
+ '圣特尔莫前哨':{capital:'圣特尔莫堡',seatLabel:'前哨驻地',government:'王室直属军事驻地',leaderLabel:'营务长',monarch:'莱昂·德·萨里亚',population:'约 2,400 人',hideRulingParty:true},
+ '特雷尔芬城邦':{capital:'特雷尔芬港',government:'海湾议会共治',leaderLabel:'议会首席',monarch:'莱乌·特雷芬',population:'约 3.8 万人',hideRulingParty:true},
+ '卡卢夫诸港同盟':{councilSeat:'卡卢夫港',government:'诸港协商同盟',leaderLabel:'轮值召集人',monarch:'阿鲁梅·卡因',population:'约 5.6 万人',hideRulingParty:true},
+ '吕尼扬科诸社':{councilSeat:'吕尼扬科集镇',government:'河谷村社联合议事',leaderLabel:'议事机构',monarch:'诸社代表会',population:'约 12.4 万人',hideRulingParty:true},
+ '阿切莱群岛联盟':{councilSeat:'塔韦莱港（临时）',government:'岛社联合议会',leaderLabel:'议会召集人',monarch:'阿雅莱·韦拉',population:'约 7.2 万人',hideRulingParty:true},
+ '绍雷克协约':{councilSeat:'绍雷克冬营（冬季）',government:'冬营代表协约',leaderLabel:'议事机构',monarch:'冬营代表会',population:'约 1.9 万人',hideRulingParty:true},
  '沃龙佐边疆区':{capital:'斯韦特洛加万',rulerTitle:'总督',monarch:'米哈伊尔·安德烈耶维奇·沃龙佐夫',population:'约 2 万人',ethnicity:'沃龙佐人（边疆驻民）'},
  '克莱曼尼殖民地':{capital:'克莱曼尼',rulerTitle:'总督',monarch:'阿瑟·威廉·哈德威克',population:'约 15 万人',territory:'约 2,440,000 平方公里',ethnicity:'克莱曼尼人（拓殖民）',rulingParty:'圣塔洛斯皇家特许公司'},
  '北英普顿殖民地':{capital:'北英普顿',rulerTitle:'总督',monarch:'爱德华·亨利·阿什克罗夫特',population:'约 46 万人',territory:'约 5,480,000 平方公里',ethnicity:'英普顿人（拓殖民）',rulingParty:'皇帝陛下的帝国拓殖公司'},

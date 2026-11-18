@@ -30,7 +30,6 @@ export default function MapControls({ mapPlus = false, basemapStyle = 'default',
     {open && <div className="map-display-panel" id="map-display-settings">
       <div className="map-display-panel__header"><h2>图层与图例</h2><button className="map-icon-button" aria-label="关闭图层设置" onClick={() => { setOpen(false); toggle.current?.focus() }}><MapIcon name="close" /></button></div>
       {mapPlus && <MapBasemapPicker value={basemapStyle} onChange={onBasemapStyle} />}
-      {mapPlus && <><button aria-label="政区显示" aria-pressed={layers.countries} onClick={() => onLayer('countries')}><span>政区显示</span><span className="map-switch" aria-hidden="true"><i /></span></button>{layers.countries && <p className="map-display-note">显示各国国境线与国旗。</p>}</>}
       {mapPlus && <button aria-label="显示航线与名称" aria-pressed={layers.routes!==false} onClick={()=>onLayer('routes')}><span>航线与名称</span><span className="map-switch" aria-hidden="true"><i /></span></button>}
       {([...switches.filter(([key]) => !mapPlus || (key !== 'countries' && key !== 'statuses')), ...(mapPlus ? [['rivers', '河流与湖泊', '显示河流与湖泊']] : [])]).map(([key, title, label]) => <button key={key} aria-label={label} aria-pressed={layers[key]} onClick={() => onLayer(key)}><span>{title}</span><span className="map-switch" aria-hidden="true"><i /></span></button>)}
       <fieldset className="map-label-mode" disabled={!layers.labels}><legend>地名显示</legend><div>{[['auto', '自动分级'], ['all', '完整原图']].map(([value, label]) => <button key={value} aria-pressed={labelMode === value} onClick={() => onLabelMode(value)}>{label}</button>)}</div></fieldset>
@@ -42,7 +41,7 @@ export default function MapControls({ mapPlus = false, basemapStyle = 'default',
           )
         )}</div>
         {!mapPlus && <div className="map-legend__states">{[...Object.values(POLLUTION_STYLES), { label: '深渊', color: '#79658d', fill: '44' }].map(item => <div key={item.label}><svg width="26" height="20" viewBox="0 0 26 20" aria-hidden="true"><rect x="3" y="3" width="20" height="14" fill={item.color + item.fill} stroke={item.color} strokeDasharray={item.label === '深渊' ? '1 3' : '4 3'} /></svg><span>{item.label}</span></div>)}</div>}
-        {layers.countries && <div className="map-legend__countries"><p>{mapPlus ? '国家与地区' : '已配置的国家与区域'}</p>{legend.map(item => <div key={item.name}><i style={{ background: item.color }} /><span>{item.name}</span></div>)}</div>}
+        {!mapPlus && layers.countries && <div className="map-legend__countries"><p>已配置的国家与区域</p>{legend.map(item => <div key={item.name}><i style={{ background: item.color }} /><span>{item.name}</span></div>)}</div>}
       </details>
       <button onClick={() => { onCenter(); setOpen(false) }}><span>回到地图中心</span><MapIcon name="center" /></button>
       <button onClick={onShare}><span>分享当前视野</span><MapIcon name="share" /></button>

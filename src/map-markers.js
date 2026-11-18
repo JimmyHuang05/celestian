@@ -16,7 +16,7 @@ const pollutionInks = {
   'V+': { center: '#7b2930', ring: '#943f43' },
 }
 
-export const pollutionMarkerGrades = Object.keys(pollutionInks)
+export const pollutionMarkerGrades = Object.keys(pollutionInks).reverse()
 export const pollutionMarkerGrade = core => core?.beyondScale ? 'V+' : core?.level === 4 ? 'Ⅳ' : 'Ⅴ'
 
 export function markerIcon(type, color, grade = 'Ⅴ') {
