@@ -8,12 +8,24 @@ export const mapPlusReleasePollution = release?.pollution
 
 const requests = new Map()
 
+async function readMapPlusJSON(url, priority) {
+  const response = await fetch(url, { priority })
+  if (!response.ok) throw new Error(`地图资料加载失败（${response.status}）：${url}`)
+  const contentType = response.headers.get('content-type') || ''
+  if (!/^(?:application|text)\/(?:[\w.+-]+\+)?json(?:\s*;|$)/i.test(contentType)) {
+    throw new Error(`地图资料未返回 JSON：${url}`)
+  }
+  try {
+    return await response.json()
+  } catch (error) {
+    if (!(error instanceof SyntaxError)) throw error
+    throw new Error(`地图资料 JSON 格式无效：${url}`, { cause: error })
+  }
+}
+
 function mapPlusJSON(url, priority) {
   if (!requests.has(url)) {
-    const request = fetch(url, { priority }).then(response => {
-      if (!response.ok) throw new Error(`地图资料加载失败（${response.status}）`)
-      return response.json()
-    }).catch(error => {
+    const request = readMapPlusJSON(url, priority).catch(error => {
       if (requests.get(url) === request) requests.delete(url)
       throw error
     })
@@ -24,14 +36,17 @@ function mapPlusJSON(url, priority) {
 
 export function mapPlusManifest({ fresh = false } = {}) {
   if (release) return Promise.resolve(release.manifest)
-  const url = import.meta.env.DEV ? '/__mapplus-paper/manifest.json' : '/mapplus/manifest.json'
+  const baseUrl = '/mapplus/manifest.json'
+  const url = import.meta.env.DEV ? '/__mapplus-paper/manifest.json' : baseUrl
   if (fresh) {
     requests.delete(url)
+    requests.delete(baseUrl)
     delete window.__celestianMapPlusManifest
   } else if (!import.meta.env.DEV && !requests.has(url) && window.__celestianMapPlusManifest) {
     const early = window.__celestianMapPlusManifest
     return early.then(metadata => metadata || mapPlusJSON(url))
   }
+  if (import.meta.env.DEV) return mapPlusJSON(url).catch(() => mapPlusJSON(baseUrl))
   return mapPlusJSON(url)
 }
 
@@ -42,10 +57,7 @@ export function mapPlusReleasePolitics(priority) {
 }
 
 export function mapPlusSource(name, legacyRoot = MAP_ROOT) {
-  if (import.meta.env.DEV) return fetch(`${legacyRoot}/${name}.json`).then(response => {
-    if (!response.ok) throw new Error('地图迁移资料加载失败')
-    return response.json()
-  })
+  if (import.meta.env.DEV) return readMapPlusJSON(`${legacyRoot}/${name}.json`)
   return mapPlusJSON(`/mapplus/source-v20261113/${name}.json`)
     .catch(() => mapPlusJSON(`${legacyRoot}/${name}.json`))
 }

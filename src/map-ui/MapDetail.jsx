@@ -185,7 +185,7 @@ export default function MapDetail({ row: sourceRow, localCopy = false, closing, 
         </div>}
         <div className="map-marker-detail__body">
           {localCopy && !row.pollutionCore && <div className="map-description-heading">简介</div>}
-          {flag && <figure className="map-detail-country-flag"><img src={flag} alt={`${row.group_id || row.title}国旗`} /></figure>}
+          {flag && <figure className="map-detail-country-flag"><img src={flag} fetchPriority="high" decoding="async" alt={`${row.group_id || row.title}国旗`} /></figure>}
           {row.pollutionCore ? <PollutionCoreReport core={row.pollutionCore} /> : <div className="map-marker-detail__description">{(description || '这里的故事，尚待补录。').split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>}
           {(row.countryOverview || (row.isRegion && row.is_primary)) && <section className="map-country-overview" aria-label="国家概况">
             <dl>

@@ -175,7 +175,7 @@ export function attachRegions(L, map, svg, records, bounds, select, options = {}
   const configured = records.filter(row => byID.has(row.region_id))
   const legend = options.political ? configured.map(row => ({ name: row.group_id, color: '#8c7049' })) : countryLegend(configured)
   const colors = new Map(legend.map(item => [item.name, item.color]))
-  const flags = options.political ? countryFlagHover(svg, outlineLayer) : null
+  const flags = options.political ? countryFlagHover(svg, outlineLayer, paint) : null
   function paint(path) {
     const id = path.dataset.regionId, row = data.get(id)
     const specialVisible = settings.statuses && special.has(row?.status)

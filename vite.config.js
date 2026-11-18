@@ -136,8 +136,7 @@ const galleryProxy = {
   },
 }
 
-// The atlas can start with system fonts while the shared font rules download.
-// Keep the normal blocking stylesheet on the other entry routes.
+// Shared stylesheets include layout rules and must stay render-blocking.
 function optimizeMapEntry() {
   return {
     name: 'optimize-map-entry',
@@ -167,15 +166,9 @@ function optimizeMapEntry() {
         html = html.replace('/* map-boot-geometry */ null', JSON.stringify({ width, height, tileSize, minZoom, maxZoom, coordinateSystemSha256 }))
         // Map lettering has its own embedded font subset. Let UI fonts load from
         // CSS when needed, instead of competing with tiles at high priority.
-        html = html.replace(/<link\b[^>]*rel="preload"[^>]*as="font"[^>]*>/g, link =>
+        return html.replace(/<link\b[^>]*rel="preload"[^>]*as="font"[^>]*>/g, link =>
           link.replace('>', ' media="not all">') +
           '<script>if (!/^\\/map\\/?$/.test(location.pathname)) document.currentScript.previousElementSibling.media = "all"</script>')
-        return html.replace(/<link\b[^>]*rel="stylesheet"[^>]*href="\/([^"]+)"[^>]*>/g, (link, file) => {
-          const asset = bundle?.[file]
-          if (asset?.type !== 'asset' || !String(asset.source).includes('@font-face')) return link
-          return link.replace('>', ' media="print" onload="this.media=\'all\'">') +
-            '<script>if (!document.documentElement.dataset.mapBoot) document.currentScript.previousElementSibling.media = "all"</script>'
-        })
       },
     },
   }

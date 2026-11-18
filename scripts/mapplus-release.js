@@ -8,6 +8,7 @@ import { buildCountryProfiles } from '../src/political-country-profiles.js'
 import { pollutionGeometry, pollutionPath, pollutionWashLayers, pollutionWashOpacity, pollutionWashColor } from '../src/map-pollution.js'
 import { initialPollution } from '../src/pollution-1818.js'
 import { emitPaper, serveMapPlusPaper } from './mapplus-paper.js'
+import { COUNTRY_FLAGS } from '../src/map-country-flags.js'
 
 const publicFile = path => new URL(`../public/${path.replace(/^\//, '').split('?')[0]}`, import.meta.url)
 const readJSON = path => JSON.parse(readFileSync(publicFile(path), 'utf8'))
@@ -85,10 +86,23 @@ export default function mapPlusRelease() {
         const [name, data] = JSON.parse(line)
         this.emitFile({ type: 'asset', fileName: `${waterDir}/${name}`, source: Buffer.from(data, 'base64') })
       }
+      const flagSources = [...new Set(Object.values(COUNTRY_FLAGS))]
+      const encodedFlags = python('./build-mapplus-flags.py', [], JSON.stringify(
+        flagSources.map(url => [url, fileURLToPath(publicFile(url))]),
+      ))
+      const flags = {}
+      for (const line of encodedFlags.trim().split(/\r?\n/)) {
+        const [url, data] = JSON.parse(line)
+        const source = Buffer.from(data, 'base64')
+        const fileName = `assets/mapplus-flags/${url.split('/').at(-1).replace(/\.webp$/, '')}-${fingerprint(source)}.webp`
+        this.emitFile({ type: 'asset', fileName, source })
+        flags[url] = '/' + fileName
+      }
       release = {
         manifest: await emitPaper(manifest, asset => this.emitFile(asset)),
         politics: '/' + politicalFile,
         pollution: '/' + pollutionFile,
+        flags,
         water: { source: manifest.waterwaysImageUrl, preview: `/${waterDir}/overview.webp`, tiles: `/${waterDir}/{z}/{x}/{y}.webp` },
       }
     },
@@ -97,7 +111,8 @@ export default function mapPlusRelease() {
       handler(html, { bundle }) {
         if (!release) return html
         const detail = Object.keys(bundle || {}).find(name => /^assets\/MapDetail-[^/]+\.js$/.test(name))
-        const boot = { ...release, detail: detail ? '/' + detail : undefined }
+        const { manifest, politics, pollution, water } = release
+        const boot = { manifest, politics, pollution, water, detail: detail ? '/' + detail : undefined }
         return html.replace('/* mapplus-boot-release */ null', JSON.stringify(boot).replaceAll('<', '\\u003c'))
       },
     },

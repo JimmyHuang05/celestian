@@ -52,18 +52,19 @@ export const COUNTRY_FLAGS = Object.freeze({
 })
 
 export function countryFlagUrl(row) {
-  return COUNTRY_FLAGS[row?.region_id] || COUNTRY_FLAGS[row?.sourceRegionId] || null
+  const source = COUNTRY_FLAGS[row?.region_id] || COUNTRY_FLAGS[row?.sourceRegionId]
+  return release?.flags?.[source] || source || null
 }
 let sequence = 0
 
 // These overlays belong to the rendered map, never the editable geometry.
-export function countryFlagHover(svg, before) {
+export function countryFlagHover(svg, before, onLoad) {
   const overlays = new Map()
   function show(path, row, visible) {
     const flag = countryFlagUrl(row)
     let overlay = overlays.get(path)
     if (!flag || !visible) {
-      if (overlay) overlay.style.opacity = '0'
+      if (overlay) overlay.element.style.opacity = '0'
       return false
     }
     if (!overlay) {
@@ -88,18 +89,23 @@ export function countryFlagHover(svg, before) {
       // Leaflet explicitly enables pointer events on descendant SVG paths,
       // overriding the group's inherited value. The decoration must not steal taps.
       shape.style.pointerEvents = 'none'
-      overlay = document.createElementNS(NS, 'g')
-      overlay.classList.add('map-country-flag')
-      overlay.setAttribute('aria-hidden', 'true')
+      const group = document.createElementNS(NS, 'g')
+      overlay = { element: group, loaded: false }
+      group.classList.add('map-country-flag')
+      group.setAttribute('aria-hidden', 'true')
       const transforms = []
       for (let parent = path.parentElement; parent && parent !== svg; parent = parent.parentElement) {
         if (parent.hasAttribute('transform')) transforms.unshift(parent.getAttribute('transform'))
       }
-      if (transforms.length) overlay.setAttribute('transform', transforms.join(' '))
-      overlay.style.opacity = '0'
-      overlay.style.pointerEvents = 'none'
+      if (transforms.length) group.setAttribute('transform', transforms.join(' '))
+      group.style.opacity = '0'
+      group.style.pointerEvents = 'none'
       const image = document.createElementNS(NS, 'image')
       image.style.pointerEvents = 'none'
+      image.addEventListener('load', () => {
+        overlay.loaded = true
+        if (path.isConnected) onLoad(path)
+      }, { once: true })
       image.setAttribute('href', flag)
       // Pattern content starts at the tile origin, not at the country's world
       // coordinates. Reusing box.x/y here shifts distant countries out of view.
@@ -110,14 +116,15 @@ export function countryFlagHover(svg, before) {
       pattern.append(image)
       defs.append(pattern)
       svg.append(defs)
-      overlay.append(shape)
-      svg.insertBefore(overlay, before)
+      group.append(shape)
+      svg.insertBefore(group, before)
       overlays.set(path, overlay)
       // Establish the initial transparent frame before the first fade-in.
-      overlay.getBoundingClientRect()
+      group.getBoundingClientRect()
     }
-    overlay.style.opacity = '.14'
-    return true
+    overlay.element.style.opacity = overlay.loaded ? '.14' : '0'
+    return overlay.loaded
   }
   return {show}
 }
+import release from './mapplus-release-data.js'
