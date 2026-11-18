@@ -40,6 +40,22 @@ function SceneImage({ scene }) {
   </div>
 }
 
+function CountryFlag({ src, preview, alt }) {
+  const [ready, setReady] = useState(null)
+  useEffect(() => {
+    if (!preview) return
+    let active = true
+    const image = new Image()
+    image.fetchPriority = 'low'
+    image.src = src
+    image.decode().then(() => { if (active) setReady(src) }).catch(() => {})
+    return () => { active = false }
+  }, [src, preview])
+  return <figure className="map-detail-country-flag">
+    <img src={!preview || ready === src ? src : preview} decoding="async" alt={alt} />
+  </figure>
+}
+
 function TerritoryOutline({ preview }) {
   const host = useRef(null)
   const legend = useRef(null)
@@ -185,7 +201,7 @@ export default function MapDetail({ row: sourceRow, localCopy = false, closing, 
         </div>}
         <div className="map-marker-detail__body">
           {localCopy && !row.pollutionCore && <div className="map-description-heading">简介</div>}
-          {flag && <figure className="map-detail-country-flag"><img src={flag} fetchPriority="high" decoding="async" alt={`${row.group_id || row.title}国旗`} /></figure>}
+          {flag && <CountryFlag src={flag} preview={row.flagPreview} alt={`${row.group_id || row.title}国旗`} />}
           {row.pollutionCore ? <PollutionCoreReport core={row.pollutionCore} /> : <div className="map-marker-detail__description">{(description || '这里的故事，尚待补录。').split(/\n\s*\n/).map((paragraph, index) => <p key={index}>{paragraph}</p>)}</div>}
           {(row.countryOverview || (row.isRegion && row.is_primary)) && <section className="map-country-overview" aria-label="国家概况">
             <dl>

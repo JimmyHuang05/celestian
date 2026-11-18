@@ -68,9 +68,6 @@ export default function mapPlusRelease() {
       }
       const pollutionFile = `assets/mapplus-pollution-${fingerprint(pollutionImage)}.webp`
       this.emitFile({ type: 'asset', fileName: pollutionFile, source: pollutionImage })
-      const politics = JSON.stringify({ coordinateSystemSha256: manifest.coordinateSystemSha256, svg, records, pollutionBorder })
-      const politicalFile = `assets/mapplus-politics-${fingerprint(politics)}.json`
-      this.emitFile({ type: 'asset', fileName: politicalFile, source: politics })
 
       const encoder = new URL('./build-mapplus-water-pyramid.py', import.meta.url)
       const source = publicFile(manifest.waterwaysImageUrl)
@@ -91,13 +88,22 @@ export default function mapPlusRelease() {
         flagSources.map(url => [url, fileURLToPath(publicFile(url))]),
       ))
       const flags = {}
+      const flagPreviews = {}
       for (const line of encodedFlags.trim().split(/\r?\n/)) {
-        const [url, data] = JSON.parse(line)
+        const [url, data, preview] = JSON.parse(line)
         const source = Buffer.from(data, 'base64')
         const fileName = `assets/mapplus-flags/${url.split('/').at(-1).replace(/\.webp$/, '')}-${fingerprint(source)}.webp`
         this.emitFile({ type: 'asset', fileName, source })
         flags[url] = '/' + fileName
+        flagPreviews[url] = `data:image/webp;base64,${preview}`
       }
+      for (const row of records) {
+        const preview = flagPreviews[COUNTRY_FLAGS[row.region_id]]
+        if (preview) row.flagPreview = preview
+      }
+      const politics = JSON.stringify({ coordinateSystemSha256: manifest.coordinateSystemSha256, svg, records, pollutionBorder })
+      const politicalFile = `assets/mapplus-politics-${fingerprint(politics)}.json`
+      this.emitFile({ type: 'asset', fileName: politicalFile, source: politics })
       release = {
         manifest: await emitPaper(manifest, asset => this.emitFile(asset)),
         politics: '/' + politicalFile,
@@ -114,6 +120,18 @@ export default function mapPlusRelease() {
         const { manifest, politics, pollution, water } = release
         const boot = { manifest, politics, pollution, water, detail: detail ? '/' + detail : undefined }
         return html.replace('/* mapplus-boot-release */ null', JSON.stringify(boot).replaceAll('<', '\\u003c'))
+      },
+    },
+    generateBundle: {
+      order: 'post',
+      handler(_options, bundle) {
+        const url = release?.manifest.terrainPyramid?.previewUrl
+        const overview = url && bundle[url.slice(1)]
+        const index = bundle['index.html']
+        if (overview?.type !== 'asset' || index?.type !== 'asset') return
+        const inline = `data:image/webp;base64,${Buffer.from(overview.source).toString('base64')}`
+        const source = String(index.source).replace('/* mapplus-inline-overview */ null', JSON.stringify(inline))
+        this.emitFile({ type: 'asset', fileName: 'mapplus/index.html', source })
       },
     },
   }

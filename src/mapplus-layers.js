@@ -3,7 +3,7 @@ import { MAPPLUS_WONDERS_ENABLED, resolveWonders } from './map-landmarks.js'
 import { createMapPlusCoastalLayer } from './mapplus-coastal-layer.js'
 import { createMapPlusWaterLayer } from './mapplus-water-layer.js'
 import { stableImageOverlay, anchorWorldTileLayer } from './map-stable-svg.js'
-import { mapPlusOverviewUrl, mapPlusReleaseWater } from './mapplus-startup.js'
+import { mapPlusOverviewSource, mapPlusOverviewUrl, mapPlusReleaseWater } from './mapplus-startup.js'
 
 // Keep decoded 30-degree tiles for the current style (72 tiles, ~33 MiB RGBA).
 // A small overview covers newly exposed areas while detail tiles decode.
@@ -134,7 +134,7 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
       image = new Image()
       image.decoding = 'async'
       image.fetchPriority = 'high'
-      image.src = mapPlusOverviewUrl(metadata, style, layers.rivers)
+      image.src = mapPlusOverviewSource(mapPlusOverviewUrl(metadata, style, layers.rivers))
       overviewReady = image.decode()
     }
     // Fetch auxiliary layers concurrently, but never hold the overview/tiles
@@ -148,6 +148,11 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
       const previous = preview
       preview = stableImageOverlay(L, image, extent, { pane: 'mapPlusOverview', className: 'mapplus-overview', interactive: false }).addTo(map)
       if (previous) map.removeLayer(previous)
+      const root = document.documentElement
+      if ('mapplusPreview' in root.dataset) {
+        delete root.dataset.mapplusPreview
+        root.style.removeProperty('background-image')
+      }
     }
     retirePrevious()
     if (pyramidLayer && style !== 'default') { map.removeLayer(pyramidLayer); pyramidLayer = null }

@@ -13,9 +13,16 @@
     <meta name="baidu-site-verification" content="codeva-9nWPZdui8T" />
 
     <link rel="icon" type="image/png" href="/data/images/icons/favicon.png">
+    <style>
+      html[data-mapplus-preview] { background: #e2d7b9 center / cover no-repeat fixed; }
+      html[data-mapplus-preview] body { background: transparent; }
+      html[data-mapplus-preview] #map-app,
+      html[data-mapplus-preview] .tiled-map__canvas { background: transparent !important; }
+    </style>
     <script>
       if (/^\/mapplus\/?$/.test(location.pathname)) {
         const release = /* mapplus-boot-release */ null
+        const inlineOverview = /* mapplus-inline-overview */ null
         window.__celestianMapPlusManifest = release ? Promise.resolve(release.manifest) : null
         const preloadImage = url => {
           const link = document.createElement('link')
@@ -26,14 +33,25 @@
           document.head.append(link)
         }
         if (release) {
+          if (inlineOverview) {
+            window.__celestianMapPlusOverview = { url: release.manifest.terrainPyramid.previewUrl, src: inlineOverview }
+            try {
+              if (!localStorage.getItem('celestian-mapplus-view-v2') && !new URLSearchParams(location.search).has('map')) {
+                const root = document.documentElement
+                root.dataset.mapplusPreview = ''
+                root.style.backgroundImage = `url("${inlineOverview}")`
+              }
+            } catch { /* The map can still reuse the inline overview. */ }
+          }
           if (release.detail) {
             const detail = document.createElement('link')
             detail.rel = 'modulepreload'
             detail.crossOrigin = 'anonymous'
+            detail.fetchPriority = 'low'
             detail.href = release.detail
             document.head.append(detail)
           }
-          window.__celestianMapPlusPolitics = fetch(release.politics, { priority: 'high' })
+          window.__celestianMapPlusPolitics = fetch(release.politics, { priority: 'auto' })
             .then(response => response.ok ? response.json() : null)
             .catch(() => null)
           const shared = new URLSearchParams(location.search)
@@ -47,6 +65,7 @@
           if (release.pollution) preloadImage(release.pollution)
         }
         window.__celestianMapPlusManifest?.then(metadata => {
+          if (window.__celestianMapPlusOverview) return
           try {
             if (localStorage.getItem('celestian-mapplus-view-v2') || new URLSearchParams(location.search).has('map')) return
           } catch { /* The default overview still loads when the map mounts. */ return }

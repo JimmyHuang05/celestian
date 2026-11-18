@@ -72,6 +72,11 @@ export function mapPlusOverviewUrl(metadata, style, rivers) {
   return grid.previewUrl.replace('{variant}', variant)
 }
 
+export function mapPlusOverviewSource(url) {
+  const boot = window.__celestianMapPlusOverview
+  return boot?.url === url ? boot.src : url
+}
+
 let warmed = false
 export function warmMapPlus() {
   const connection = navigator.connection
