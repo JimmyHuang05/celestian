@@ -24,11 +24,11 @@ function mapPlusJSON(url, priority) {
 
 export function mapPlusManifest({ fresh = false } = {}) {
   if (release) return Promise.resolve(release.manifest)
-  const url = '/mapplus/manifest.json'
+  const url = import.meta.env.DEV ? '/__mapplus-paper/manifest.json' : '/mapplus/manifest.json'
   if (fresh) {
     requests.delete(url)
     delete window.__celestianMapPlusManifest
-  } else if (!requests.has(url) && window.__celestianMapPlusManifest) {
+  } else if (!import.meta.env.DEV && !requests.has(url) && window.__celestianMapPlusManifest) {
     const early = window.__celestianMapPlusManifest
     return early.then(metadata => metadata || mapPlusJSON(url))
   }

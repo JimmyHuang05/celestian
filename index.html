@@ -16,9 +16,7 @@
     <script>
       if (/^\/mapplus\/?$/.test(location.pathname)) {
         const release = /* mapplus-boot-release */ null
-        window.__celestianMapPlusManifest = release ? Promise.resolve(release.manifest) : fetch('/mapplus/manifest.json', { priority: 'high' })
-          .then(response => response.ok ? response.json() : null)
-          .catch(() => null)
+        window.__celestianMapPlusManifest = release ? Promise.resolve(release.manifest) : null
         const preloadImage = url => {
           const link = document.createElement('link')
           link.rel = 'preload'
@@ -48,7 +46,7 @@
           if (rivers) preloadImage(release.water.preview)
           if (release.pollution) preloadImage(release.pollution)
         }
-        window.__celestianMapPlusManifest.then(metadata => {
+        window.__celestianMapPlusManifest?.then(metadata => {
           try {
             if (localStorage.getItem('celestian-mapplus-view-v2') || new URLSearchParams(location.search).has('map')) return
           } catch { /* The default overview still loads when the map mounts. */ return }

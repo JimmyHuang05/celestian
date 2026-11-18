@@ -7,6 +7,7 @@ import { flattenCoast, setPoliticalCoast } from '../src/political-coast.js'
 import { buildCountryProfiles } from '../src/political-country-profiles.js'
 import { pollutionGeometry, pollutionPath, pollutionWashLayers, pollutionWashOpacity, pollutionWashColor } from '../src/map-pollution.js'
 import { initialPollution } from '../src/pollution-1818.js'
+import { emitPaper, serveMapPlusPaper } from './mapplus-paper.js'
 
 const publicFile = path => new URL(`../public/${path.replace(/^\//, '').split('?')[0]}`, import.meta.url)
 const readJSON = path => JSON.parse(readFileSync(publicFile(path), 'utf8'))
@@ -25,6 +26,9 @@ export default function mapPlusRelease() {
     name: 'mapplus-release',
     configResolved(config) {
       building = config.command === 'build'
+    },
+    configureServer(server) {
+      serveMapPlusPaper(server, publicFile('mapplus/manifest.json'))
     },
     transform(_source, id) {
       if (release && id.replaceAll('\\', '/') === fileURLToPath(releaseModule).replaceAll('\\', '/')) {
@@ -82,7 +86,7 @@ export default function mapPlusRelease() {
         this.emitFile({ type: 'asset', fileName: `${waterDir}/${name}`, source: Buffer.from(data, 'base64') })
       }
       release = {
-        manifest,
+        manifest: await emitPaper(manifest, asset => this.emitFile(asset)),
         politics: '/' + politicalFile,
         pollution: '/' + pollutionFile,
         water: { source: manifest.waterwaysImageUrl, preview: `/${waterDir}/overview.webp`, tiles: `/${waterDir}/{z}/{x}/{y}.webp` },

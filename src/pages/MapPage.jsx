@@ -27,7 +27,6 @@ import { attachMapFrame, coverMap, frameZoom } from '../map-frame.js'
 import { attachMapPlusLayers } from '../mapplus-layers.js'
 import MapStudyRoutes from '../studies/MapStudyRoutes.jsx'
 import MapShips from '../studies/MapShips.jsx'
-import MapCottonTexture from '../studies/MapCottonTexture.jsx'
 import MapOceanRelief from '../studies/MapOceanRelief.jsx'
 import { WONDER_KEY, resolveWonders } from '../map-landmarks.js'
 import { placementEntries } from '../map-placement-archive.js'
@@ -492,8 +491,7 @@ export default function MapPage({ mapPlus = false }) {
       <div ref={container} className="tiled-map__canvas" style={{ position: 'absolute', inset: 0 }} aria-label="世界地图，可拖动和缩放" />
       {mapPlus && <MapStudyRoutes viewer={routeViewer} visible={layers.routes!==false} />}
       {mapPlus && <MapShips viewer={routeViewer} />}
-      {mapPlus && <MapCottonTexture viewer={routeViewer} />}
-      {mapPlus && <MapOceanRelief viewer={routeViewer} enabled={basemapStyle==='default'} />}
+      {mapPlus && <MapOceanRelief viewer={routeViewer} enabled={basemapStyle==='default' && !routeViewer?.metadata.bakedPaper} />}
       <nav className="map-page-actions" aria-label="页面控制">
         <button className="page-action" type="button" onClick={toggleMusic} aria-pressed={!enabled} aria-label={enabled ? '静音' : '开启声音'} title={enabled ? '静音' : '开启声音'} dangerouslySetInnerHTML={{ __html: soundIcon(!enabled) }} />
         <BackButton className="page-action" aria-label="关闭并返回百科" title="关闭并返回百科"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 6 12 12M18 6 6 18" /></svg></BackButton>
