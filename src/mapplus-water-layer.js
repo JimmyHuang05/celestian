@@ -26,7 +26,8 @@ export function createMapPlusWaterLayer(L, map, bounds, metadata, pyramid, signa
   function settle() {
     cancelAnimationFrame(frame)
     frame = requestAnimationFrame(() => {
-      if (!detail || map._animatingZoom || map.dragging?.moving() || detail.isLoading()) return
+      if (!detail || map._animatingZoom || map.touchZoom?._zooming || map.dragging?.moving()) return
+      if (detail.isLoading()) { showPreview(); return }
       const visible = Object.values(detail._tiles).filter(tile => tile.current)
       showDetail(visible.length > 0 && visible.every(tile => tile.loaded && !failed.has(tile.el)))
     })
@@ -34,7 +35,7 @@ export function createMapPlusWaterLayer(L, map, bounds, metadata, pyramid, signa
 
   function updateZoom() {
     if (!pyramid || !enabled || !preview || !map.hasLayer(preview)) return
-    if (map.getZoom() < 3.5) {
+    if (map.getZoom() < (detail ? 3.25 : 3.5)) {
       showPreview()
       detail?.remove()
       detail = null
@@ -47,7 +48,9 @@ export function createMapPlusWaterLayer(L, map, bounds, metadata, pyramid, signa
         minZoom: 3, minNativeZoom: 4, maxNativeZoom: 6, maxZoom: metadata.maxZoom,
         keepBuffer: 1, updateWhenIdle: true, updateWhenZooming: false, opacity: 0,
       }))
-      detail.on('tileloadstart', showPreview)
+      detail.on('tileloadstart', () => {
+        if (!map._animatingZoom && !map.touchZoom?._zooming) showPreview()
+      })
       detail.on('tileerror', ({ tile }) => failed.add(tile))
       detail.on('load', settle)
       detail.addTo(map)
@@ -85,12 +88,12 @@ export function createMapPlusWaterLayer(L, map, bounds, metadata, pyramid, signa
   }
 
   if (pyramid) {
-    map.on('movestart zoomstart', showPreview)
+    map.on('dragstart', showPreview)
     map.on('zoomend', updateZoom)
     map.on('moveend', settle)
   }
   signal.addEventListener('abort', () => {
-    map.off('movestart zoomstart', showPreview)
+    map.off('dragstart', showPreview)
     map.off('zoomend', updateZoom)
     map.off('moveend', settle)
     cancelAnimationFrame(frame)

@@ -162,10 +162,26 @@ export function attachMapPlusLayers(L, map, bounds, metadata, initial, signal, o
         minZoom: metadata.minZoom - 1, maxZoom: metadata.maxZoom,
         minNativeZoom: pyramid.minZoom, maxNativeZoom: pyramid.maxZoom,
         bounds: extent, noWrap: true, keepBuffer: 1,
-        updateWhenIdle: true, updateWhenZooming: false,
+        updateWhenIdle: true, updateWhenZooming: true,
       })
       // Fractional map scales expose antialiased gaps between separate raster tiles.
       anchorWorldTileLayer(pyramidLayer)
+      const setView = pyramidLayer._setView
+      pyramidLayer._setView = function (center, zoom, noPrune, noUpdate) {
+        // Select tiles from the projected pixel size, not just the camera
+        // zoom. Limit the density boost and ease into it after the overview.
+        const density = Math.min(window.devicePixelRatio || 1, 1.5)
+        const bias = Math.max(0, Math.log2(metadata.width / pyramid.width * density))
+        const weight = Math.max(0, Math.min(1, zoom - 2.5))
+        const target = Math.round(zoom + bias * weight)
+        const current = this._map.getZoom()
+        // GridLayer resets a level outside one zoom step of the live camera.
+        // Stay inside that range both during animation and at rest.
+        const tileView = Math.max(Math.ceil(current - 1),
+          Math.min(this.options.maxZoom, Math.floor(current + 1), Math.floor(zoom + 1), target))
+        // The shared camera still uses the real zoom for tile transforms.
+        return setView.call(this, center, tileView, noPrune, noUpdate)
+      }
       // A narrow overlap covers both resampling edges at fractional zoom levels.
       const initTile = pyramidLayer._initTile
       pyramidLayer._initTile = function (tile) {
