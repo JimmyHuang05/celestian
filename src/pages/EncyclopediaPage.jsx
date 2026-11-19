@@ -8,7 +8,7 @@ import GalaxyVeil from '../components/encyclopedia/GalaxyVeil.jsx'
 import { galaxyTextureMask } from '../components/encyclopedia/galaxyDensity.js'
 import DataNode from '../components/encyclopedia/DataNode.jsx'
 import StandardDetail from '../components/encyclopedia/StandardDetail.jsx'
-import AeonDetail from '../components/encyclopedia/AeonDetail.jsx'
+import AeonPaperStudy from '../components/encyclopedia/AeonPaperStudy.jsx'
 import '../page-actions.css'
 import './encyclopedia.css'
 import VersionBadge from '../components/VersionBadge.jsx'
@@ -238,7 +238,7 @@ function EncyclopediaPage({ onArrivalReady }) {
     const compType = activeNode.id === 'aeons' ? 'AeonDetail' : 'StandardDetail'
     const commonProps = { node: activeNode, isMobile, onClose: closeDetail, entryId, onEntryChange }
     if (compType === 'StandardDetail') return <StandardDetail {...commonProps} />
-    if (compType === 'AeonDetail') return <AeonDetail {...commonProps} />
+    if (compType === 'AeonDetail') return <AeonPaperStudy initialId={entryId} onClose={closeDetail} />
     return null
   }
 
